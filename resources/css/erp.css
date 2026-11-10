@@ -1,0 +1,244 @@
+/* ==========================================================================
+   Kayan ERP — Odoo-Inspired Enterprise Design System (Modular Architecture)
+   Arabic RTL First · Light/Dark Themes · Enterprise Dense Mode
+   ========================================================================== */
+
+/* Design Tokens & Theme Palettes */
+@import './tokens/variables.css';
+@import './tokens/themes.css';
+
+/* Base Normalize & Cairo Typography */
+@import './base/reset.css';
+
+/* Application Shell Layout */
+@import './layout/shell.css';
+@import './layout/topbar.css';
+@import './layout/sidebar.css';
+@import './layout/control-panel.css';
+
+/* Shared Enterprise Components */
+@import './components/buttons.css';
+@import './components/badges.css';
+@import './components/cards.css';
+@import './components/tables.css';
+@import './components/forms.css';
+@import './components/dropdowns.css';
+@import './components/modals.css';
+@import './components/tabs.css';
+@import './components/toasts.css';
+@import './components/empty-states.css';
+@import './components/scanner.css';
+
+/* Page-Specific Styles */
+@import './pages/dashboard.css';
+@import './pages/products.css';
+@import './pages/categories.css';
+@import './pages/inventory.css';
+@import './pages/warehouses.css';
+@import './pages/settings.css';
+@import './pages/customers.css';
+@import './pages/suppliers.css';
+@import './pages/shipping-offices.css';
+@import './pages/print-templates.css';
+@import './pages/purchases.css';
+@import './pages/auth.css';
+@import './pages/users.css';
+@import './pages/roles.css';
+@import './pages/units.css';
+@import './pages/sales.css';
+@import './pages/home.css';
+@import './pages/shifts.css';
+@import './pages/finance.css';
+
+/* Core Utility Classes */
+.is-hidden {
+    display: none !important;
+}
+
+.hidden:not([class*="sm:"]):not([class*="md:"]):not([class*="lg:"]):not([class*="xl:"]):not([class*="2xl:"]) {
+    display: none !important;
+}
+
+.visible {
+    display: block !important;
+}
+
+/* Primary Utility Fallbacks */
+.text-\[var\(--primary\)\], .text-primary {
+    color: var(--primary) !important;
+}
+
+.bg-\[var\(--primary\)\], .bg-primary {
+    background-color: var(--primary) !important;
+}
+
+.border-\[var\(--primary\)\], .border-primary {
+    border-color: var(--primary) !important;
+}
+
+.bg-\[var\(--primary-soft\)\], .bg-primary-soft {
+    background-color: var(--primary-soft) !important;
+}
+
+/* Odoo Pill Button for Topbars and Banners */
+.erp-btn-pill-white {
+    background-color: #FFFFFF !important;
+    color: #714B67 !important;
+    font-weight: 700 !important;
+    border-radius: 6px !important;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.08) !important;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    transition: transform 0.15s ease, background-color 0.15s ease !important;
+}
+
+.erp-btn-pill-white:hover {
+    background-color: #F8F9FA !important;
+    color: #5D3B54 !important;
+}
+
+.erp-btn-pill-white:active {
+    transform: scale(0.96) !important;
+}
+
+/* Hotwire Turbo SPA Progress Bar */
+.turbo-progress-bar {
+    height: 3px !important;
+    background: linear-gradient(90deg, #714B67, #a26993, #714B67) !important;
+    box-shadow: 0 0 10px rgba(113, 75, 103, 0.7) !important;
+    z-index: 999999 !important;
+}
+
+
+
+/* Packing List Auto-complete & Inspector Modal Styles */
+#searchResultsDropdown.hidden,
+.purchases-autocomplete-dropdown.hidden {
+    display: none !important;
+}
+
+.purchases-autocomplete-dropdown {
+    position: absolute !important;
+    top: calc(100% + 4px) !important;
+    right: 0 !important;
+    left: 0 !important;
+    width: 100% !important;
+    min-width: 480px !important;
+    max-height: 320px !important;
+    overflow-y: auto !important;
+    background: #ffffff !important;
+    border: 1.5px solid #cbd5e1 !important;
+    border-radius: 8px !important;
+    box-shadow: 0 16px 36px rgba(0, 0, 0, 0.25) !important;
+    z-index: 9999 !important;
+}
+
+.dark .purchases-autocomplete-dropdown {
+    background: #1e293b !important;
+    border-color: #334155 !important;
+    box-shadow: 0 16px 36px rgba(0, 0, 0, 0.5) !important;
+}
+
+.purchases-suggestion-item {
+    padding: 9px 12px !important;
+    cursor: pointer !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    gap: 12px !important;
+    border-bottom: 1px solid #f1f5f9 !important;
+    color: #1e293b !important;
+    background: #ffffff !important;
+    transition: background-color 0.12s ease !important;
+}
+
+.dark .purchases-suggestion-item {
+    border-bottom-color: #334155 !important;
+    color: #f8fafc !important;
+    background: #1e293b !important;
+}
+
+.purchases-suggestion-item:last-child {
+    border-bottom: none !important;
+}
+
+.purchases-suggestion-item:hover,
+.purchases-suggestion-item.active {
+    background: #f8fafc !important;
+}
+
+.dark .purchases-suggestion-item:hover,
+.dark .purchases-suggestion-item.active {
+    background: #334155 !important;
+}
+
+.pos-row-highlight {
+    animation: posRowFlash 1.4s ease-out forwards;
+}
+@keyframes posRowFlash {
+    0% { background-color: rgba(16, 185, 129, 0.45) !important; }
+    50% { background-color: rgba(16, 185, 129, 0.2) !important; }
+    100% { background-color: transparent; }
+}
+
+/* Stock Inspector Modal Enhancements */
+#stockInspectorModal.erp-modal-overlay {
+    z-index: 1000 !important;
+}
+
+#stockInspectorModal .erp-modal-container {
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.45) !important;
+}
+
+#inspectorStockTable {
+    min-width: 960px;
+    border-collapse: separate;
+    border-spacing: 0;
+}
+
+#inspectorStockTable th {
+    background-color: var(--bg-surface-alt, #f8fafc) !important;
+    color: var(--text-main, #1e293b) !important;
+    font-weight: 700 !important;
+    white-space: nowrap !important;
+    position: sticky !important;
+    top: 0 !important;
+    z-index: 10 !important;
+    border-bottom: 2px solid var(--border-color, #e2e8f0) !important;
+}
+
+[data-theme="dark"] #inspectorStockTable th,
+.dark #inspectorStockTable th {
+    background-color: #1e293b !important;
+    color: #f8fafc !important;
+    border-bottom: 2px solid #334155 !important;
+}
+
+#inspectorStockTable tbody tr {
+    transition: background-color 0.15s ease;
+}
+
+#inspectorStockTable td {
+    border-bottom: 1px solid var(--border-color, #e2e8f0);
+}
+
+[data-theme="dark"] #inspectorStockTable td,
+.dark #inspectorStockTable td {
+    border-bottom: 1px solid #334155;
+}
+
+#inspectorScrollArea {
+    scrollbar-gutter: stable;
+    scrollbar-width: thin;
+}
+
+#inspectorScrollArea::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+}
+
+#inspectorScrollArea::-webkit-scrollbar-thumb {
+    background-color: var(--border-color, #cbd5e1);
+    border-radius: 4px;
+}
