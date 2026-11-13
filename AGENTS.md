@@ -131,6 +131,15 @@ This project has domain-specific skills available in `**/skills/**`. You MUST ac
 - If you have modified any PHP files, you must run `vendor/bin/pint --dirty --format agent` before finalizing changes to ensure your code matches the project's expected style.
 - Do not run `vendor/bin/pint --test --format agent`, simply run `vendor/bin/pint --format agent` to fix any formatting issues.
 
+=== arabic-rtl rules ===
+
+# Arabic Language & RTL Direction Guidelines
+
+Whenever responding in Arabic:
+- Wrap all Arabic text blocks and responses inside `<div dir="rtl">...</div>` containers to enforce proper Right-to-Left rendering in the UI.
+- Keep English words and code symbols properly isolated inside backticks (e.g. `code`) or on independent lines so sentences and punctuation do not get scrambled or reversed.
+- Keep all code snippets in standard LTR code blocks.
+
 === phpunit/core rules ===
 
 # PHPUnit

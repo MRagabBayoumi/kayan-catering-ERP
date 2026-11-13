@@ -2,7 +2,6 @@
 
 namespace App\Models;
 
-use App\Traits\Auditable;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -13,7 +12,7 @@ use Illuminate\Support\Facades\Storage;
 
 class Product extends Model
 {
-    use Auditable, HasFactory;
+    use HasFactory;
 
     /**
      * The attributes that are mass assignable.
@@ -30,6 +29,9 @@ class Product extends Model
         'retail_price',
         'distributor_price',
         'unit',
+        'storage_type',
+        'shelf_life_days',
+        'acceptable_waste_pct',
         'pieces_per_package',
         'min_stock_alert',
         'opening_quantity',
@@ -38,10 +40,7 @@ class Product extends Model
         'opening_balance_date',
         'image_path',
         'is_active',
-        'is_available_online',
-        'online_price',
-        'online_description',
-        'is_featured_online',
+        'notes',
     ];
 
     /**

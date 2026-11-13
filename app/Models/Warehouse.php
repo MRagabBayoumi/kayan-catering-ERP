@@ -2,18 +2,30 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Warehouse extends Model
 {
     use HasFactory;
 
+    public const TYPE_MAIN = 'main';
+
+    public const TYPE_DRY = 'dry';
+
+    public const TYPE_CHILLED = 'chilled';
+
+    public const TYPE_FROZEN = 'frozen';
+
+    public const TYPE_VAN_TRANSIT = 'van_transit';
+
     protected $fillable = [
         'code',
         'name',
+        'type',
+        'driver_id',
         'location',
         'is_active',
         'is_default',
@@ -28,6 +40,11 @@ class Warehouse extends Model
         ];
     }
 
+    public function driver(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'driver_id');
+    }
+
     public function stockBalances(): HasMany
     {
         return $this->hasMany(StockBalance::class);
@@ -38,41 +55,13 @@ class Warehouse extends Model
         return $this->hasMany(InventoryBatch::class);
     }
 
-    public function purchaseReturns(): HasMany
-    {
-        return $this->hasMany(PurchaseReturn::class);
-    }
-
     public function movements(): HasMany
     {
         return $this->hasMany(StockMovement::class, 'to_warehouse_id');
     }
 
-    public function scopeActive(Builder $query): Builder
+    public function isVanTransit(): bool
     {
-        return $query->where('is_active', true);
-    }
-
-    public static function getDefaultWarehouse(): self
-    {
-        $default = static::where('is_default', true)->first();
-
-        if ($default) {
-            return $default;
-        }
-
-        $first = static::where('is_active', true)->first();
-
-        if ($first) {
-            return $first;
-        }
-
-        return static::create([
-            'code' => 'WH-MAIN',
-            'name' => 'المستودع الرئيسي',
-            'location' => 'المقر الرئيسي',
-            'is_active' => true,
-            'is_default' => true,
-        ]);
+        return $this->type === self::TYPE_VAN_TRANSIT;
     }
 }

@@ -22,6 +22,7 @@ class Category extends Model
         'name',
         'code',
         'slug',
+        'storage_type',
         'description',
         'parent_id',
         'is_active',
