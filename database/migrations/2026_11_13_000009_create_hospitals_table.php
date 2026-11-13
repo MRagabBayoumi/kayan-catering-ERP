@@ -22,10 +22,17 @@ return new class extends Migration
             $table->text('notes')->nullable();
             $table->timestamps();
         });
+
+        Schema::table('warehouses', function (Blueprint $table) {
+            $table->foreignId('hospital_id')->nullable()->after('driver_id')->constrained('hospitals')->nullOnDelete();
+        });
     }
 
     public function down(): void
     {
+        Schema::table('warehouses', function (Blueprint $table) {
+            $table->dropConstrainedForeignId('hospital_id');
+        });
         Schema::dropIfExists('hospitals');
     }
 };

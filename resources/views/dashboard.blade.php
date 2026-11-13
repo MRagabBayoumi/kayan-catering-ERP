@@ -16,7 +16,7 @@
             </p>
         </div>
         <div class="flex flex-col sm:flex-row gap-3">
-            <button type="button" onclick="document.getElementById('aiLauncherBtn')?.click()" class="px-5 py-2.5 bg-blue-600 hover:bg-blue-500 text-white font-medium text-sm rounded-xl shadow-lg shadow-blue-600/30 transition flex items-center justify-center gap-2">
+            <button type="button" data-action="open-ai-copilot" class="px-5 py-2.5 bg-blue-600 hover:bg-blue-500 text-white font-medium text-sm rounded-xl shadow-lg shadow-blue-600/30 transition flex items-center justify-center gap-2">
                 <span>💬 اسأل المساعد الذكي</span>
             </button>
         </div>

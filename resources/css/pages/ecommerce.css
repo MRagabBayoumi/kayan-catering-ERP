@@ -1,0 +1,109 @@
+/* ==========================================================================
+   Kayan ERP — E-Commerce Orders & Storefront Management Styles
+   ========================================================================== */
+
+/* Mobile Responsive E-Commerce Orders (max-width: 768px) */
+@media (max-width: 768px) {
+    [data-page="ecommerce-orders"] .erp-table-responsive {
+        border: none;
+        background: transparent;
+        overflow: visible;
+    }
+
+    [data-page="ecommerce-orders"] .erp-table,
+    [data-page="ecommerce-orders"] .erp-table tbody {
+        display: block;
+        width: 100%;
+    }
+
+    [data-page="ecommerce-orders"] .erp-table thead {
+        display: none;
+    }
+
+    [data-page="ecommerce-orders"] .erp-table tbody tr {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 6px;
+        background: var(--bg-surface);
+        border: 1px solid var(--border-color);
+        border-radius: var(--border-radius-md, 10px);
+        padding: 12px;
+        margin-bottom: 10px;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+    }
+
+    [data-page="ecommerce-orders"] .erp-table tbody tr td {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+        padding: 0;
+        border: none;
+        background: transparent;
+        font-size: 12px;
+    }
+
+    [data-page="ecommerce-orders"] td.td-order-num {
+        grid-column: span 1;
+        font-weight: 800;
+        font-size: 14px;
+    }
+
+    [data-page="ecommerce-orders"] td.td-order-status {
+        grid-column: span 1;
+        align-items: flex-end;
+    }
+
+    [data-page="ecommerce-orders"] td.td-order-customer {
+        grid-column: span 1;
+        font-size: 13px;
+        font-weight: 700;
+    }
+
+    [data-page="ecommerce-orders"] td.td-order-contact {
+        grid-column: span 1;
+        align-items: flex-end;
+    }
+
+    [data-page="ecommerce-orders"] td.td-order-total {
+        grid-column: span 1;
+        font-size: 14px;
+        font-weight: 800;
+        background: var(--bg-surface-alt, #f8fafc);
+        padding: 4px 8px;
+        border-radius: 6px;
+    }
+    [data-page="ecommerce-orders"] td.td-order-total::before {
+        content: "إجمالي الطلب";
+        font-size: 10px;
+        color: var(--text-muted);
+        margin-bottom: 2px;
+    }
+
+    [data-page="ecommerce-orders"] td.td-order-payment {
+        grid-column: span 1;
+        align-items: flex-end;
+        background: var(--bg-surface-alt, #f8fafc);
+        padding: 4px 8px;
+        border-radius: 6px;
+    }
+    [data-page="ecommerce-orders"] td.td-order-payment::before {
+        content: "حالة الدفع";
+        font-size: 10px;
+        color: var(--text-muted);
+        margin-bottom: 2px;
+    }
+
+    [data-page="ecommerce-orders"] td.td-order-actions {
+        grid-column: span 2;
+        padding-top: 6px;
+        border-top: 1px solid var(--border-color);
+        width: 100%;
+        align-items: flex-end;
+    }
+
+    [data-page="ecommerce-orders"] td.td-order-items,
+    [data-page="ecommerce-orders"] td.td-order-date,
+    [data-page="ecommerce-orders"] td.td-order-invoice {
+        display: none;
+    }
+}

@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 
 class Hospital extends Model
 {
@@ -76,6 +77,11 @@ class Hospital extends Model
     public function consumptionLogs(): HasMany
     {
         return $this->hasMany(ConsumptionLog::class);
+    }
+
+    public function siteWarehouse(): HasOne
+    {
+        return $this->hasOne(Warehouse::class)->where('type', Warehouse::TYPE_SITE);
     }
 
     public function isContractActive(): bool

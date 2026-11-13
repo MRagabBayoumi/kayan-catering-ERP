@@ -21,11 +21,14 @@ class Warehouse extends Model
 
     public const TYPE_VAN_TRANSIT = 'van_transit';
 
+    public const TYPE_SITE = 'site';
+
     protected $fillable = [
         'code',
         'name',
         'type',
         'driver_id',
+        'hospital_id',
         'location',
         'is_active',
         'is_default',

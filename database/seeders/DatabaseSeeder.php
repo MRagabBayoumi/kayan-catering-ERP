@@ -4,10 +4,20 @@ namespace Database\Seeders;
 
 use App\Models\Category;
 use App\Models\CompanySetting;
+use App\Models\CompetitorPrice;
+use App\Models\DailyCashClosing;
+use App\Models\FinancialVoucher;
 use App\Models\Hospital;
 use App\Models\InventoryBatch;
+use App\Models\MealType;
 use App\Models\Product;
+use App\Models\Recipe;
+use App\Models\RecipeIngredient;
 use App\Models\StockBalance;
+use App\Models\Supplier;
+use App\Models\SupplierPaymentSchedule;
+use App\Models\Tender;
+use App\Models\Treasury;
 use App\Models\User;
 use App\Models\Warehouse;
 use Carbon\Carbon;
@@ -389,6 +399,170 @@ class DatabaseSeeder extends Seeder
         StockBalance::updateOrCreate(
             ['product_id' => $prod3->id, 'warehouse_id' => $mainWh->id],
             ['quantity' => 1650.00, 'reserved_quantity' => 0.00]
+        );
+
+        // 7. Costing Recipes (BOM)
+        $mealType = MealType::updateOrCreate(
+            ['code' => 'MEAL-PATIENT-LUNCH'],
+            [
+                'name' => 'غداء نزلاء عادي (مستشفيات عامة)',
+                'category' => 'patient',
+                'dietary_notes' => 'وجبة متوازنة السعرات وفق المقنن الوزاري',
+                'is_active' => true,
+            ]
+        );
+
+        $lunchBeefRecipe = Recipe::updateOrCreate(
+            ['recipe_code' => 'REC-LUNCH-BEEF'],
+            [
+                'name' => 'وجبة غداء لحم بقري بلدي فاخر مع أرز مصري وخضار',
+                'meal_type_id' => $mealType->id,
+                'standard_cost_per_meal' => 85.00,
+                'is_approved_by_costing' => true,
+                'is_approved_by_site_mgr' => true,
+                'is_active' => true,
+                'created_by' => $admin->id,
+            ]
+        );
+
+        RecipeIngredient::updateOrCreate(
+            ['recipe_id' => $lunchBeefRecipe->id, 'product_id' => $prod1->id],
+            [
+                'raw_quantity_per_meal' => 0.150,
+                'cooked_yield_quantity' => 0.100,
+                'unit' => 'kg',
+                'standard_unit_cost' => 380.00,
+            ]
+        );
+
+        RecipeIngredient::updateOrCreate(
+            ['recipe_id' => $lunchBeefRecipe->id, 'product_id' => $prod3->id],
+            [
+                'raw_quantity_per_meal' => 0.120,
+                'cooked_yield_quantity' => 0.220,
+                'unit' => 'kg',
+                'standard_unit_cost' => 28.50,
+            ]
+        );
+
+        // 8. Tenders and Competitor Archive
+        $hosp1 = Hospital::first();
+        $tender = Tender::updateOrCreate(
+            ['tender_number' => 'TND-GIZA-2025'],
+            [
+                'title' => 'مناقصة توريد وإعاشة مستشفيات مديرية الصحة بالجيزة 2025-2026',
+                'hospital_id' => $hosp1?->id,
+                'entity_name' => 'مديرية الشؤون الصحية بمحافظة الجيزة',
+                'announcement_date' => '2025-10-15',
+                'envelope_opening_date' => '2025-11-20',
+                'status' => 'awarded',
+                'created_by' => $admin->id,
+            ]
+        );
+
+        CompetitorPrice::updateOrCreate(
+            ['tender_id' => $tender->id, 'competitor_name' => 'الشركة الدولية لخدمات الأغذية'],
+            [
+                'item_or_meal_name' => 'وجبة غداء كاملة باللحم البقري',
+                'our_bid_price' => 85.00,
+                'competitor_price' => 92.00,
+                'tender_year' => 2025,
+                'notes' => 'أسعار منافسة تم أرشفتها لتسعير العام القادم',
+            ]
+        );
+
+        CompetitorPrice::updateOrCreate(
+            ['tender_id' => $tender->id, 'competitor_name' => 'مجموعة الأمل للكيترينج والتغذية'],
+            [
+                'item_or_meal_name' => 'وجبة غداء كاملة باللحم البقري',
+                'our_bid_price' => 85.00,
+                'competitor_price' => 89.50,
+                'tender_year' => 2025,
+                'notes' => 'عرض الجودة أقل من المواصفات المطلوبة',
+            ]
+        );
+
+        // 9. Suppliers & Scheduling
+        $supplierBeef = Supplier::updateOrCreate(
+            ['code' => 'SUP-001'],
+            [
+                'name' => 'شركة الأهرام للحوم والمجمدات الطازجة',
+                'phone' => '01099887766',
+                'contact_person' => 'الحاج إبراهيم رضوان',
+                'current_balance' => 45000.00,
+                'credit_limit' => 150000.00,
+                'payment_terms_days' => 21,
+            ]
+        );
+
+        SupplierPaymentSchedule::updateOrCreate(
+            ['supplier_id' => $supplierBeef->id, 'invoice_reference' => 'INV-AHRAM-8891'],
+            [
+                'due_date' => $now->copy()->addDays(10)->toDateString(),
+                'amount' => 25000.00,
+                'status' => 'pending',
+                'notes' => 'دفعة فاتورة توريد لحوم الأسبوع الماضي',
+            ]
+        );
+
+        // 10. Treasuries and Site Petty Cash
+        $mainSafe = Treasury::updateOrCreate(
+            ['name' => 'الخزينة المركزية لإدارة التوريدات'],
+            [
+                'type' => Treasury::TYPE_CASHBOX,
+                'hospital_id' => null,
+                'balance' => 185000.00,
+            ]
+        );
+
+        $bankMisr = Treasury::updateOrCreate(
+            ['name' => 'بنك مصر - الحساب الجاري للتوريدات'],
+            [
+                'type' => Treasury::TYPE_BANK,
+                'hospital_id' => null,
+                'balance' => 420000.00,
+            ]
+        );
+
+        $siteCustody = Treasury::updateOrCreate(
+            ['name' => 'عهدة موقع مستشفى إمبابة (شراء عيش وكايزر وثلج)'],
+            [
+                'type' => Treasury::TYPE_SITE_CUSTODY,
+                'hospital_id' => $hosp1?->id,
+                'balance' => 3500.00,
+            ]
+        );
+
+        // 11. Financial Vouchers
+        FinancialVoucher::updateOrCreate(
+            ['voucher_number' => 'VCH-PAY-261113-01'],
+            [
+                'type' => FinancialVoucher::TYPE_PAYMENT,
+                'treasury_id' => $siteCustody->id,
+                'hospital_id' => $hosp1?->id,
+                'amount' => 450.00,
+                'purpose' => 'شراء 900 رغيف عيش بلدي وكايزر طازج للمستشفى',
+                'payment_method' => 'cash',
+                'created_by' => $admin->id,
+                'voucher_date' => $now->toDateString(),
+                'notes' => 'سند صرف عهدة موقع معتمد من مدير الموقع',
+            ]
+        );
+
+        // 12. Daily Cash Closing
+        DailyCashClosing::updateOrCreate(
+            ['closing_date' => $now->toDateString()],
+            [
+                'opening_balance' => 600000.00,
+                'total_inflow' => 25000.00,
+                'total_outflow' => 16500.00,
+                'closing_balance' => 608500.00,
+                'site_custody_spent' => 450.00,
+                'supplier_payments' => 15000.00,
+                'status' => 'closed',
+                'notes' => 'تم تقفيل اليومية ومراجعة عهد المواقع والموردين وجاهزة للعرض على صاحب العمل',
+                'closed_by' => $admin->id,
+            ]
         );
     }
 }

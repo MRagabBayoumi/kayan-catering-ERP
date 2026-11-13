@@ -5,6 +5,7 @@
 
 import * as Turbo from '@hotwired/turbo';
 import { initCommonUI } from './common.js';
+import { initAiCopilot } from './components/ai-copilot.js';
 import { initBarcodeScanner } from './components/barcode-scanner.js';
 import { initProductForm } from './pages/products-form.js';
 import { initProductsIndex } from './pages/products-index.js';
@@ -17,6 +18,9 @@ import { initCustomersPage } from './pages/customers.js';
 import { initSuppliersPage } from './pages/suppliers.js';
 import { initShippingOfficesPage } from './pages/shipping-offices.js';
 import { initPurchases } from './pages/purchases.js';
+import { initPurchaseOrders } from './pages/purchase-orders.js';
+import { initPurchaseReturns } from './pages/purchase-returns.js';
+import { initQuotations } from './pages/quotations.js';
 import { initSales } from './pages/sales.js';
 import { initShifts } from './pages/shifts.js';
 import { initPrintTemplatesPage } from './pages/print-templates.js';
@@ -69,6 +73,7 @@ document.addEventListener('turbo:load', () => {
     initDropdowns();
     initGlobalSearch();
     initBarcodeScanner();
+    initAiCopilot();
     initProductForm();
     initProductsIndex();
     initProductShow();
@@ -80,6 +85,9 @@ document.addEventListener('turbo:load', () => {
     initSuppliersPage();
     initShippingOfficesPage();
     initPurchases();
+    initPurchaseOrders();
+    initPurchaseReturns();
+    initQuotations();
     initSales();
     initShifts();
     initPrintTemplatesPage();

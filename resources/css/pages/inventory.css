@@ -1,0 +1,290 @@
+/* Kayan ERP — Inventory & Movements Page Styles */
+.inventory-kpi-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 200px), 1fr));
+    gap: 14px;
+    margin-bottom: 20px;
+}
+
+.inventory-kpi-card {
+    padding: 16px;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+}
+
+.inventory-kpi-icon {
+    width: 44px;
+    height: 44px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.inventory-kpi-icon.primary {
+    background: rgba(13, 148, 136, 0.1);
+    color: var(--primary, #0d9488);
+}
+
+.inventory-kpi-icon.info {
+    background: rgba(59, 130, 246, 0.1);
+    color: #3b82f6;
+}
+
+.inventory-kpi-icon.warning {
+    background: rgba(245, 158, 11, 0.1);
+    color: #f59e0b;
+}
+
+.inventory-kpi-icon.danger {
+    background: rgba(239, 68, 68, 0.1);
+    color: #ef4444;
+}
+
+.movement-type-tab {
+    border: 1px solid var(--border-light);
+    padding: 8px;
+    border-radius: 6px;
+    text-align: center;
+    cursor: pointer;
+    font-size: 12px;
+    font-weight: 600;
+    transition: all 0.15s ease-in-out;
+}
+
+.movement-type-tab.active {
+    background: var(--primary, #0d9488);
+    color: #fff;
+    border-color: var(--primary, #0d9488);
+}
+
+.movement-type-tab:not(.active) {
+    background: transparent;
+    color: var(--text-main);
+    border-color: var(--border-light);
+}
+
+.text-movement-in {
+    color: var(--primary, #0d9488);
+}
+
+.text-movement-out {
+    color: var(--danger, #ef4444);
+}
+
+/* Mobile Responsive Optimization for Inventory Page */
+@media (max-width: 768px) {
+    .inventory-kpi-grid {
+        grid-template-columns: repeat(2, 1fr) !important;
+        gap: 8px !important;
+        margin-bottom: 14px !important;
+    }
+
+    .inventory-kpi-card {
+        padding: 10px 12px !important;
+        gap: 10px !important;
+    }
+
+    .inventory-kpi-icon {
+        width: 36px !important;
+        height: 36px !important;
+        border-radius: 8px !important;
+    }
+
+    .inventory-kpi-card .text-xs {
+        font-size: 11px !important;
+        white-space: nowrap !important;
+    }
+
+    .inventory-kpi-card .font-numeric {
+        font-size: 15px !important;
+    }
+
+    /* Filter Form on Mobile */
+    [data-page="inventory"] .erp-filter-form {
+        display: grid !important;
+        grid-template-columns: 1fr 1fr !important;
+        gap: 8px !important;
+    }
+
+    [data-page="inventory"] .erp-filter-form > div:first-child {
+        grid-column: span 2 !important;
+        width: 100% !important;
+    }
+
+    [data-page="inventory"] .erp-filter-form > div {
+        min-width: 0 !important;
+        width: 100% !important;
+    }
+
+    [data-page="inventory"] .erp-filter-form > button[type="submit"] {
+        grid-column: span 1 !important;
+        width: 100% !important;
+        min-width: 0 !important;
+        height: 36px !important;
+        display: inline-flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+    }
+
+    [data-page="inventory"] .erp-filter-form > a {
+        grid-column: span 1 !important;
+        width: 100% !important;
+        min-width: 0 !important;
+        height: 36px !important;
+        display: inline-flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+    }
+
+    /* Transform Inventory Table to Mobile Cards */
+    [data-page="inventory"] .erp-table thead {
+        display: none !important;
+    }
+
+    [data-page="inventory"] .erp-table tbody {
+        display: flex !important;
+        flex-direction: column !important;
+        gap: 10px !important;
+    }
+
+    [data-page="inventory"] .erp-table tbody tr {
+        display: grid !important;
+        grid-template-columns: 1fr 1fr !important;
+        background-color: var(--bg-surface) !important;
+        border: 1px solid var(--border-color) !important;
+        border-radius: var(--border-radius-md, 8px) !important;
+        padding: 12px !important;
+        box-shadow: var(--shadow-xs) !important;
+        gap: 8px !important;
+        position: relative !important;
+    }
+
+    [data-page="inventory"] .td-inv-index {
+        display: none !important;
+    }
+
+    [data-page="inventory"] .td-inv-name {
+        grid-column: span 2 !important;
+        padding: 0 !important;
+        border: none !important;
+    }
+
+    [data-page="inventory"] .td-inv-name a {
+        font-size: 13.5px !important;
+        font-weight: 700 !important;
+    }
+
+    [data-page="inventory"] .td-inv-sku {
+        grid-column: span 1 !important;
+        padding: 0 !important;
+        border: none !important;
+        display: flex !important;
+        align-items: center !important;
+        font-size: 11.5px !important;
+    }
+
+    [data-page="inventory"] .td-inv-sku::before {
+        content: 'كود: ';
+        font-size: 10.5px;
+        color: var(--text-muted);
+        margin-left: 4px;
+    }
+
+    [data-page="inventory"] .td-inv-cat {
+        grid-column: span 1 !important;
+        padding: 0 !important;
+        border: none !important;
+        display: flex !important;
+        justify-content: flex-end !important;
+        align-items: center !important;
+    }
+
+    [data-page="inventory"] .td-inv-cost {
+        grid-column: span 1 !important;
+        padding: 4px 8px !important;
+        border-radius: 4px !important;
+        background: var(--bg-surface-alt) !important;
+        border: 1px solid var(--border-color) !important;
+        font-size: 11.5px !important;
+    }
+
+    [data-page="inventory"] .td-inv-cost::before {
+        content: 'التكلفة: ';
+        font-size: 10px;
+        color: var(--text-muted);
+        font-weight: 600;
+    }
+
+    [data-page="inventory"] .td-inv-val {
+        grid-column: span 1 !important;
+        padding: 4px 8px !important;
+        border-radius: 4px !important;
+        background: var(--bg-surface-alt) !important;
+        border: 1px solid var(--border-color) !important;
+        font-size: 11.5px !important;
+        text-align: left !important;
+    }
+
+    [data-page="inventory"] .td-inv-val::before {
+        content: 'إجمالي القيمة: ';
+        font-size: 10px;
+        color: var(--text-muted);
+        font-weight: 600;
+    }
+
+    [data-page="inventory"] .td-inv-stock {
+        grid-column: span 1 !important;
+        padding: 0 !important;
+        border: none !important;
+        display: flex !important;
+        align-items: center !important;
+    }
+
+    [data-page="inventory"] .td-inv-stock::before {
+        content: 'الرصيد: ';
+        font-size: 11px;
+        color: var(--text-muted);
+        font-weight: 600;
+        margin-left: 6px;
+    }
+
+    [data-page="inventory"] .td-inv-status {
+        grid-column: span 1 !important;
+        padding: 0 !important;
+        border: none !important;
+        display: flex !important;
+        justify-content: flex-end !important;
+        align-items: center !important;
+    }
+
+    [data-page="inventory"] .td-inv-wh {
+        grid-column: span 2 !important;
+        padding: 6px 8px !important;
+        border-radius: 4px !important;
+        background: var(--bg-surface-alt) !important;
+        border: 1px solid var(--border-color) !important;
+        font-size: 11px !important;
+    }
+
+    [data-page="inventory"] .td-inv-actions {
+        grid-column: span 2 !important;
+        padding: 8px 0 0 0 !important;
+        border-top: 1px solid var(--border-color) !important;
+        margin-top: 2px !important;
+    }
+
+    [data-page="inventory"] .td-inv-actions > div {
+        display: flex !important;
+        justify-content: flex-end !important;
+        gap: 8px !important;
+    }
+
+    [data-page="inventory"] .td-inv-actions .erp-btn {
+        height: 32px !important;
+    }
+}
+
+

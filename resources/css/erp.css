@@ -28,6 +28,8 @@
 @import './components/toasts.css';
 @import './components/empty-states.css';
 @import './components/scanner.css';
+@import './components/mobile-nav.css';
+@import './components/ai-copilot.css';
 
 /* Page-Specific Styles */
 @import './pages/dashboard.css';
@@ -49,6 +51,7 @@
 @import './pages/home.css';
 @import './pages/shifts.css';
 @import './pages/finance.css';
+@import './pages/ecommerce.css';
 
 /* Core Utility Classes */
 .is-hidden {
@@ -132,6 +135,15 @@
     border-radius: 8px !important;
     box-shadow: 0 16px 36px rgba(0, 0, 0, 0.25) !important;
     z-index: 9999 !important;
+}
+
+@media (max-width: 640px) {
+    .purchases-autocomplete-dropdown {
+        min-width: 0 !important;
+        width: 100% !important;
+        max-width: calc(100vw - 28px) !important;
+        box-shadow: 0 12px 28px rgba(0, 0, 0, 0.3) !important;
+    }
 }
 
 .dark .purchases-autocomplete-dropdown {

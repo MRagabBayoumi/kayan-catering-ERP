@@ -46,8 +46,9 @@
                         <span>حفظ وتفعيل المسار</span>
                     </button>
                     @if(!empty($settings->custom_backup_path))
-                        <button type="button" 
-                                onclick="document.querySelector('input[name=custom_backup_path]').value = ''; this.form.submit();" 
+                        <button type="submit" 
+                                name="custom_backup_path"
+                                value=""
                                 class="erp-btn erp-btn-secondary" 
                                 title="إلغاء المسار الإضافي والاعتماد على المسار الافتراضي فقط">
                             <x-icon name="x" size="16" />
@@ -77,7 +78,7 @@
                 </div>
             </div>
             <div class="erp-card-footer bg-[var(--bg-surface-alt)] p-4 flex justify-end border-t border-[var(--border-color)]">
-                <form action="{{ route('settings.backups.create') }}" method="POST" onsubmit="this.querySelector('button').disabled = true; this.querySelector('button').innerHTML = 'جاري الإنشاء...';">
+                <form action="{{ route('settings.backups.create') }}" method="POST">
                     @csrf
                     <input type="hidden" name="type" value="db">
                     <button type="submit" class="erp-btn erp-btn-primary">
@@ -104,7 +105,7 @@
                 </div>
             </div>
             <div class="erp-card-footer bg-[var(--bg-surface-alt)] p-4 flex justify-end border-t border-[var(--border-color)]">
-                <form action="{{ route('settings.backups.create') }}" method="POST" onsubmit="this.querySelector('button').disabled = true; this.querySelector('button').innerHTML = 'جاري الإنشاء...';">
+                <form action="{{ route('settings.backups.create') }}" method="POST">
                     @csrf
                     <input type="hidden" name="type" value="full">
                     <button type="submit" class="erp-btn erp-btn-success">
@@ -149,7 +150,7 @@
                                 <tr class="hover:bg-[var(--bg-surface-alt)] transition-colors">
                                     <td class="font-mono text-xs text-[var(--text-muted)]">{{ $index + 1 }}</td>
                                     <td class="font-mono font-medium text-[var(--text-main)]">
-                                        <div class="flex items-center gap-2" dir="ltr" style="justify-content: flex-end;">
+                                        <div class="flex items-center justify-end gap-2" dir="ltr">
                                             <span class="font-mono text-xs select-all">{{ $backup['filename'] }}</span>
                                             <x-icon name="file-text" size="16" class="text-[var(--primary)] shrink-0" />
                                         </div>
@@ -159,7 +160,7 @@
                                             {{ $backup['size_formatted'] }}
                                         </span>
                                     </td>
-                                    <td class="text-xs text-[var(--text-muted)] font-mono" dir="ltr" style="text-align: right;">
+                                    <td class="text-xs text-[var(--text-muted)] font-mono text-right" dir="ltr">
                                         {{ $backup['created_at'] }}
                                     </td>
                                     <td class="text-center">

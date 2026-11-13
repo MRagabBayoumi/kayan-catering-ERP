@@ -105,30 +105,27 @@
                     <div class="font-bold text-[var(--text-main)]">{{ auth()->user()->name ?? 'مدير النظام' }}</div>
                     <small class="text-[var(--text-muted)]">{{ auth()->user()->role_label ?? 'مسؤول إدارة كيان ERP' }}</small>
                 </div>
-                @can('manage-users')
-                <a href="{{ route('users.edit', auth()->user() ?? 1) }}" class="erp-dropdown-item">
+                <a href="{{ Route::has('users.edit') ? route('users.edit', auth()->user() ?? 1) : '#' }}" class="erp-dropdown-item">
                     <x-icon name="user" size="14" />
                     <span>الملف الشخصي</span>
                 </a>
-                @else
-                <a href="#" class="erp-dropdown-item">
-                    <x-icon name="user" size="14" />
-                    <span>الملف الشخصي</span>
-                </a>
-                @endcan
                 @can('manage-company-settings')
+                @if(Route::has('settings.index'))
                 <a href="{{ route('settings.index') }}" class="erp-dropdown-item">
                     <x-icon name="settings" size="14" />
                     <span>إعدادات النظام</span>
                 </a>
+                @endif
                 @endcan
                 @can('access-sales-portal')
+                @if(Route::has('portal.index'))
                 <a href="{{ route('portal.index') }}" class="erp-dropdown-item text-sky-600 font-semibold">
                     <x-icon name="smartphone" size="14" />
                     <span>بوابة المندوب الميداني (الموبايل)</span>
                 </a>
+                @endif
                 @endcan
-                <button type="button" class="erp-dropdown-item font-semibold text-emerald-600" data-action="install-pwa-app" style="display: none;">
+                <button type="button" class="erp-dropdown-item font-semibold text-emerald-600 hidden" data-action="install-pwa-app">
                     <x-icon name="download" size="14" />
                     <span>تثبيت البرنامج على الكمبيوتر</span>
                 </button>
