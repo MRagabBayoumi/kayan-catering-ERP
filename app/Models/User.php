@@ -91,6 +91,11 @@ class User extends Authenticatable
         return $this->hasMany(DriverSettlement::class, 'accountant_id');
     }
 
+    public function isSalesRep(): bool
+    {
+        return false;
+    }
+
     public function isAdmin(): bool
     {
         return $this->role === self::ROLE_ADMIN;

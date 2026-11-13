@@ -81,11 +81,8 @@
         </main>
     </div>
 
-    <!-- Odoo 3x3 App Launcher Drawer -->
-    <x-app-launcher />
-
-    <!-- Universal Print Options Modal -->
-    <x-universal-print-modal />
+    <!-- Kayan AI Copilot -->
+    <x-ai-copilot />
 </div>
 
 @stack('scripts')

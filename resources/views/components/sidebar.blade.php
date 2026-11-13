@@ -1,22 +1,18 @@
-<aside id="erpSidebar" class="erp-sidebar">
+<aside id="erpSidebar" class="erp-sidebar" dir="rtl">
     <!-- Company Box -->
     <div class="erp-sidebar-header">
         <div class="erp-company-card">
             @if(!empty($globalCompanySetting?->logo_url))
                 <img src="{{ $globalCompanySetting->logo_url }}" alt="{{ $globalCompanySetting?->company_name }}" class="erp-company-logo erp-company-logo-img">
             @else
-                <div class="erp-company-logo">K</div>
+                <div class="erp-company-logo">KC</div>
             @endif
             <div class="erp-company-info">
-                <div class="erp-company-name" title="{{ $globalCompanySetting?->company_name ?? 'Kayan Fashion Accessories' }}">
-                    {{ $globalCompanySetting?->company_name ?? 'Kayan Fashion Accessories' }}
+                <div class="erp-company-name" title="{{ $globalCompanySetting?->company_name_ar ?? 'كيان للكيترينج والتغذية' }}">
+                    {{ $globalCompanySetting?->company_name_ar ?? 'كيان للكيترينج والتغذية' }}
                 </div>
                 <div class="erp-company-sub">
-                    @if(!empty($globalCompanySetting) && $globalCompanySetting->isMaintenance())
-                        <span class="erp-badge erp-badge-warning text-[10px] px-1.5 py-0.5">وضع الصيانة</span>
-                    @else
-                        <span>استيراد وتوزيع إكسسوارات حريمي</span>
-                    @endif
+                    <span>توريد الأغذية وإعاشة المستشفيات</span>
                 </div>
             </div>
         </div>
@@ -29,389 +25,157 @@
 
     <!-- Navigation List (Collapsible Sections) -->
     <nav class="erp-sidebar-nav">
-        <!-- Overview & Applications (Always open) -->
+        <!-- Overview -->
         <div class="erp-nav-section mb-2">
-            <div class="erp-nav-section-title">التطبيقات العامة</div>
+            <div class="erp-nav-section-title">نظرة عامة</div>
             <div class="erp-nav-section-items" style="display: block;">
-                <a href="{{ route('home') }}" class="erp-nav-item {{ request()->routeIs('home') ? 'active' : '' }}" title="تطبيقات {{ $globalCompanySetting?->company_name ?? config('app.name', 'Kayan ERP') }}">
-                    <div class="erp-nav-content">
-                        <span class="erp-nav-icon"><x-icon name="grid" size="18" /></span>
-                        <span class="erp-nav-label">تطبيقات النظام</span>
-                    </div>
-                </a>
-                @can('access-dashboard')
                 <a href="{{ route('dashboard') }}" class="erp-nav-item {{ request()->routeIs('dashboard') ? 'active' : '' }}" title="لوحة التحكم والمؤشرات">
                     <div class="erp-nav-content">
                         <span class="erp-nav-icon"><x-icon name="layout-dashboard" size="18" /></span>
                         <span class="erp-nav-label">لوحة التحكم العامة</span>
                     </div>
                 </a>
-                @endcan
+                <button type="button" onclick="document.getElementById('aiLauncherBtn')?.click()" class="erp-nav-item w-full text-right" style="background: rgba(59, 130, 246, 0.08); border-right: 3px solid #3b82f6;">
+                    <div class="erp-nav-content">
+                        <span class="erp-nav-icon text-blue-500">🤖</span>
+                        <span class="erp-nav-label font-bold text-blue-600 dark:text-blue-400">مساعد كيان الذكي (AI)</span>
+                    </div>
+                </button>
             </div>
         </div>
 
-        <!-- 1. Sales & POS Section -->
-        @can('access-sales')
-        @php
-            $salesActive = request()->is('sales*') || request()->is('sales-returns*') || request()->is('shifts*') || (request()->is('customers*') && !request()->is('customer-installments*')) || request()->is('customer-installments*');
-        @endphp
-        <div class="erp-nav-section {{ $salesActive ? 'is-open has-active' : '' }}" data-section="sales">
-            <button type="button" class="erp-nav-section-header" aria-expanded="{{ $salesActive ? 'true' : 'false' }}">
-                <span class="erp-nav-section-title">المبيعات ونقاط البيع</span>
-                <svg class="erp-section-arrow" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                    <polyline points="6 9 12 15 18 9"></polyline>
-                </svg>
+        <!-- 1. Warehouse Department (إدارة المخازن والـ FIFO) -->
+        <div class="erp-nav-section is-open" data-section="warehouse">
+            <button type="button" class="erp-nav-section-header" aria-expanded="true">
+                <span class="erp-nav-section-title">📦 1. إدارة المخازن والـ FIFO</span>
+                <span class="erp-nav-section-arrow">
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                        <polyline points="6 9 12 15 18 9"></polyline>
+                    </svg>
+                </span>
             </button>
-            <div class="erp-nav-section-items">
-                <a href="{{ route('sales.create') }}" class="erp-nav-item {{ request()->routeIs('sales.create') ? 'active' : '' }}" title="نقطة البيع (الكاشير)">
+            <div class="erp-nav-section-items" style="display: block;">
+                <a href="{{ url('/') }}" class="erp-nav-item" title="أرصدة وتشغيلات الباتشات">
                     <div class="erp-nav-content">
-                        <span class="erp-nav-icon"><x-icon name="zap" size="18" class="text-amber-500" /></span>
-                        <span class="erp-nav-label font-bold">نقطة البيع (الكاشير)</span>
+                        <span class="erp-nav-icon"><x-icon name="layers" size="16" /></span>
+                        <span class="erp-nav-label">تشغيلات الشراء (Batches FIFO)</span>
                     </div>
                 </a>
-                <a href="{{ route('sales.index') }}" class="erp-nav-item {{ request()->is('sales') || (request()->is('sales/*') && !request()->routeIs('sales.create')) ? 'active' : '' }}" title="فواتير المبيعات">
+                <a href="{{ url('/') }}" class="erp-nav-item" title="أذون التحميل والصرف لسيارات المناديب">
                     <div class="erp-nav-content">
-                        <span class="erp-nav-icon"><x-icon name="shopping-cart" size="18" /></span>
-                        <span class="erp-nav-label">فواتير المبيعات</span>
+                        <span class="erp-nav-icon"><x-icon name="truck" size="16" /></span>
+                        <span class="erp-nav-label">أذون التحميل والصرف (السيارات)</span>
                     </div>
                 </a>
-                <a href="{{ route('sales-returns.index') }}" class="erp-nav-item {{ request()->is('sales-returns*') ? 'active' : '' }}" title="مرتجعات المبيعات">
+                <a href="{{ url('/') }}" class="erp-nav-item" title="الجرد اليومي الأعمى لأمين المخزن">
                     <div class="erp-nav-content">
-                        <span class="erp-nav-icon"><x-icon name="rotate-ccw" size="18" /></span>
-                        <span class="erp-nav-label">مرتجعات المبيعات</span>
+                        <span class="erp-nav-icon"><x-icon name="check-square" size="16" /></span>
+                        <span class="erp-nav-label">الجرد اليومي الأعمى (Blind Audit)</span>
                     </div>
                 </a>
-                @can('manage-shifts')
-                <a href="{{ route('shifts.index') }}" class="erp-nav-item {{ request()->is('shifts*') ? 'active' : '' }}" title="ورديات وخزينة الكاشير">
+                <a href="{{ url('/') }}" class="erp-nav-item" title="تسوية عهدة السائق ومخرجات الـ ERP">
                     <div class="erp-nav-content">
-                        <span class="erp-nav-icon"><x-icon name="clock" size="18" /></span>
-                        <span class="erp-nav-label">ورديات وخزينة الكاشير</span>
-                    </div>
-                </a>
-                @endcan
-                @can('manage-customers')
-                <a href="{{ route('customers.index') }}" class="erp-nav-item {{ request()->is('customers*') && !request()->is('customer-installments*') ? 'active' : '' }}" title="العملاء وتجار الجملة">
-                    <div class="erp-nav-content">
-                        <span class="erp-nav-icon"><x-icon name="users" size="18" /></span>
-                        <span class="erp-nav-label">العملاء</span>
-                    </div>
-                </a>
-                <a href="{{ route('customer-installments.index') }}" class="erp-nav-item {{ request()->is('customer-installments*') ? 'active' : '' }}" title="جدول مواعيد وأقساط تحصيل العملاء">
-                    <div class="erp-nav-content">
-                        <span class="erp-nav-icon"><x-icon name="calendar" size="18" /></span>
-                        <span class="erp-nav-label">مواعيد تحصيل العملاء</span>
-                    </div>
-                </a>
-                @endcan
-            </div>
-        </div>
-        @endcan
-
-        <!-- 2. Inventory & Products Section -->
-        @php
-            $invActive = request()->is('products*') || request()->is('packing-list*') || request()->is('categories*') || request()->is('inventory*') || request()->is('warehouses*');
-        @endphp
-        <div class="erp-nav-section {{ $invActive ? 'is-open has-active' : '' }}" data-section="inventory">
-            <button type="button" class="erp-nav-section-header" aria-expanded="{{ $invActive ? 'true' : 'false' }}">
-                <span class="erp-nav-section-title">المخزون والمنتجات</span>
-                <svg class="erp-section-arrow" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                    <polyline points="6 9 12 15 18 9"></polyline>
-                </svg>
-            </button>
-            <div class="erp-nav-section-items">
-                @can('view-products')
-                <a href="{{ url('/products') }}" class="erp-nav-item {{ (request()->is('products*') && !request()->is('products/price-list*')) ? 'active' : '' }}" title="المنتجات والأصناف">
-                    <div class="erp-nav-content">
-                        <span class="erp-nav-icon"><x-icon name="package" size="18" /></span>
-                        <span class="erp-nav-label">المنتجات والأصناف</span>
-                    </div>
-                </a>
-                <a href="{{ route('packing-list.index') }}" class="erp-nav-item {{ request()->is('packing-list*') ? 'active' : '' }}" title="قائمة التعبئة والتجهيز (Packing List)">
-                    <div class="erp-nav-content">
-                        <span class="erp-nav-icon"><x-icon name="clipboard-check" size="18" class="text-emerald-500" /></span>
-                        <span class="erp-nav-label font-bold text-emerald-600 dark:text-emerald-400">قائمة التعبئة (Packing List)</span>
-                    </div>
-                </a>
-                @endcan
-                @can('manage-products')
-                <a href="{{ route('categories.index') }}" class="erp-nav-item {{ request()->is('categories*') ? 'active' : '' }}" title="تصنيفات المنتجات">
-                    <div class="erp-nav-content">
-                        <span class="erp-nav-icon"><x-icon name="tag" size="18" /></span>
-                        <span class="erp-nav-label">تصنيفات المنتجات</span>
-                    </div>
-                </a>
-                @endcan
-                @can('access-inventory')
-                <a href="{{ route('inventory.index') }}" class="erp-nav-item {{ request()->routeIs('inventory.index') ? 'active' : '' }}" title="نظرة عامة على المخزون">
-                    <div class="erp-nav-content">
-                        <span class="erp-nav-icon"><x-icon name="warehouse" size="18" /></span>
-                        <span class="erp-nav-label">نظرة عامة على المخزون</span>
-                    </div>
-                </a>
-                <a href="{{ route('warehouses.index') }}" class="erp-nav-item {{ request()->routeIs('warehouses.*') ? 'active' : '' }}" title="المستودعات والمخازن">
-                    <div class="erp-nav-content">
-                        <span class="erp-nav-icon"><x-icon name="home" size="18" /></span>
-                        <span class="erp-nav-label">المستودعات والمخازن</span>
-                    </div>
-                </a>
-                <a href="{{ route('inventory.movements') }}" class="erp-nav-item {{ request()->routeIs('inventory.movements') ? 'active' : '' }}" title="حركات المخزون">
-                    <div class="erp-nav-content">
-                        <span class="erp-nav-icon"><x-icon name="arrow-left-right" size="18" /></span>
-                        <span class="erp-nav-label">حركات المخزون</span>
-                    </div>
-                </a>
-                <a href="{{ route('inventory.stocktake') }}" class="erp-nav-item {{ request()->routeIs('inventory.stocktake*') ? 'active' : '' }}" title="جرد المخزون والتسوية">
-                    <div class="erp-nav-content">
-                        <span class="erp-nav-icon"><x-icon name="clipboard-check" size="18" /></span>
-                        <span class="erp-nav-label">جرد المخزون والتسوية</span>
-                    </div>
-                </a>
-                <a href="{{ route('inventory.low-stock') }}" class="erp-nav-item {{ request()->routeIs('inventory.low-stock') ? 'active' : '' }}" title="نواقص المخزون">
-                    <div class="erp-nav-content">
-                        <span class="erp-nav-icon"><x-icon name="alert-triangle" size="18" /></span>
-                        <span class="erp-nav-label">نواقص المخزون</span>
-                    </div>
-                    <span class="erp-nav-badge warning">تنبيه</span>
-                </a>
-                @endcan
-            </div>
-        </div>
-
-        <!-- 3. Purchases & Suppliers Section -->
-        @can('access-purchases')
-        @php
-            $purchActive = request()->is('purchases*') || request()->is('purchase-returns*') || request()->is('suppliers*') || request()->is('shipping-offices*');
-        @endphp
-        <div class="erp-nav-section {{ $purchActive ? 'is-open has-active' : '' }}" data-section="purchases">
-            <button type="button" class="erp-nav-section-header" aria-expanded="{{ $purchActive ? 'true' : 'false' }}">
-                <span class="erp-nav-section-title">المشتريات والواردات</span>
-                <svg class="erp-section-arrow" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                    <polyline points="6 9 12 15 18 9"></polyline>
-                </svg>
-            </button>
-            <div class="erp-nav-section-items">
-                <a href="{{ route('purchases.index') }}" class="erp-nav-item {{ request()->is('purchases*') ? 'active' : '' }}" title="فواتير الشراء والتوريد">
-                    <div class="erp-nav-content">
-                        <span class="erp-nav-icon"><x-icon name="shopping-bag" size="18" /></span>
-                        <span class="erp-nav-label">فواتير الشراء والتوريد</span>
-                    </div>
-                </a>
-                <a href="{{ route('purchase-returns.index') }}" class="erp-nav-item {{ request()->is('purchase-returns*') ? 'active' : '' }}" title="مرتجعات المشتريات">
-                    <div class="erp-nav-content">
-                        <span class="erp-nav-icon"><x-icon name="rotate-ccw" size="18" /></span>
-                        <span class="erp-nav-label">مرتجعات المشتريات</span>
-                    </div>
-                </a>
-                <a href="{{ route('suppliers.index') }}" class="erp-nav-item {{ request()->is('suppliers*') || request()->is('shipping-offices*') ? 'active' : '' }}" title="الموردون ومكاتب الشحن">
-                    <div class="erp-nav-content">
-                        <span class="erp-nav-icon"><x-icon name="factory" size="18" /></span>
-                        <span class="erp-nav-label">الموردون ومكاتب الشحن</span>
-                    </div>
-                </a>
-            </div>
-        </div>
-        @endcan
-
-        <!-- 4. E-Commerce Storefront Section -->
-        @php
-            $ecomActive = request()->is('ecommerce*') || request()->is('shop*');
-        @endphp
-        <div class="erp-nav-section {{ $ecomActive ? 'is-open has-active' : '' }}" data-section="ecommerce">
-            <button type="button" class="erp-nav-section-header" aria-expanded="{{ $ecomActive ? 'true' : 'false' }}">
-                <span class="erp-nav-section-title">المتجر الإلكتروني (E-Commerce)</span>
-                <svg class="erp-section-arrow" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                    <polyline points="6 9 12 15 18 9"></polyline>
-                </svg>
-            </button>
-            <div class="erp-nav-section-items">
-                <a href="{{ route('ecommerce.orders.index') }}" class="erp-nav-item {{ request()->is('ecommerce/orders*') ? 'active' : '' }}" title="طلبات المتجر الإلكتروني">
-                    <div class="erp-nav-content">
-                        <span class="erp-nav-icon"><x-icon name="shopping-bag" size="18" class="text-indigo-400" /></span>
-                        <span class="erp-nav-label">طلبات المتجر أونلاين</span>
-                    </div>
-                </a>
-                <a href="{{ route('ecommerce.settings') }}" class="erp-nav-item {{ request()->is('ecommerce/settings*') ? 'active' : '' }}" title="إعدادات المتجر والشحن">
-                    <div class="erp-nav-content">
-                        <span class="erp-nav-icon"><x-icon name="settings" size="18" /></span>
-                        <span class="erp-nav-label">إعدادات وسياسة المتجر</span>
-                    </div>
-                </a>
-                <a href="{{ route('shop.catalog') }}" target="_blank" class="erp-nav-item" title="معاينة المتجر المباشر للعملاء">
-                    <div class="erp-nav-content">
-                        <span class="erp-nav-icon"><x-icon name="external-link" size="18" class="text-emerald-400" /></span>
-                        <span class="erp-nav-label">زيارة المتجر (العملاء)</span>
+                        <span class="erp-nav-icon"><x-icon name="file-text" size="16" /></span>
+                        <span class="erp-nav-label">تسوية عهد المناديب (محاسب المخزن)</span>
                     </div>
                 </a>
             </div>
         </div>
 
-        <!-- 5. Sales Representatives Section -->
-        @if(auth()->user()?->isAdmin() || auth()->user()?->isSalesRep())
-        @php
-            $repActive = request()->is('sales-reps*') || request()->is('portal*');
-        @endphp
-        <div class="erp-nav-section {{ $repActive ? 'is-open has-active' : '' }}" data-section="sales_reps">
-            <button type="button" class="erp-nav-section-header" aria-expanded="{{ $repActive ? 'true' : 'false' }}">
-                <span class="erp-nav-section-title">مندوبو المبيعات</span>
-                <svg class="erp-section-arrow" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                    <polyline points="6 9 12 15 18 9"></polyline>
-                </svg>
+        <!-- 2. Costing Department (إدارة التكاليف والمقننات) -->
+        <div class="erp-nav-section is-open" data-section="costing">
+            <button type="button" class="erp-nav-section-header" aria-expanded="true">
+                <span class="erp-nav-section-title">⚖️ 2. إدارة التكاليف والمقننات</span>
+                <span class="erp-nav-section-arrow">
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                        <polyline points="6 9 12 15 18 9"></polyline>
+                    </svg>
+                </span>
             </button>
-            <div class="erp-nav-section-items">
-                @can('manage-sales-reps')
-                <a href="{{ route('sales-reps.index') }}" class="erp-nav-item {{ request()->is('sales-reps*') ? 'active' : '' }}" title="إدارة وتحليل أداء المناديب">
+            <div class="erp-nav-section-items" style="display: block;">
+                <a href="{{ url('/') }}" class="erp-nav-item" title="المقننات الغذائية القياسية">
                     <div class="erp-nav-content">
-                        <span class="erp-nav-icon"><x-icon name="user-check" size="18" class="text-indigo-600" /></span>
-                        <span class="erp-nav-label font-bold">إدارة وتحليل المناديب</span>
+                        <span class="erp-nav-icon"><x-icon name="book-open" size="16" /></span>
+                        <span class="erp-nav-label">المقننات القياسية للوجبات (BOM)</span>
                     </div>
                 </a>
-                @endcan
-                @can('access-sales-portal')
-                <a href="{{ route('portal.index') }}" class="erp-nav-item {{ request()->is('portal*') ? 'active' : '' }}" title="بوابة المندوب الميداني">
+                <a href="{{ url('/') }}" class="erp-nav-item" title="متابعة استهلاك المطبخ الفعلي">
                     <div class="erp-nav-content">
-                        <span class="erp-nav-icon"><x-icon name="smartphone" size="18" class="text-sky-500" /></span>
-                        <span class="erp-nav-label font-bold text-sky-600">بوابة المندوب (الموبايل)</span>
+                        <span class="erp-nav-icon"><x-icon name="activity" size="16" /></span>
+                        <span class="erp-nav-label">متابعة الاستهلاك الفعلي للمطبخ</span>
                     </div>
                 </a>
-                @endcan
+                <a href="{{ url('/') }}" class="erp-nav-item" title="كشف انحرافات المقنن والهدر المالي">
+                    <div class="erp-nav-content">
+                        <span class="erp-nav-icon"><x-icon name="alert-circle" size="16" /></span>
+                        <span class="erp-nav-label">كشف انحرافات المقنن (Variance)</span>
+                    </div>
+                </a>
             </div>
         </div>
-        @endif
 
-        <!-- 6. Finance & Accounts Section -->
-        @can('manage-company-settings')
-        @php
-            $finActive = request()->is('treasuries*') || request()->is('sales-payments*') || request()->is('supplier-payments*') || request()->is('supplier-installments*') || request()->is('expenses*') || request()->is('accounting*');
-        @endphp
-        <div class="erp-nav-section {{ $finActive ? 'is-open has-active' : '' }}" data-section="finance">
-            <button type="button" class="erp-nav-section-header" aria-expanded="{{ $finActive ? 'true' : 'false' }}">
-                <span class="erp-nav-section-title">المالية والحسابات</span>
-                <svg class="erp-section-arrow" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                    <polyline points="6 9 12 15 18 9"></polyline>
-                </svg>
+        <!-- 3. Sales & Tenders Department (إدارة المبيعات والمناقصات) -->
+        <div class="erp-nav-section is-open" data-section="sales">
+            <button type="button" class="erp-nav-section-header" aria-expanded="true">
+                <span class="erp-nav-section-title">💼 3. إدارة المبيعات والمناقصات</span>
+                <span class="erp-nav-section-arrow">
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                        <polyline points="6 9 12 15 18 9"></polyline>
+                    </svg>
+                </span>
             </button>
-            <div class="erp-nav-section-items">
-                <a href="{{ route('treasuries.index') }}" class="erp-nav-item {{ request()->is('treasuries*') ? 'active' : '' }}" title="الخزائن والحسابات البنكية">
+            <div class="erp-nav-section-items" style="display: block;">
+                <a href="{{ url('/') }}" class="erp-nav-item" title="المستشفيات والجهات المتعاقدة">
                     <div class="erp-nav-content">
-                        <span class="erp-nav-icon"><x-icon name="landmark" size="18" /></span>
-                        <span class="erp-nav-label">الخزائن والبنوك</span>
+                        <span class="erp-nav-icon"><x-icon name="shield" size="16" /></span>
+                        <span class="erp-nav-label">المستشفيات والتعاقدات</span>
                     </div>
                 </a>
-                <a href="{{ route('sales.payments.index') }}" class="erp-nav-item {{ request()->is('sales-payments*') ? 'active' : '' }}" title="سندات قبض ومتحصلات العملاء">
+                <a href="{{ url('/') }}" class="erp-nav-item" title="سجل المناقصات وكراسات الشروط">
                     <div class="erp-nav-content">
-                        <span class="erp-nav-icon"><x-icon name="banknote" size="18" /></span>
-                        <span class="erp-nav-label">مقبوضات العملاء</span>
+                        <span class="erp-nav-icon"><x-icon name="file-text" size="16" /></span>
+                        <span class="erp-nav-label">المناقصات والعطاءات (Tenders)</span>
                     </div>
                 </a>
-                <a href="{{ route('customer-installments.index') }}" class="erp-nav-item {{ request()->is('customer-installments*') ? 'active' : '' }}" title="جدول مواعيد وأقساط تحصيل العملاء">
+                <a href="{{ url('/') }}" class="erp-nav-item" title="أرشيف أسعار المنافسين للعام القادم">
                     <div class="erp-nav-content">
-                        <span class="erp-nav-icon"><x-icon name="calendar" size="18" /></span>
-                        <span class="erp-nav-label">أقساط وتحصيل العملاء</span>
-                    </div>
-                </a>
-                <a href="{{ route('supplier-payments.index') }}" class="erp-nav-item {{ request()->is('supplier-payments*') ? 'active' : '' }}" title="مدفوعات وسندات صرف الموردين">
-                    <div class="erp-nav-content">
-                        <span class="erp-nav-icon"><x-icon name="credit-card" size="18" /></span>
-                        <span class="erp-nav-label">مدفوعات الموردين</span>
-                    </div>
-                </a>
-                <a href="{{ route('supplier-installments.index') }}" class="erp-nav-item {{ request()->is('supplier-installments*') ? 'active' : '' }}" title="جدول أقساط ومستحقات الموردين">
-                    <div class="erp-nav-content">
-                        <span class="erp-nav-icon"><x-icon name="calendar" size="18" /></span>
-                        <span class="erp-nav-label">أقساط الموردين</span>
-                    </div>
-                </a>
-                <a href="{{ route('expenses.index') }}" class="erp-nav-item {{ request()->is('expenses*') ? 'active' : '' }}" title="المصروفات التشغيلية والعمومية">
-                    <div class="erp-nav-content">
-                        <span class="erp-nav-icon"><x-icon name="receipt" size="18" /></span>
-                        <span class="erp-nav-label">المصروفات الجارية</span>
-                    </div>
-                </a>
-                <a href="{{ route('accounting.chart-of-accounts') }}" class="erp-nav-item {{ request()->is('accounting/chart-of-accounts*') ? 'active' : '' }}" title="دليل الحسابات الشجري العام">
-                    <div class="erp-nav-content">
-                        <span class="erp-nav-icon"><x-icon name="list" size="18" /></span>
-                        <span class="erp-nav-label">شجرة الحسابات</span>
-                    </div>
-                </a>
-                <a href="{{ route('accounting.journal-entries') }}" class="erp-nav-item {{ request()->is('accounting/journal-entries*') ? 'active' : '' }}" title="دفتر قيود اليومية العامة">
-                    <div class="erp-nav-content">
-                        <span class="erp-nav-icon"><x-icon name="file-text" size="18" /></span>
-                        <span class="erp-nav-label">قيود اليومية العامة</span>
-                    </div>
-                </a>
-                <a href="{{ route('accounting.reports.trial-balance') }}" class="erp-nav-item {{ request()->is('accounting/reports/trial-balance*') ? 'active' : '' }}" title="ميزان المراجعة بالأرصدة والمجاميع">
-                    <div class="erp-nav-content">
-                        <span class="erp-nav-icon"><x-icon name="layers" size="18" /></span>
-                        <span class="erp-nav-label">ميزان المراجعة</span>
-                    </div>
-                </a>
-                <a href="{{ route('accounting.reports.income-statement') }}" class="erp-nav-item {{ request()->is('accounting/reports/income-statement*') ? 'active' : '' }}" title="قائمة الدخل والأرباح والخسائر">
-                    <div class="erp-nav-content">
-                        <span class="erp-nav-icon"><x-icon name="trending-up" size="18" /></span>
-                        <span class="erp-nav-label">قائمة الدخل والأرباح</span>
-                    </div>
-                </a>
-                <a href="{{ route('accounting.reports.balance-sheet') }}" class="erp-nav-item {{ request()->is('accounting/reports/balance-sheet*') ? 'active' : '' }}" title="الميزانية العمومية وقائمة المركز المالي">
-                    <div class="erp-nav-content">
-                        <span class="erp-nav-icon"><x-icon name="pie-chart" size="18" /></span>
-                        <span class="erp-nav-label">الميزانية العمومية</span>
+                        <span class="erp-nav-icon"><x-icon name="archive" size="16" /></span>
+                        <span class="erp-nav-label">أرشيف أسعار المنافسين</span>
                     </div>
                 </a>
             </div>
         </div>
-        @endcan
 
-        <!-- 7. Administration & System Section -->
-        @can('manage-company-settings')
-        @php
-            $adminActive = request()->is('users*') || request()->is('roles*') || request()->is('units*') || request()->is('settings*');
-        @endphp
-        <div class="erp-nav-section {{ $adminActive ? 'is-open has-active' : '' }}" data-section="admin">
-            <button type="button" class="erp-nav-section-header" aria-expanded="{{ $adminActive ? 'true' : 'false' }}">
-                <span class="erp-nav-section-title">الإدارة والنظام</span>
-                <svg class="erp-section-arrow" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                    <polyline points="6 9 12 15 18 9"></polyline>
-                </svg>
+        <!-- 4. Procurement & Finance Section -->
+        <div class="erp-nav-section" data-section="finance">
+            <button type="button" class="erp-nav-section-header" aria-expanded="false">
+                <span class="erp-nav-section-title">💰 4. المشتريات والمالية</span>
+                <span class="erp-nav-section-arrow">
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                        <polyline points="6 9 12 15 18 9"></polyline>
+                    </svg>
+                </span>
             </button>
             <div class="erp-nav-section-items">
-                @can('manage-users')
-                <a href="{{ route('users.index') }}" class="erp-nav-item {{ request()->is('users*') ? 'active' : '' }}" title="إدارة المستخدمين">
+                <a href="{{ url('/') }}" class="erp-nav-item" title="حسابات الموردين وجدولة السداد">
                     <div class="erp-nav-content">
-                        <span class="erp-nav-icon"><x-icon name="users" size="18" /></span>
-                        <span class="erp-nav-label">المستخدمون وحسابات الدخول</span>
+                        <span class="erp-nav-icon"><x-icon name="credit-card" size="16" /></span>
+                        <span class="erp-nav-label">حسابات الموردين والآجل</span>
                     </div>
                 </a>
-                @endcan
-                @can('manage-roles')
-                <a href="{{ route('roles.index') }}" class="erp-nav-item {{ request()->is('roles*') ? 'active' : '' }}" title="إدارة الأدوار ومصفوفة الصلاحيات">
+                <a href="{{ url('/') }}" class="erp-nav-item" title="الخزينة والبنوك وعهد المواقع">
                     <div class="erp-nav-content">
-                        <span class="erp-nav-icon"><x-icon name="shield" size="18" /></span>
-                        <span class="erp-nav-label">الأدوار ومصفوفة الصلاحيات</span>
+                        <span class="erp-nav-icon"><x-icon name="dollar-sign" size="16" /></span>
+                        <span class="erp-nav-label">الخزينة وعهد المواقع النقدية</span>
                     </div>
                 </a>
-                @endcan
-                @can('manage-units')
-                <a href="{{ route('units.index') }}" class="erp-nav-item {{ request()->is('units*') ? 'active' : '' }}" title="إدارة وحدات القياس">
+                <a href="{{ url('/') }}" class="erp-nav-item" title="التقفيل اليومي لصاحب العمل">
                     <div class="erp-nav-content">
-                        <span class="erp-nav-icon"><x-icon name="layers" size="18" /></span>
-                        <span class="erp-nav-label">وحدات القياس والتحويل</span>
-                    </div>
-                </a>
-                @endcan
-                <a href="{{ route('settings.index') }}" class="erp-nav-item {{ request()->is('settings*') ? 'active' : '' }}" title="إعدادات الشركة والنظام">
-                    <div class="erp-nav-content">
-                        <span class="erp-nav-icon"><x-icon name="settings" size="18" /></span>
-                        <span class="erp-nav-label">إعدادات الشركة والنظام</span>
-                    </div>
-                </a>
-                <a href="{{ route('audit-logs.index') }}" class="erp-nav-item {{ request()->is('audit-logs*') ? 'active' : '' }}" title="الصندوق الأسود — سجل تدقيق ومراقبة العمليات">
-                    <div class="erp-nav-content">
-                        <span class="erp-nav-icon"><x-icon name="activity" size="18" /></span>
-                        <span class="erp-nav-label">الصندوق الأسود (Audit Log)</span>
+                        <span class="erp-nav-icon"><x-icon name="pie-chart" size="16" /></span>
+                        <span class="erp-nav-label">اليومية والتقفيل لصاحب العمل</span>
                     </div>
                 </a>
             </div>
         </div>
-        @endcan
     </nav>
 </aside>
