@@ -140,6 +140,41 @@ Whenever responding in Arabic:
 - Keep English words and code symbols properly isolated inside backticks (e.g. `code`) or on independent lines so sentences and punctuation do not get scrambled or reversed.
 - Keep all code snippets in standard LTR code blocks.
 
+=== kayan-catering rules ===
+
+# Kayan Catering ERP Specifications
+
+## Domain Architecture & Core Departments
+This application manages hospital catering operations with 4 isolated departments:
+1. **Warehouse & FIFO Batches**:
+   - `PurchaseBatch` tracks price, entry date, and expiry date.
+   - Immediate dispatch strictly follows FIFO.
+   - `DispatchOrder` tracks transfers to van/driver inventory.
+   - `InventoryAudit` represents blind stocktaking by the storekeeper (without knowing book balance).
+   - `DriverSettlement` is conducted by the warehouse accountant to reconcile driver inventory and feed ERP outputs.
+2. **Costing & BOM (Bill of Materials)**:
+   - `Recipe` & `RecipeIngredient` define standard ingredient weights per meal.
+   - Daily kitchen orders are computed from hospital patient counts multiplied by the BOM agreed upon by costing and site manager.
+   - Variance analysis detects kitchen waste and budget deviation.
+3. **Sales & Tenders**:
+   - `Hospital` contracts can only be initiated and terminated by the sales department.
+   - `Tender` manages tenders from issuance to award or archiving.
+   - `CompetitorPrice` archives past competitor prices to inform bidding for the following year.
+4. **Procurement & Finance**:
+   - Manages purchase requests, supplier quotations, owner approval, and item coding.
+   - `Supplier` ledger, aging schedules, and statement notifications.
+   - `PettyCashTransaction` manages site petty cash for purchasing bread/buns.
+   - `DailyClosing` reconciles daily revenues, expenses, partner shares, taxes, and net profits for the business owner.
+5. **Kayan AI Copilot**:
+   - Service `AiCopilotService` handles natural language queries (`/ai/ask`).
+   - Answers queries on item stock, past tenders/meal prices, supplier balances, hospital profitability, and daily meals consumed.
+
+## Strict Architectural Invariants
+- **Zero Inline Code**: Never write `<script>`, `<style>`, inline `style="..."`, or inline `onclick/onchange` handlers in any Blade file. All JavaScript belongs in `resources/js` and all CSS belongs in `resources/css`. This is verified by `BladeArchitectureSeparationTest`.
+- **RBAC**: Use explicit authorization checks via Gates/Policies matching the 4 departments.
+- **Port Convention**: Always run the local development server on port 7888: `php artisan serve --port=7888`.
+- **UI Design System**: Reuse the `.kpi-card`, `<x-control-panel>`, `.erp-table`, and crisp SVG `<x-icon>` tokens from `kayan-erp`. Never use raw emojis in titles or dashboard cards.
+
 === phpunit/core rules ===
 
 # PHPUnit

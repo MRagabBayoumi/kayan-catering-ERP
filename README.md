@@ -1,58 +1,88 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# منظومة كيان لإعاشة وتغذية المستشفيات (Kayan Catering ERP)
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+نظام ERP متكامل ومتخصص في إدارة شركات الكيترينج وتوريد الأغذية للمستشفيات والجهات الحكومية والخاصة، مبني بأحدث معايير **Laravel 12** ومستوحى بالكامل من نظام وهوية **Kayan ERP**.
 
-## About Laravel
+---
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+## 🏛️ الهيكل الإداري للأقسام الأربعة (Four Core Departments)
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+تم فصل النظام إلى 4 إدارات مستقلة مع صلاحيات صارمة لكل إدارة:
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+### 1. إدارة المخازن والتشغيلات (Warehouse & Batches FIFO)
+- **تشغيلات الشراء بنظام الباتشات (`PurchaseBatch`)**: تتبع كل كمية واردة بسعر شرائها، تاريخ دخولها، وتاريخ الصلاحية.
+- **الصرف الفوري بنظام `FIFO`**: الأقدم والأقرب انتهاءً يصرف أولاً لتفادي الهدر وتلف الأغذية.
+- **أذون التحميل والصرف لسيارات المناديب (`DispatchOrder`)**: نقل عهدة البضاعة من المخزن إلى عهدة السائق لتغطية أي طلبات طارئة للمستشفيات.
+- **الجرد اليومي الأعمى (`Blind Inventory Audit`)**: يقوم أمين المخزن بإدخال الكميات الفعلية دون معرفة الرصيد الدفتري لكشف أي عجز أو خلل مخزني فوراً.
+- **تسوية عهد المناديب اليومية (`Driver Settlement`)**: يقوم محاسب المخزن بتسوية المنصرف والمرتجع والمنقول وإصدار مخرجات القيود لنظام الـ ERP.
 
-## Learning Laravel
+### 2. إدارة التكاليف والمقننات (Costing & BOM Management)
+- **المقننات القياسية للوجبات (`Standard Meal BOM`)**: بطاقة مقادير دقيقة لكل وجبة (إفطار، غداء، عشاء، وجبات كلى وسكر...) بالجرام والوحدة.
+- **حساب طلبيات المطبخ (`Daily Kitchen Orders`)**: احتساب احتياجات المطبخ اليومية تلقائياً بضرب أعداد النزلاء في المقنن المتفق عليه بين إدارة التكاليف ومدير الموقع.
+- **كشف انحرافات المقنن والهدر المالي (`Variance Analysis`)**: مقارنة الاستهلاك الفعلي للمطبخ بالمقنن المسموح به ورصد أي هدر بالكميات والقيمة المالية.
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+### 3. إدارة المبيعات والمناقصات (Sales & Tenders)
+- **المستشفيات والتعاقدات (`Hospitals & Contracts`)**: إدارة بيانات المستشفيات، بدء العقود، وإنهائها حصرياً من إدارة المبيعات.
+- **سجل المناقصات والعطاءات (`Tenders`)**: متابعة المناقصات من تاريخ طرح كراسة الشروط ودراسة التكاليف حتى الترسية أو الأرشفة.
+- **أرشيف أسعار المنافسين (`Competitor Pricing Archive`)**: أرشفة أسعار المنافسين في المناقصات السابقة لدراسة عروض العام القادم والفوز بالعطاءات بأعلى هامش ربح.
 
-In addition, [Laracasts](https://laracasts.com) contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+### 4. المشتريات والمالية (Procurement & Finance)
+- **طلبات الشراء وعروض الأسعار**: استقبال طلبات الاحتياج من المخزن، طلب عروض الأسعار، اعتماد صاحب العمل، وتكويد الأصناف الجديدة.
+- **حسابات الموردين والآجل (`Suppliers & Aging`)**: متابعة أرصدة الموردين، إرسال كشوف الحساب، وجدولة السداد للآجل.
+- **الخزائن والبنوك وعهد المواقع (`Treasury & Site Petty Cash`)**: إدارة السيولة، تسليم عهد نقدية لمشرفي المواقع لشراء الخبز والكايزر والفواكه اليومية.
+- **التقفيل اليومي مع صاحب العمل (`Daily Financial Closing`)**: إجمالي الوارد والمصروف، اليومية، الأرباح، والمسحوبات.
 
-You can also watch bite-sized lessons with real-world projects on [Laravel Learn](https://laravel.com/learn), where you will be guided through building a Laravel application from scratch while learning PHP fundamentals.
+---
 
-## Agentic Development
+## 🤖 مساعد كيان الذكي (Kayan AI Copilot)
 
-Laravel's predictable structure and conventions make it ideal for AI coding agents like Claude Code, Cursor, and GitHub Copilot. Install [Laravel Boost](https://laravel.com/docs/ai) to supercharge your AI workflow:
+مساعد ذكاء اصطناعي فوري متصل مباشرة بقاعدة البيانات عبر مسار `POST /ai/ask` ويجيب باللغة العربية الطبيعية عن استفسارات متقدمة، مثل:
+- **أرصدة المخزن**: *"عندي قد ايه عسل؟"* أو *"عندي قد ايه لحمه؟"*
+- **سجل المناقصات**: *"مناقصة الجيزة وجبة الغداء كانت بكام السنة اللي فاتت؟"*
+- **حسابات الموردين**: *"حساب مورد فلان كام وآخر دفعة واخدها امتى؟"*
+- **تحليل ربحية المستشفيات**: *"تكلفة مستشفى إمبابة كام ومعجزة ولا مهدرة في البضاعة وصافي ربحها بعد نسبة المطبخ والضرائب والتأمينات وعمولة الشريك؟"*
+- **الاستهلاك اليومي**: *"أكلت كام وجبة النهارده؟"*
+
+---
+
+## 📐 القواعد المعمارية الثابتة (Architectural Invariants)
+
+1. **فصل كامل للأكواد (Zero Inline Code)**:
+   - ممنوع منعاً باتاً وجود وسوم `<script>` أو `<style>` داخل ملفات الـ Blade.
+   - ممنوع وجود خصائص مضمنة `style="..."` أو معالجات أحداث مثل `onclick` / `onchange`.
+   - يتم اختبار هذا الشرط تلقائياً عبر `BladeArchitectureSeparationTest`.
+2. **نظام الصلاحيات والأدوار (Strict RBAC)**:
+   - صلاحيات معزولة للأدوار: مدير النظام (`admin`)، أمين المخزن (`storekeeper`)، محاسب المخزن (`accountant`)، مسؤول التكاليف (`costing_manager`)، مدير المبيعات (`sales_manager`)، مسؤول المشتريات (`procurement_manager`).
+3. **نظام وهوية Kayan ERP**:
+   - استخدام بطاقات المؤشرات `.kpi-card`، شريط التحكم `<x-control-panel>`، جداول `.erp-table`، وشارات `.erp-badge`.
+   - خط **Cairo** العربي المتجاوب بالكامل مع اتجاه اليمين لليسار (RTL).
+   - استخدام أيقونات فيكتورية كاملة (SVG) بدون أي رموز تعجب أو إيموجيات عشوائية.
+
+---
+
+## 🚀 تشغيل المشروع (Quick Start)
 
 ```bash
-composer require laravel/boost --dev
+# تثبيت الاعتماديات
+composer install
 
-php artisan boost:install
+# إنشاء وتحديث قاعدة البيانات والبيانات الأولية
+php artisan migrate --seed
+
+# تشغيل السيرفر على البورت 7888
+php artisan serve --port=7888
+
+# تشغيل حزمة الاختبارات
+php artisan test --compact
+
+# تنسيق الكود وفق معايير المشروع
+vendor/bin/pint --format agent
 ```
 
-Boost provides your agent 15+ tools and skills that help agents build Laravel applications while following best practices.
+---
 
-## Contributing
+## 📋 خطة العمل للمرحلة القادمة (Next Roadmap)
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
-
-## Code of Conduct
-
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
-
-## Security Vulnerabilities
-
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
-
-## License
-
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+- [ ] استكمال شاشات إدخال قيود اليومية المحاسبية المزدوجة التلقائية الناتجة عن تسوية عهد المناديب.
+- [ ] إضافة شاشة المقارنة الرسومية بين عروض أسعار الموردين واعتماد صاحب العمل بضغطة زر.
+- [ ] تصدير وطباعة كشوف تسوية عهد المناديب وأذون التحميل بنمط الطباعة الحرارية والمستندية.
+- [ ] ربط المساعد الذكي بنموذج LLM متقدم (عبر OpenAI أو Google Gemini API) لتعزيز الردود بالتحليلات التنبؤية.
