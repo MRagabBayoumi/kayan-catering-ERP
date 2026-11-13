@@ -33,22 +33,18 @@
     @php
         $activeModuleName = $moduleName ?? (trim($__env->yieldContent('module_name')) ?: null);
         if (!$activeModuleName) {
-            if (request()->is('inventory/movements*')) {
-                $activeModuleName = 'سجل حركات المخزون';
-            } elseif (request()->is('inventory*') || request()->is('warehouses*')) {
-                $activeModuleName = 'المخزون والمستودعات';
-            } elseif (request()->is('products*') || request()->is('categories*')) {
-                $activeModuleName = 'المنتجات والأصناف';
+            if (request()->is('warehouse*')) {
+                $activeModuleName = 'إدارة المخازن والـ FIFO';
+            } elseif (request()->is('costing*')) {
+                $activeModuleName = 'إدارة التكاليف والمقننات';
+            } elseif (request()->is('sales*')) {
+                $activeModuleName = 'المبيعات والمناقصات';
+            } elseif (request()->is('finance*')) {
+                $activeModuleName = 'المشتريات والمالية';
             } elseif (request()->is('settings*')) {
                 $activeModuleName = 'إعدادات النظام';
-            } elseif (request()->is('sales-reps*')) {
-                $activeModuleName = 'إدارة مناديب المبيعات';
-            } elseif (request()->is('customers*')) {
-                $activeModuleName = 'المبيعات والعملاء';
-            } elseif (request()->is('suppliers*') || request()->is('shipping-offices*')) {
-                $activeModuleName = 'المشتريات والتوريدات';
-            } elseif (request()->is('expenses*') || request()->is('payments*')) {
-                $activeModuleName = 'المالية والحسابات';
+            } elseif (request()->is('users*')) {
+                $activeModuleName = 'المستخدمين والصلاحيات';
             } else {
                 $activeModuleName = 'لوحة التحكم';
             }

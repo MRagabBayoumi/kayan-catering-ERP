@@ -38,6 +38,13 @@
             <polyline points="9 22 9 12 15 12 15 22"/>
             @break
 
+        @case('menu')
+        @case('bars')
+            <line x1="3" y1="12" x2="21" y2="12"/>
+            <line x1="3" y1="6" x2="21" y2="6"/>
+            <line x1="3" y1="18" x2="21" y2="18"/>
+            @break
+
         @case('package')
         @case('product')
         @case('products')
@@ -516,6 +523,7 @@
 
         @case('sliders')
         @case('controls')
+        @case('sliders-horizontal')
             <line x1="4" x2="4" y1="21" y2="14"/>
             <line x1="4" x2="4" y1="10" y2="3"/>
             <line x1="12" x2="12" y1="21" y2="12"/>
@@ -525,6 +533,105 @@
             <line x1="1" x2="7" y1="14" y2="14"/>
             <line x1="9" x2="15" y1="8" y2="8"/>
             <line x1="17" x2="23" y1="16" y2="16"/>
+            @break
+
+        @case('check-square')
+            <polyline points="9 11 12 14 22 4"/>
+            <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/>
+            @break
+
+        @case('clipboard-check')
+            <rect width="8" height="4" x="8" y="2" rx="1" ry="1"/>
+            <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/>
+            <path d="m9 14 2 2 4-4"/>
+            @break
+
+        @case('activity')
+            <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/>
+            @break
+
+        @case('archive')
+            <rect width="20" height="5" x="2" y="3" rx="1"/>
+            <path d="M4 8v11a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8"/>
+            <path d="M10 12h4"/>
+            @break
+
+        @case('pie-chart')
+            <path d="M21.21 15.89A10 10 0 1 1 8 2.83"/>
+            <path d="M22 12A10 10 0 0 0 12 2v10z"/>
+            @break
+
+        @case('clock')
+            <circle cx="12" cy="12" r="10"/>
+            <polyline points="12 6 12 12 16 14"/>
+            @break
+
+        @case('bot')
+        @case('ai')
+        @case('robot')
+            <path d="M12 8V4H8"/>
+            <rect width="16" height="12" x="4" y="8" rx="2"/>
+            <path d="M2 14h2"/>
+            <path d="M20 14h2"/>
+            <path d="M15 13v2"/>
+            <path d="M9 13v2"/>
+            @break
+
+        @case('sparkles')
+            <path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z"/>
+            <path d="M5 3v4"/>
+            <path d="M19 17v4"/>
+            <path d="M3 5h4"/>
+            <path d="M17 19h4"/>
+            @break
+
+        @case('utensils')
+        @case('food')
+        @case('cooking')
+            <path d="M18 2v6a3 3 0 0 1-3 3 3 3 0 0 1-3-3V2"/>
+            <path d="M15 2v18"/>
+            <path d="M5 2c0 2.5 1.5 5 4 5v13"/>
+            <path d="M9 2v4"/>
+            @break
+
+        @case('scale')
+        @case('balance')
+            <path d="m16 16 3-8 3 8c-.87.65-1.92 1-3 1s-2.13-.35-3-1Z"/>
+            <path d="m2 16 3-8 3 8c-.87.65-1.92 1-3 1s-2.13-.35-3-1Z"/>
+            <path d="M7 21h10"/>
+            <path d="M12 3v18"/>
+            <path d="M3 7h2c2 0 5-1 7-2 2 1 5 2 7 2h2"/>
+            @break
+
+        @case('landmark')
+        @case('bank')
+            <line x1="3" x2="21" y1="22" y2="22"/>
+            <line x1="6" x2="6" y1="18" y2="11"/>
+            <line x1="10" x2="10" y1="18" y2="11"/>
+            <line x1="14" x2="14" y1="18" y2="11"/>
+            <line x1="18" x2="18" y1="18" y2="11"/>
+            <polygon points="12 2 20 7 4 7"/>
+            @break
+
+        @case('hospital')
+            <path d="M12 6v4"/>
+            <path d="M10 8h4"/>
+            <path d="M18 20V4a2 2 0 0 0-2-2H8a2 2 0 0 0-2 2v16"/>
+            <path d="M2 20h20"/>
+            <path d="M14 20v-4a2 2 0 0 0-2-2a2 2 0 0 0-2 2v4"/>
+            @break
+
+        @case('hard-drive')
+            <line x1="22" x2="2" y1="12" y2="12"/>
+            <path d="M5.45 5.11 2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.45-6.89A2 2 0 0 0 16.76 4H7.24a2 2 0 0 0-1.79 1.11z"/>
+            <line x1="6" x2="6.01" y1="16" y2="16"/>
+            <line x1="10" x2="10.01" y1="16" y2="16"/>
+            @break
+
+        @case('globe')
+            <circle cx="12" cy="12" r="10"/>
+            <line x1="2" x2="22" y1="12" y2="12"/>
+            <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/>
             @break
 
         @case('boxes')
