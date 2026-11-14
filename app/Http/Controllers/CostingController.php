@@ -52,6 +52,13 @@ class CostingController extends Controller
     {
         Gate::authorize('manage-costing');
 
+        $request->merge([
+            'ingredients' => array_values(array_filter(
+                (array) $request->input('ingredients', []),
+                fn ($item) => ! empty($item['product_id'])
+            )),
+        ]);
+
         $validated = $request->validate([
             'name' => 'required|string|max:255',
             'meal_type_id' => 'required|exists:meal_types,id',
@@ -100,7 +107,7 @@ class CostingController extends Controller
         Gate::authorize('manage-costing');
 
         $consumptions = ConsumptionLog::with(['hospital', 'recipe', 'product'])
-            ->orderBy('log_date', 'desc')
+            ->orderBy('consumption_date', 'desc')
             ->paginate(20);
 
         return view('costing.consumption.index', compact('consumptions'));
@@ -117,14 +124,27 @@ class CostingController extends Controller
             'hospital_id' => 'required|exists:hospitals,id',
             'recipe_id' => 'required|exists:recipes,id',
             'product_id' => 'required|exists:products,id',
-            'actual_meal_count' => 'required|integer|min:1',
-            'actual_used_quantity' => 'required|numeric|min:0',
-            'unit' => 'required|string',
-            'log_date' => 'required|date',
-            'notes' => 'nullable|string',
+            'actual_served_meals_count' => 'required|integer|min:1',
+            'actual_consumed_qty' => 'required|numeric|min:0',
+            'consumption_date' => 'required|date',
+            'discrepancy_justification' => 'nullable|string',
         ]);
 
-        $this->costingService->recordKitchenConsumption($validated);
+        $this->costingService->recordKitchenConsumption(
+            header: [
+                'hospital_id' => (int) $validated['hospital_id'],
+                'recipe_id' => (int) $validated['recipe_id'],
+                'actual_served_meals_count' => (int) $validated['actual_served_meals_count'],
+                'consumption_date' => $validated['consumption_date'],
+            ],
+            consumedItems: [
+                [
+                    'product_id' => (int) $validated['product_id'],
+                    'actual_consumed_qty' => (float) $validated['actual_consumed_qty'],
+                    'discrepancy_justification' => $validated['discrepancy_justification'] ?? null,
+                ],
+            ]
+        );
 
         return redirect()->route('costing.consumption.index')->with('success', 'تم تسجيل استهلاك المطبخ واحتساب نسبة الانحراف بنجاح.');
     }

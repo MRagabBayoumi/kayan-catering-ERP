@@ -27,11 +27,11 @@
         <!-- Brand Name -->
         <a href="{{ url('/') }}" class="erp-brand">
             @if(!empty($globalCompanySetting?->logo_url))
-                <img src="{{ $globalCompanySetting->logo_url }}" alt="{{ $globalCompanySetting?->company_name ?? 'Kayan ERP' }}" class="h-6 w-6 object-contain rounded">
+                <img src="{{ $globalCompanySetting->logo_url }}" alt="{{ $globalCompanySetting?->company_name ?? 'Kayan Catering ERP' }}" class="h-6 w-6 object-contain rounded">
             @else
                 <span class="erp-brand-badge">K</span>
             @endif
-            <span>{{ $globalCompanySetting?->company_name ?? config('app.name', 'Kayan ERP') }}</span>
+            <span>{{ $globalCompanySetting?->company_name ?? config('app.name', 'Kayan Catering ERP') }}</span>
         </a>
 
         <div class="erp-topbar-divider"></div>

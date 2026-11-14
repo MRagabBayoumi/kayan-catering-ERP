@@ -66,24 +66,25 @@
                         <th>الاستهلاك الفعلي</th>
                         <th>الانحراف (الفرق)</th>
                         <th>نسبة الهدر / التوفير</th>
+                        <th>التبرير والملاحظات</th>
                     </tr>
                 </thead>
                 <tbody>
                     @forelse($consumptions as $log)
                         <tr>
-                            <td class="font-mono text-xs">{{ $log->log_date->format('Y-m-d') }}</td>
+                            <td class="font-mono text-xs">{{ $log->consumption_date?->format('Y-m-d') }}</td>
                             <td class="font-semibold">{{ $log->hospital->name }}</td>
                             <td>{{ $log->recipe->name }}</td>
                             <td class="font-medium text-slate-700 dark:text-slate-300">{{ $log->product->name }}</td>
-                            <td class="font-mono font-bold">{{ number_format($log->actual_meal_count) }}</td>
+                            <td class="font-mono font-bold">{{ number_format($log->actual_served_meals_count) }}</td>
                             <td class="font-mono text-slate-600 dark:text-slate-400">
-                                {{ number_format($log->standard_expected_quantity, 2) }} {{ $log->unit }}
+                                {{ number_format($log->standard_expected_qty, 2) }} {{ $log->product->unit ?? 'كجم' }}
                             </td>
                             <td class="font-mono font-bold">
-                                {{ number_format($log->actual_used_quantity, 2) }} {{ $log->unit }}
+                                {{ number_format($log->actual_consumed_qty, 2) }} {{ $log->product->unit ?? 'كجم' }}
                             </td>
-                            <td class="font-mono font-bold {{ $log->variance_quantity > 0 ? 'text-rose-600' : 'text-emerald-600' }}">
-                                {{ $log->variance_quantity > 0 ? '+' : '' }}{{ number_format($log->variance_quantity, 2) }} {{ $log->unit }}
+                            <td class="font-mono font-bold {{ $log->variance_qty > 0 ? 'text-rose-600' : 'text-emerald-600' }}">
+                                {{ $log->variance_qty > 0 ? '+' : '' }}{{ number_format($log->variance_qty, 2) }} {{ $log->product->unit ?? 'كجم' }}
                             </td>
                             <td>
                                 @if($log->variance_percentage > 5)
@@ -94,10 +95,11 @@
                                     <span class="erp-badge erp-badge-success">ضمن المقنن ({{ $log->variance_percentage }}%)</span>
                                 @endif
                             </td>
+                            <td class="text-xs text-slate-500">{{ $log->discrepancy_justification ?? '—' }}</td>
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="9" class="text-center py-8 text-slate-400">
+                            <td colspan="10" class="text-center py-8 text-slate-400">
                                 لا توجد سجلات استهلاك مطبخ مسجلة حتى الآن.
                             </td>
                         </tr>

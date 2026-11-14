@@ -94,11 +94,14 @@ export function initAiCopilot() {
                 if (loadingEl) loadingEl.remove();
 
                 if (data.success && data.response) {
-                    let formattedHtml = `<div class="font-bold text-blue-600 dark:text-blue-400 mb-1">${escapeHtml(data.response.headline || '')}</div>`;
-                    formattedHtml += `<div class="whitespace-pre-line text-xs">${formatMarkdown(data.response.message || '')}</div>`;
+                    let formattedHtml = `<div class="ai-response-headline">${escapeHtml(data.response.headline || '')}</div>`;
+                    formattedHtml += `<div class="ai-response-message">${formatMarkdown(data.response.message || '')}</div>`;
 
                     if (data.response.recommendations && data.response.recommendations.length > 0) {
-                        formattedHtml += `<div class="mt-2 pt-2 border-t border-slate-200 dark:border-slate-700 text-[11px] text-amber-600 dark:text-amber-400 font-semibold">💡 توصيات: ${data.response.recommendations.map(r => `<div>• ${escapeHtml(r)}</div>`).join('')}</div>`;
+                        formattedHtml += `<div class="ai-response-recommendations">
+                            <div class="ai-rec-title">💡 توصيات تشغيلية:</div>
+                            <div class="ai-rec-list">${data.response.recommendations.map(r => `<div class="ai-rec-item">• ${escapeHtml(r)}</div>`).join('')}</div>
+                        </div>`;
                     }
 
                     appendMessage(formattedHtml, 'bot', null, true);
@@ -138,9 +141,11 @@ export function initAiCopilot() {
     }
 
     function formatMarkdown(text) {
+        if (!text) return '';
         return text
             .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
-            .replace(/_(.*?)_/g, '<em>$1</em>');
+            .replace(/_(.*?)_/g, '<em>$1</em>')
+            .replace(/\[(BATCH-[^\]]+)\]/g, '<span class="ai-batch-tag">[$1]</span>');
     }
 }
 

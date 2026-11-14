@@ -73,9 +73,30 @@ class CateringDepartmentsFeatureTest extends TestCase
         $response->assertStatus(200);
         $response->assertSee('الخامات المطلوبة لإعداد 300 وجبة');
 
-        // 4. Consumption log index
+        // 4. Consumption log index & store
+        $hospital = Hospital::first();
+        $response = $this->post(route('costing.consumption.store'), [
+            'hospital_id' => $hospital->id,
+            'recipe_id' => $recipe->id,
+            'product_id' => $product->id,
+            'actual_served_meals_count' => 300,
+            'actual_consumed_qty' => 62.5,
+            'consumption_date' => now()->toDateString(),
+            'discrepancy_justification' => 'هدر بسيط نتيجة إعداد وجبات طوارئ إضافية',
+        ]);
+        $response->assertRedirect(route('costing.consumption.index'));
+        $this->assertDatabaseHas('consumption_logs', [
+            'recipe_id' => $recipe->id,
+            'actual_served_meals_count' => 300,
+        ]);
+
         $response = $this->get(route('costing.consumption.index'));
         $response->assertStatus(200);
+        $response->assertSee('هدر بسيط نتيجة إعداد وجبات طوارئ إضافية', false);
+
+        // 5. Root costing redirect
+        $response = $this->get('/costing');
+        $response->assertRedirect(route('costing.recipes.index'));
     }
 
     public function test_sales_and_tenders_department_lifecycle(): void

@@ -5,26 +5,31 @@
         <!-- Drawer Header -->
         <div class="ai-drawer-header">
             <div class="ai-header-title">
-                <div class="ai-avatar text-[var(--primary)] bg-white dark:bg-slate-800 rounded-lg p-1.5 shadow-sm">
-                    <x-icon name="sparkles" size="20" />
+                <div class="ai-avatar">
+                    <x-icon name="sparkles" size="18" />
                 </div>
                 <div>
-                    <h3 class="font-bold text-sm">Kayan AI Copilot</h3>
-                    <p class="text-xs text-slate-400">مساعدك الذكي لإدارة المخازن والمقننات والتكاليف</p>
+                    <h3 class="ai-header-name">Kayan AI Copilot</h3>
+                    <p class="ai-header-subtitle">مساعدك الذكي لإدارة المخازن والمقننات والتكاليف</p>
                 </div>
             </div>
-            <button id="aiCloseBtn" type="button" class="ai-close-btn" title="إغلاق">&times;</button>
+            <button id="aiCloseBtn" type="button" class="ai-close-btn" title="إغلاق" aria-label="إغلاق المساعد الذكي">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                    <line x1="18" y1="6" x2="6" y2="18"></line>
+                    <line x1="6" y1="6" x2="18" y2="18"></line>
+                </svg>
+            </button>
         </div>
 
         <!-- Quick Prompt Suggestions (Pills) -->
         <div class="ai-quick-prompts">
-            <span class="text-xs text-slate-400 block mb-1">أسئلة سريعة:</span>
+            <div class="ai-quick-title">أسئلة سريعة ومقترحة:</div>
             <div class="ai-pills-row">
-                <button type="button" class="ai-pill-btn" data-query="عندي قد ايه لحمه">🥩 عندي قد ايه لحمة؟</button>
+                <button type="button" class="ai-pill-btn" data-query="عندي قد ايه لحمه">🥩 رصيد اللحوم بالمخزن</button>
                 <button type="button" class="ai-pill-btn" data-query="المناقصه مثلا بتاع الجيزه وجبة الغداء كانت بكام السنه الي فاتت">🎯 مناقصة الجيزة وجبة الغداء بكام؟</button>
-                <button type="button" class="ai-pill-btn" data-query="تكلفة مستشفي امبابه كام و معجزه ولا مهدره في البضاعه و صافي ربحها بعد نسبة المطبخ و ضرائب و دمعات و تامينات و عمولة شريك">🏥 تكلفة وأرباح مستشفى إمبابة؟</button>
-                <button type="button" class="ai-pill-btn" data-query="انا اكلت كام وجبه النهارده">🍽️ أكلت كام وجبة النهاردة؟</button>
-                <button type="button" class="ai-pill-btn" data-query="حساب مورد فلان كام اخر مره واخد دفعه امتي">🤝 كشف حساب الموردين وآخر دفعة؟</button>
+                <button type="button" class="ai-pill-btn" data-query="تكلفة مستشفي امبابه كام و معجزه ولا مهدره في البضاعه و صافي ربحها بعد نسبة المطبخ و ضرائب و دمعات و تامينات و عمولة شريك">🏥 تكلفة وأرباح مستشفى إمبابة</button>
+                <button type="button" class="ai-pill-btn" data-query="انا اكلت كام وجبه النهارده">🍽️ عدد الوجبات المنفذة اليوم</button>
+                <button type="button" class="ai-pill-btn" data-query="حساب مورد فلان كام اخر مره واخد دفعه امتي">🤝 كشوفات الموردين والدفعات</button>
             </div>
         </div>
 
@@ -33,8 +38,11 @@
             <!-- Welcome message from AI -->
             <div class="ai-msg ai-msg-bot">
                 <div class="ai-bubble">
-                    <p class="font-semibold text-primary mb-1">أهلاً بك يا فندم! 🌸</p>
-                    <p class="text-xs leading-relaxed text-slate-700 dark:text-slate-200">
+                    <div class="ai-welcome-header">
+                        <span class="ai-welcome-icon">🌸</span>
+                        <span class="ai-welcome-title">أهلاً بك يا فندم!</span>
+                    </div>
+                    <p class="ai-welcome-body">
                         أنا مساعدك اللحظي المتصل مباشرة بقاعدة بيانات وتشغيلات الكيترينج. اسألني عن أرصدة الباتشات، تكاليف المستشفيات، المقننات والهادر، أو المناقصات وأسعار المنافسين السابقة.
                     </p>
                 </div>
@@ -52,8 +60,8 @@
                     autocomplete="off" 
                     required
                 />
-                <button type="submit" id="aiSendBtn" class="ai-send-btn" title="إرسال">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <button type="submit" id="aiSendBtn" class="ai-send-btn" title="إرسال" aria-label="إرسال السؤال">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
                         <line x1="22" y1="2" x2="11" y2="13"></line>
                         <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
                     </svg>

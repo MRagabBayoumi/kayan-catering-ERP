@@ -148,6 +148,10 @@ class CompanySetting extends Model
             return null;
         }
 
-        return Storage::disk('public')->url($this->logo_path);
+        if (! Storage::disk('public')->exists($this->logo_path)) {
+            return null;
+        }
+
+        return '/storage/'.ltrim($this->logo_path, '/');
     }
 }

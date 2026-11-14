@@ -72,4 +72,13 @@ class ConsumptionLog extends Model
     {
         return $this->variance_qty > 0.0001;
     }
+
+    public function getVariancePercentageAttribute(): float
+    {
+        if ((float) $this->standard_expected_qty <= 0) {
+            return 0.0;
+        }
+
+        return round(((float) $this->variance_qty / (float) $this->standard_expected_qty) * 100, 1);
+    }
 }

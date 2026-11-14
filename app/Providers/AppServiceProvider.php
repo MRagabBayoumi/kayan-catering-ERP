@@ -2,8 +2,11 @@
 
 namespace App\Providers;
 
+use App\Models\CompanySetting;
 use App\Models\User;
 use Illuminate\Support\Facades\Gate;
+use Illuminate\Support\Facades\Schema;
+use Illuminate\Support\Facades\View;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
@@ -21,6 +24,25 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+        // Global Company Settings View Composer
+        View::composer('*', function ($view) {
+            static $settings = null;
+            static $hasChecked = false;
+
+            if (! $hasChecked) {
+                try {
+                    if (Schema::hasTable('company_settings')) {
+                        $settings = CompanySetting::getSettings();
+                    }
+                } catch (\Throwable $e) {
+                    // Silently fallback if database is not reachable during early boot
+                }
+                $hasChecked = true;
+            }
+
+            $view->with('globalCompanySetting', $settings);
+        });
+
         // Super Admin Bypass
         Gate::before(function (User $user) {
             if ($user->isAdmin()) {

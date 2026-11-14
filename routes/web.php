@@ -80,6 +80,7 @@ Route::middleware('auth')->group(function () {
 
     // 2. Costing Department Routes (المقننات والتكاليف)
     Route::prefix('costing')->name('costing.')->group(function () {
+        Route::get('/', fn () => redirect()->route('costing.recipes.index'))->name('index');
         Route::get('/recipes', [CostingController::class, 'indexRecipes'])->name('recipes.index');
         Route::get('/recipes/create', [CostingController::class, 'createRecipe'])->name('recipes.create');
         Route::post('/recipes', [CostingController::class, 'storeRecipe'])->name('recipes.store');
