@@ -6,7 +6,13 @@ import tailwindcss from '@tailwindcss/vite';
 export default defineConfig({
     plugins: [
         laravel({
-            input: ['resources/js/theme-init.js', 'resources/css/app.css', 'resources/js/app.js'],
+            input: [
+                'resources/js/theme-init.js',
+                'resources/css/app.css',
+                'resources/js/app.js',
+                'resources/css/print/thermal-label.css',
+                'resources/js/pages/print-label.js',
+            ],
             refresh: true,
             fonts: [
                 bunny('Instrument Sans', {

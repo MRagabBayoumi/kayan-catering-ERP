@@ -158,5 +158,33 @@ export function initUniversalPrintModal() {
             }
         }
     });
+
+    // 5. Recipe Ingredient Auto-fill Cost Price from Procurement
+    document.addEventListener('change', (e) => {
+        const select = e.target.closest('.recipe-product-select');
+        if (!select) return;
+
+        const row = select.closest('.recipe-ingredient-row');
+        if (!row) return;
+
+        const selectedOption = select.options[select.selectedIndex];
+        const costPrice = selectedOption?.getAttribute('data-cost') || '';
+        const unit = selectedOption?.getAttribute('data-unit') || '';
+
+        const costInput = row.querySelector('.recipe-cost-input');
+        if (costInput) {
+            costInput.value = costPrice ? parseFloat(costPrice).toFixed(2) : '';
+        }
+
+        const unitSelect = row.querySelector('.recipe-unit-select');
+        if (unitSelect && unit) {
+            for (let i = 0; i < unitSelect.options.length; i++) {
+                if (unitSelect.options[i].value === unit) {
+                    unitSelect.selectedIndex = i;
+                    break;
+                }
+            }
+        }
+    });
 }
 

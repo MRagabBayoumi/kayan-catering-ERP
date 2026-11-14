@@ -300,10 +300,16 @@
                                     @endif
                                 </td>
                                 <td class="text-center">
-                                    <button type="button" class="erp-btn erp-btn-secondary text-xs px-2.5 py-1" data-action="suggest-batch-consumption" data-batch-id="{{ $batch->id }}" title="اقتراح وجبات للمطبخ لاستهلاك هذه التشغيلة فوراً">
-                                        <x-icon name="utensils" size="14" class="text-indigo-600" />
-                                        <span>وجبات استهلاك</span>
-                                    </button>
+                                    <div class="flex items-center justify-center gap-1.5">
+                                        <a href="{{ route('warehouse.batches.print-label', $batch->id) }}" target="_blank" class="erp-btn erp-btn-secondary text-xs px-2.5 py-1" title="طباعة ملصق باركود وبيانات التشغيلة">
+                                            <x-icon name="printer" size="14" class="text-blue-600" />
+                                            <span>طباعة ملصق</span>
+                                        </a>
+                                        <button type="button" class="erp-btn erp-btn-secondary text-xs px-2.5 py-1" data-action="suggest-batch-consumption" data-batch-id="{{ $batch->id }}" title="اقتراح وجبات للمطبخ لاستهلاك هذه التشغيلة فوراً">
+                                            <x-icon name="utensils" size="14" class="text-indigo-600" />
+                                            <span>وجبات استهلاك</span>
+                                        </button>
+                                    </div>
                                 </td>
                             </tr>
                         @empty

@@ -4,6 +4,7 @@ namespace App\Services;
 
 use App\Models\ConsumptionLog;
 use App\Models\InventoryBatch;
+use App\Models\Product;
 use App\Models\Recipe;
 use App\Models\RecipeIngredient;
 use Carbon\Carbon;
@@ -36,7 +37,14 @@ class CostingService
 
             foreach ($ingredients as $ing) {
                 $rawQty = (float) $ing['raw_quantity_per_meal'];
+                $product = Product::find($ing['product_id']);
+
+                // Sourced automatically from Procurement Department / Product Master
                 $unitCost = (float) ($ing['standard_unit_cost'] ?? 0.00);
+                if ($unitCost <= 0.00 && $product) {
+                    $unitCost = (float) $product->cost_price;
+                }
+
                 $totalEstCost += ($rawQty * $unitCost);
 
                 RecipeIngredient::create([

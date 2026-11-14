@@ -106,12 +106,12 @@
 
     <!-- Disbursements Table -->
     <div class="erp-card">
-        <div class="p-4 border-b border-slate-200 dark:border-slate-700 flex justify-between items-center">
-            <h3 class="font-bold text-slate-800 dark:text-slate-100 flex items-center gap-2">
+        <div class="erp-card-header">
+            <h3 class="erp-card-title">
                 <x-icon name="truck" size="18" />
                 <span>جدول أذونات الصرف اللحظية</span>
             </h3>
-            <span class="text-xs text-slate-400">تحديث فوري لجميع الأذونات</span>
+            <span class="text-xs text-slate-500 font-medium">تحديث فوري لجميع الأذونات</span>
         </div>
 
         <div class="overflow-x-auto">
@@ -136,7 +136,7 @@
                             <td class="font-mono text-xs">{{ $order->order_date->toDateString() }}</td>
                             <td>
                                 <div class="font-bold text-slate-800 dark:text-slate-100">{{ $order->beneficiary_label }}</div>
-                                <span class="text-[11px] text-slate-400">
+                                <span class="text-[11px] text-slate-500">
                                     @if($order->beneficiary_type === 'supplier')
                                         مورد خامات
                                     @elseif($order->beneficiary_type === 'hospital')
@@ -151,7 +151,7 @@
                             <td class="max-w-xs truncate" title="{{ $order->purpose }}">
                                 <span>{{ $order->purpose }}</span>
                                 @if($order->notes)
-                                    <span class="block text-[11px] text-slate-400 truncate">{{ $order->notes }}</span>
+                                    <span class="block text-[11px] text-slate-500 truncate">{{ $order->notes }}</span>
                                 @endif
                             </td>
                             <td class="font-mono font-bold text-rose-600 dark:text-rose-400 text-sm">
@@ -170,7 +170,7 @@
                             <td class="text-xs">
                                 @if($order->isCompleted())
                                     <span class="font-bold text-slate-700 dark:text-slate-200">{{ $order->executor->name ?? 'أمين الخزنة' }}</span>
-                                    <span class="block text-[10px] text-slate-400 font-mono">{{ $order->executed_at?->format('Y-m-d H:i') }}</span>
+                                    <span class="block text-[10px] text-slate-500 font-mono">{{ $order->executed_at?->format('Y-m-d H:i') }}</span>
                                     @if($order->financialVoucher)
                                         <span class="block text-[10px] text-primary font-mono font-bold">{{ $order->financialVoucher->voucher_number }}</span>
                                     @endif
@@ -195,8 +195,14 @@
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="9" class="text-center py-8 text-slate-400">
-                                لا توجد أذونات صرف مطابقة للشروط المحددة.
+                            <td colspan="9">
+                                <div class="py-10 text-center flex flex-col items-center justify-center gap-2">
+                                    <div class="w-12 h-12 rounded-full bg-slate-100 flex items-center justify-center text-slate-400 mb-1">
+                                        <x-icon name="inbox" size="24" />
+                                    </div>
+                                    <p class="font-bold text-sm text-slate-700">لا توجد أذونات صرف مطابقة للشروط</p>
+                                    <p class="text-xs text-slate-500">يمكنك إصدار إذن صرف جديد لحظياً من النموذج أدناه</p>
+                                </div>
                             </td>
                         </tr>
                     @endforelse
@@ -212,77 +218,96 @@
     </div>
 
     <!-- Manager Form: Create New Disbursement Order -->
-    <div id="newDisbursementSection" class="erp-card p-6">
-        <div class="flex items-center gap-2 mb-4 border-b border-slate-200 dark:border-slate-700 pb-3">
-            <x-icon name="plus-circle" size="20" class="text-primary" />
-            <h3 class="font-bold text-slate-800 dark:text-slate-100">إصدار إذن صرف جديد (من الإدارة إلى أمين الخزنة)</h3>
+    <div id="newDisbursementSection" class="erp-card">
+        <div class="erp-card-header">
+            <h3 class="erp-card-title text-primary">
+                <x-icon name="plus-circle" size="20" />
+                <span>إصدار إذن صرف جديد (من الإدارة إلى أمين الخزنة)</span>
+            </h3>
+            <span class="text-xs text-slate-500 font-medium">يصل فورياً إلى شاشة أمين الخزنة للصرف</span>
         </div>
 
-        <form action="{{ route('finance.disbursements.store') }}" method="POST" class="grid grid-cols-1 md:grid-cols-3 gap-4">
-            @csrf
+        <div class="erp-card-body">
+            <form action="{{ route('finance.disbursements.store') }}" method="POST">
+                @csrf
 
-            <div>
-                <label class="erp-form-label">تاريخ الإذن</label>
-                <input type="date" name="order_date" class="erp-form-control font-mono" value="{{ date('Y-m-d') }}" required>
-            </div>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
+                    <div class="erp-form-group">
+                        <label class="erp-form-label">
+                            <span>تاريخ الإذن</span>
+                            <span class="required">*</span>
+                        </label>
+                        <input type="date" name="order_date" class="erp-form-control font-mono" value="{{ date('Y-m-d') }}" required>
+                    </div>
 
-            <div>
-                <label class="erp-form-label">المبلغ المطلوب صرفه (ج.م)</label>
-                <input type="number" step="0.01" min="0.01" name="amount" class="erp-form-control font-mono font-bold" placeholder="0.00" required>
-            </div>
+                    <div class="erp-form-group">
+                        <label class="erp-form-label">
+                            <span>المبلغ المطلوب صرفه (ج.م)</span>
+                            <span class="required">*</span>
+                        </label>
+                        <input type="number" step="0.01" min="0.01" name="amount" class="erp-form-control font-mono font-bold" placeholder="0.00" required>
+                    </div>
 
-            <div>
-                <label class="erp-form-label">نوع المستفيد</label>
-                <select name="beneficiary_type" class="erp-form-control" required>
-                    <option value="supplier">مورد خامات ومواد غذائية</option>
-                    <option value="hospital">عهدة موقع مستشفى (نثريات/خبز)</option>
-                    <option value="user">سلفة / عهدة موظف أو سائق</option>
-                    <option value="other">جهة أخرى / مصروف تشغيلي</option>
-                </select>
-            </div>
+                    <div class="erp-form-group">
+                        <label class="erp-form-label">
+                            <span>نوع المستفيد</span>
+                            <span class="required">*</span>
+                        </label>
+                        <select name="beneficiary_type" class="erp-form-control" required>
+                            <option value="supplier">مورد خامات ومواد غذائية</option>
+                            <option value="hospital">عهدة موقع مستشفى (نثريات/خبز)</option>
+                            <option value="user">سلفة / عهدة موظف أو سائق</option>
+                            <option value="other">جهة أخرى / مصروف تشغيلي</option>
+                        </select>
+                    </div>
 
-            <div>
-                <label class="erp-form-label">المورد (إن كان المستفيد مورداً)</label>
-                <select name="supplier_id" class="erp-form-control">
-                    <option value="">-- اختياري: اختر المورد --</option>
-                    @foreach($suppliers as $supplier)
-                        <option value="{{ $supplier->id }}">{{ $supplier->name }} (رصيد: {{ number_format($supplier->current_balance, 2) }} ج.م)</option>
-                    @endforeach
-                </select>
-            </div>
+                    <div class="erp-form-group">
+                        <label class="erp-form-label">المورد (إن كان المستفيد مورداً)</label>
+                        <select name="supplier_id" class="erp-form-control">
+                            <option value="">-- اختياري: اختر المورد --</option>
+                            @foreach($suppliers as $supplier)
+                                <option value="{{ $supplier->id }}">{{ $supplier->name }} (رصيد: {{ number_format($supplier->current_balance, 2) }} ج.م)</option>
+                            @endforeach
+                        </select>
+                    </div>
 
-            <div>
-                <label class="erp-form-label">موقع المستشفى (إن كان لعهدة موقع)</label>
-                <select name="hospital_id" class="erp-form-control">
-                    <option value="">-- اختياري: اختر المستشفى --</option>
-                    @foreach($hospitals as $hosp)
-                        <option value="{{ $hosp->id }}">{{ $hosp->name }}</option>
-                    @endforeach
-                </select>
-            </div>
+                    <div class="erp-form-group">
+                        <label class="erp-form-label">موقع المستشفى (إن كان لعهدة موقع)</label>
+                        <select name="hospital_id" class="erp-form-control">
+                            <option value="">-- اختياري: اختر المستشفى --</option>
+                            @foreach($hospitals as $hosp)
+                                <option value="{{ $hosp->id }}">{{ $hosp->name }}</option>
+                            @endforeach
+                        </select>
+                    </div>
 
-            <div>
-                <label class="erp-form-label">اسم المستفيد / الشخص</label>
-                <input type="text" name="beneficiary_name" class="erp-form-control" placeholder="اسم المستفيد في حال عدم وجوده بالقوائم">
-            </div>
+                    <div class="erp-form-group">
+                        <label class="erp-form-label">اسم المستفيد / الشخص</label>
+                        <input type="text" name="beneficiary_name" class="erp-form-control" placeholder="اسم المستفيد في حال عدم وجوده بالقوائم">
+                    </div>
 
-            <div class="md:col-span-2">
-                <label class="erp-form-label">الغرض والبيان من الصرف</label>
-                <input type="text" name="purpose" class="erp-form-control" placeholder="مثال: سداد دفعة توريد لحوم مجمدة أو عهدة شراء كايزر وثلج طارئة" required>
-            </div>
+                    <div class="erp-form-group md:col-span-2">
+                        <label class="erp-form-label">
+                            <span>الغرض والبيان من الصرف</span>
+                            <span class="required">*</span>
+                        </label>
+                        <input type="text" name="purpose" class="erp-form-control" placeholder="مثال: سداد دفعة توريد لحوم مجمدة أو عهدة شراء كايزر وثلج طارئة" required>
+                    </div>
 
-            <div>
-                <label class="erp-form-label">ملاحظات وتوجيهات المدير لأمين الخزنة</label>
-                <input type="text" name="notes" class="erp-form-control" placeholder="تعليمات إضافية لأمين الخزنة">
-            </div>
+                    <div class="erp-form-group">
+                        <label class="erp-form-label">ملاحظات وتوجيهات المدير لأمين الخزنة</label>
+                        <input type="text" name="notes" class="erp-form-control" placeholder="تعليمات إضافية لأمين الخزنة">
+                    </div>
+                </div>
 
-            <div class="md:col-span-3 flex justify-end gap-2 pt-2 border-t border-slate-200 dark:border-slate-700">
-                <button type="submit" class="erp-btn erp-btn-primary">
-                    <x-icon name="check-circle" size="16" />
-                    <span>إصدار إذن الصرف وإرساله لحظياً لأمين الخزنة</span>
-                </button>
-            </div>
-        </form>
+                <div class="flex justify-end gap-3 pt-4 mt-2 border-t border-slate-200 dark:border-slate-700">
+                    <button type="submit" class="erp-btn erp-btn-primary">
+                        <x-icon name="check-circle" size="18" />
+                        <span>إصدار إذن الصرف وإرساله لحظياً لأمين الخزنة</span>
+                    </button>
+                </div>
+            </form>
+        </div>
     </div>
 </div>
 @endsection

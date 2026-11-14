@@ -564,5 +564,8 @@ class DatabaseSeeder extends Seeder
                 'closed_by' => $admin->id,
             ]
         );
+
+        // 13. Diet Schedules & Ministerial Matrices
+        $this->call(DietScheduleSeeder::class);
     }
 }

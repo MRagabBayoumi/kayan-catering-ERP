@@ -46,13 +46,14 @@
 
 .erp-table th {
     background-color: var(--bg-surface-alt);
-    color: var(--text-muted);
+    color: var(--text-secondary);
     font-weight: 700;
     font-size: var(--density-font-size-sm);
     padding: var(--density-table-py) var(--density-table-px);
     border-bottom: 1px solid var(--border-color);
     white-space: nowrap;
     user-select: none;
+    letter-spacing: 0.2px;
 }
 
 .erp-table td {

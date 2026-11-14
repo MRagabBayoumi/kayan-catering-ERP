@@ -154,6 +154,7 @@
                             <th>الكمية المتبقية</th>
                             <th>تاريخ الاستلام</th>
                             <th>الصلاحية وFEFO</th>
+                            <th class="text-center">طباعة الباركود</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -210,10 +211,24 @@
                                         <span class="erp-badge erp-badge-neutral text-xs">بدون تاريخ</span>
                                     @endif
                                 </td>
+                                <td class="text-center">
+                                    <div class="flex items-center justify-center gap-1.5">
+                                        <a href="{{ route('warehouse.batches.print-label', $b->id) }}" target="_blank" class="erp-btn erp-btn-secondary text-[11px] px-2 py-1" title="طباعة ملصق حراري لباركود وبيانات التشغيلة">
+                                            <x-icon name="printer" size="13" class="text-blue-600" />
+                                            <span>ملصق التشغيلة</span>
+                                        </a>
+                                        @if($b->product)
+                                            <a href="{{ route('products.print-label', $b->product->id) }}" target="_blank" class="erp-btn erp-btn-secondary text-[11px] px-2 py-1" title="طباعة باركود الصنف">
+                                                <x-icon name="barcode" size="13" class="text-slate-600" />
+                                                <span>باركود الصنف</span>
+                                            </a>
+                                        @endif
+                                    </div>
+                                </td>
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="7" class="text-center py-8 text-[var(--text-muted)] text-xs">
+                                <td colspan="8" class="text-center py-8 text-[var(--text-muted)] text-xs">
                                     لا توجد تشغيلات مسجلة حالياً
                                 </td>
                             </tr>

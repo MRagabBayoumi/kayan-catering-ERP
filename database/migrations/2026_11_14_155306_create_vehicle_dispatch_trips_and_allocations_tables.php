@@ -18,7 +18,7 @@ return new class extends Migration
             $table->decimal('fuel_expense', 10, 2)->default(0.00); // تفويل بنزين / سولار
             $table->decimal('toll_and_other_expense', 10, 2)->default(0.00); // كارتة، بوابات، زيت...
             $table->decimal('total_trip_expense', 10, 2)->default(0.00); // إجمالي المصروف
-            $table->foreignId('petty_cash_transaction_id')->nullable()->constrained('petty_cash_transactions')->nullOnDelete(); // الربط بتصفية العهدة
+            $table->foreignId('financial_voucher_id')->nullable()->constrained('financial_vouchers')->nullOnDelete(); // الربط بسند الصرف المالي
             $table->foreignId('created_by')->constrained('users');
             $table->text('notes')->nullable();
             $table->timestamps();

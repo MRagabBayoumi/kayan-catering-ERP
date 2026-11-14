@@ -5,14 +5,19 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\BlindAuditController;
 use App\Http\Controllers\CompanySettingController;
 use App\Http\Controllers\CostingController;
+use App\Http\Controllers\CostingReconciliationController;
 use App\Http\Controllers\DriverSettlementController;
 use App\Http\Controllers\FinanceController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\HospitalController;
 use App\Http\Controllers\ProcurementController;
+use App\Http\Controllers\ProductPrintController;
 use App\Http\Controllers\RoleController;
+use App\Http\Controllers\SiteDailyCensusController;
+use App\Http\Controllers\SiteKitchenIssueController;
 use App\Http\Controllers\TenderController;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\VehicleDispatchTripController;
 use App\Http\Controllers\WarehouseController;
 use App\Models\DispatchOrder;
 use App\Models\Hospital;
@@ -30,8 +35,12 @@ Route::middleware('guest')->group(function () {
 Route::middleware('auth')->group(function () {
     Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
-    // Dashboard
-    Route::get('/', function () {
+    // Odoo Apps Hub (Default Landing Page)
+    Route::get('/', [HomeController::class, 'home'])->name('home');
+    Route::get('/home', [HomeController::class, 'home']);
+
+    // KPI & Operational Dashboard
+    Route::get('/dashboard', function () {
         $today = Carbon::today();
 
         $stats = [
@@ -52,8 +61,6 @@ Route::middleware('auth')->group(function () {
         return view('dashboard', $stats);
     })->name('dashboard');
 
-    Route::get('/home', [HomeController::class, 'home'])->name('home');
-
     // AI Copilot Query Endpoint
     Route::post('/ai/ask', [AiCopilotController::class, 'ask'])->name('ai.ask');
 
@@ -63,6 +70,7 @@ Route::middleware('auth')->group(function () {
         Route::get('/expiry', [WarehouseController::class, 'expiry'])->name('expiry');
         Route::get('/expiry/suggest/{batch}', [WarehouseController::class, 'suggestBatchConsumption'])->name('expiry.suggest');
         Route::get('/recipes/{recipe}/bom', [WarehouseController::class, 'calculateRecipeBom'])->name('recipes.bom');
+        Route::get('/batches/{batch}/print-label', [ProductPrintController::class, 'printBatchLabel'])->name('batches.print-label');
         Route::post('/sync-barcodes', [WarehouseController::class, 'syncBarcodes'])->name('sync-barcodes');
 
         // Dispatches to Driver Vans
@@ -80,7 +88,15 @@ Route::middleware('auth')->group(function () {
         Route::get('/settlements', [DriverSettlementController::class, 'index'])->name('settlements.index');
         Route::get('/settlements/create', [DriverSettlementController::class, 'create'])->name('settlements.create');
         Route::post('/settlements', [DriverSettlementController::class, 'store'])->name('settlements.store');
+
+        // Vehicle Trips & Fuel Expense Allocation
+        Route::get('/trips', [VehicleDispatchTripController::class, 'index'])->name('trips.index');
+        Route::get('/trips/create', [VehicleDispatchTripController::class, 'create'])->name('trips.create');
+        Route::post('/trips', [VehicleDispatchTripController::class, 'store'])->name('trips.store');
     });
+
+    // Product Barcode Label Printing
+    Route::get('/products/{product}/print-label', [ProductPrintController::class, 'printProductLabel'])->name('products.print-label');
 
     // 2. Costing Department Routes (المقننات والتكاليف)
     Route::prefix('costing')->name('costing.')->group(function () {
@@ -94,6 +110,16 @@ Route::middleware('auth')->group(function () {
         Route::get('/consumption', [CostingController::class, 'consumptionIndex'])->name('consumption.index');
         Route::post('/consumption', [CostingController::class, 'storeConsumption'])->name('consumption.store');
         Route::get('/variance', [CostingController::class, 'consumptionIndex'])->name('variance');
+        Route::get('/reconciliation', [CostingReconciliationController::class, 'index'])->name('reconciliation.index');
+    });
+
+    // Site Operations Routes (مدير الموقع والمخزن الفرعي)
+    Route::prefix('site')->name('site.')->group(function () {
+        Route::get('/census', [SiteDailyCensusController::class, 'index'])->name('census.index');
+        Route::post('/census', [SiteDailyCensusController::class, 'store'])->name('census.store');
+
+        Route::get('/kitchen-issues', [SiteKitchenIssueController::class, 'index'])->name('kitchen-issues.index');
+        Route::post('/kitchen-issues', [SiteKitchenIssueController::class, 'store'])->name('kitchen-issues.store');
     });
 
     // 3. Sales & Tenders Department Routes (المبيعات والمناقصات)

@@ -22,13 +22,18 @@ class DashboardAndAiViewTest extends TestCase
             'is_active' => true,
         ]);
 
-        $response = $this->actingAs($user)->get('/');
+        $response = $this->actingAs($user)->get('/dashboard');
 
         $response->assertStatus(200);
         $response->assertSee('منظومة كيان لإعاشة وتغذية المستشفيات');
         $response->assertSee('Kayan AI Copilot');
         $response->assertSee('erp-sidebar-footer');
         $response->assertDontSee('ai-launcher-btn');
+
+        // Verify Home (Odoo Apps Hub) renders as primary root launcher
+        $homeResponse = $this->actingAs($user)->get('/');
+        $homeResponse->assertStatus(200);
+        $homeResponse->assertSee('تطبيقات المنظومة');
     }
 
     public function test_ai_copilot_endpoint_returns_json_response(): void

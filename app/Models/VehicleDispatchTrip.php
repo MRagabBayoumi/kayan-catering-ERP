@@ -19,7 +19,7 @@ class VehicleDispatchTrip extends Model
         'fuel_expense',
         'toll_and_other_expense',
         'total_trip_expense',
-        'petty_cash_transaction_id',
+        'financial_voucher_id',
         'created_by',
         'notes',
     ];
@@ -44,9 +44,9 @@ class VehicleDispatchTrip extends Model
         return $this->belongsTo(User::class, 'created_by');
     }
 
-    public function pettyCashTransaction(): BelongsTo
+    public function financialVoucher(): BelongsTo
     {
-        return $this->belongsTo(PettyCashTransaction::class);
+        return $this->belongsTo(FinancialVoucher::class);
     }
 
     public function destinations(): HasMany

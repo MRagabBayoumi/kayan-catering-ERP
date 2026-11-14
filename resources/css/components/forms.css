@@ -42,17 +42,27 @@
 
 .erp-input,
 .erp-select,
-.erp-textarea {
+.erp-textarea,
+.erp-form-control {
     width: 100%;
-    height: 38px;
+    height: 40px;
     background-color: var(--bg-surface);
     border: 1px solid var(--border-color);
     border-radius: var(--border-radius-sm);
-    padding: 0 12px;
-    font-size: 14px;
+    padding: 0 14px;
+    font-size: 13.5px;
     color: var(--text-main);
     outline: none;
     transition: all 0.15s ease;
+    box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.04);
+}
+
+.erp-input::placeholder,
+.erp-select::placeholder,
+.erp-textarea::placeholder,
+.erp-form-control::placeholder {
+    color: var(--text-light);
+    opacity: 1;
 }
 
 /* Inputs with search icon and camera button */
@@ -61,13 +71,17 @@
     padding-left: 38px !important;
 }
 
+textarea.erp-input,
+textarea.erp-form-control,
 .erp-textarea {
     height: auto;
-    min-height: 80px;
-    padding: 8px 12px;
+    min-height: 84px;
+    padding: 10px 14px;
+    line-height: 1.5;
 }
 
 select.erp-input,
+select.erp-form-control,
 .erp-select {
     appearance: none;
     -webkit-appearance: none;
@@ -76,23 +90,27 @@ select.erp-input,
     background-position: left 12px center;
     background-size: 14px;
     padding-left: 36px;
-    padding-right: 12px;
+    padding-right: 14px;
     cursor: pointer;
 }
 
 .erp-input:focus,
 .erp-select:focus,
-.erp-textarea:focus {
+.erp-textarea:focus,
+.erp-form-control:focus {
     border-color: var(--primary);
     box-shadow: 0 0 0 3px var(--primary-soft);
+    background-color: var(--bg-surface);
 }
 
 .erp-input.is-invalid,
 .erp-select.is-invalid,
 .erp-textarea.is-invalid,
+.erp-form-control.is-invalid,
 .erp-input.erp-input-error,
 .erp-select.erp-input-error,
-.erp-textarea.erp-input-error {
+.erp-textarea.erp-input-error,
+.erp-form-control.erp-input-error {
     border-color: var(--danger);
     background-color: var(--danger-soft);
 }

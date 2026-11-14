@@ -24,7 +24,7 @@ class AuthController extends Controller
                 return redirect()->route('portal.index');
             }
 
-            return redirect()->intended(route('dashboard'));
+            return redirect()->intended(route('home'));
         }
 
         return view('auth.login', [
@@ -103,7 +103,7 @@ class AuthController extends Controller
                 ->with('message', 'مرحباً بك مجدداً، '.Auth::user()->name);
         }
 
-        return redirect()->intended(route('dashboard'))
+        return redirect()->intended(route('home'))
             ->with('status', 'success')
             ->with('message', 'مرحباً بك مجدداً، '.Auth::user()->name);
     }

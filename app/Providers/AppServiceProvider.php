@@ -115,5 +115,14 @@ class AppServiceProvider extends ServiceProvider
         Gate::define('review-blind-audit', function (User $user) {
             return in_array($user->role, [User::ROLE_ADMIN, User::ROLE_ACCOUNTANT]);
         });
+
+        // 7. Site Operations & Vehicle Trips Gates
+        Gate::define('manage-site-operations', function (User $user) {
+            return in_array($user->role, [User::ROLE_ADMIN, User::ROLE_SITE_MANAGER, User::ROLE_COSTING_MANAGER]);
+        });
+
+        Gate::define('manage-vehicle-trips', function (User $user) {
+            return in_array($user->role, [User::ROLE_ADMIN, User::ROLE_STORE_MANAGER, User::ROLE_STOREKEEPER, User::ROLE_ACCOUNTANT]);
+        });
     }
 }

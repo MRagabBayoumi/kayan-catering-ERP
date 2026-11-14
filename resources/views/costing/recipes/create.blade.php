@@ -54,35 +54,43 @@
             </div>
 
             <div class="border-t border-slate-200 dark:border-slate-700 pt-4">
-                <h3 class="text-sm font-bold text-slate-700 dark:text-slate-200 mb-3">الخامات المكونة للوجبة (المقنن بالجرامات/الكيلو)</h3>
+                <div class="flex items-center justify-between mb-3">
+                    <h3 class="text-sm font-bold text-slate-700 dark:text-slate-200">الخامات المكونة للوجبة (المقنن بالجرامات/الكيلو)</h3>
+                    <span class="erp-badge erp-badge-info text-xs">
+                        <x-icon name="shopping-bag" size="13" />
+                        <span>أسعار الخامات معتمدة وتحدث آلياً من إدارة المشتريات والتوريدات</span>
+                    </span>
+                </div>
 
                 <div class="space-y-3">
-                    @for($i = 0; $i < 3; $i++)
-                        <div class="grid grid-cols-1 md:grid-cols-4 gap-3 p-3 bg-slate-50 dark:bg-slate-800/50 rounded-lg border border-slate-200 dark:border-slate-700">
+                    @for($i = 0; $i < 4; $i++)
+                        <div class="recipe-ingredient-row grid grid-cols-1 md:grid-cols-4 gap-3 p-3 bg-slate-50 dark:bg-slate-800/50 rounded-lg border border-slate-200 dark:border-slate-700">
                             <div>
                                 <label class="erp-form-label text-xs">الصنف الخام</label>
-                                <select name="ingredients[{{ $i }}][product_id]" class="erp-form-control" {{ $i === 0 ? 'required' : '' }}>
+                                <select name="ingredients[{{ $i }}][product_id]" class="erp-form-control recipe-product-select" {{ $i === 0 ? 'required' : '' }}>
                                     <option value="">-- اختر الصنف --</option>
                                     @foreach($products as $prod)
-                                        <option value="{{ $prod->id }}">{{ $prod->name }}</option>
+                                        <option value="{{ $prod->id }}" data-cost="{{ $prod->cost_price }}" data-unit="{{ $prod->unit }}">
+                                            {{ $prod->name }} ({{ number_format($prod->cost_price, 2) }} ج.م - مشتريات)
+                                        </option>
                                     @endforeach
                                 </select>
                             </div>
                             <div>
                                 <label class="erp-form-label text-xs">الوزن الخام للوجبة</label>
-                                <input type="number" step="0.001" name="ingredients[{{ $i }}][raw_quantity_per_meal]" class="erp-form-control" placeholder="مثلاً: 0.150" {{ $i === 0 ? 'required' : '' }}>
+                                <input type="number" step="0.001" name="ingredients[{{ $i }}][raw_quantity_per_meal]" class="erp-form-control font-mono font-bold" placeholder="مثلاً: 0.150" {{ $i === 0 ? 'required' : '' }}>
                             </div>
                             <div>
                                 <label class="erp-form-label text-xs">الوحدة</label>
-                                <select name="ingredients[{{ $i }}][unit]" class="erp-form-control">
+                                <select name="ingredients[{{ $i }}][unit]" class="erp-form-control recipe-unit-select">
                                     <option value="kg">كيلوجرام (kg)</option>
                                     <option value="gm">جرام (gm)</option>
                                     <option value="pcs">قطعة (pcs)</option>
                                 </select>
                             </div>
                             <div>
-                                <label class="erp-form-label text-xs">سعر التكلفة التقديري للوحدة</label>
-                                <input type="number" step="0.01" name="ingredients[{{ $i }}][standard_unit_cost]" class="erp-form-control" placeholder="مثلاً: 380">
+                                <label class="erp-form-label text-xs">سعر التكلفة (إدارة المشتريات)</label>
+                                <input type="number" step="0.01" name="ingredients[{{ $i }}][standard_unit_cost]" class="erp-form-control recipe-cost-input font-mono font-bold bg-slate-100 dark:bg-slate-800 text-emerald-600 dark:text-emerald-400" placeholder="آلي من المشتريات" readonly>
                             </div>
                         </div>
                     @endfor
