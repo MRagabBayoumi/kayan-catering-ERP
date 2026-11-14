@@ -48,6 +48,100 @@ class CompanySetting extends Model
         return (bool) ($this->settings['maintenance_mode'] ?? false);
     }
 
+    public function getCompanyPhoneAttribute(): ?string
+    {
+        return $this->phone;
+    }
+
+    public function setCompanyPhoneAttribute(?string $value): void
+    {
+        $this->attributes['phone'] = $value;
+    }
+
+    public function getProgramStatusAttribute(): string
+    {
+        return $this->isMaintenance() ? 'maintenance' : 'active';
+    }
+
+    public function setProgramStatusAttribute(string $value): void
+    {
+        $current = $this->settings ?? [];
+        $current['maintenance_mode'] = ($value === 'maintenance');
+        $this->settings = $current;
+    }
+
+    public function getTelegramEnabledAttribute(): bool
+    {
+        return (bool) ($this->settings['telegram_enabled'] ?? false);
+    }
+
+    public function setTelegramEnabledAttribute(bool $value): void
+    {
+        $current = $this->settings ?? [];
+        $current['telegram_enabled'] = $value;
+        $this->settings = $current;
+    }
+
+    public function getTelegramBotTokenAttribute(): ?string
+    {
+        return $this->settings['telegram_bot_token'] ?? null;
+    }
+
+    public function setTelegramBotTokenAttribute(?string $value): void
+    {
+        $current = $this->settings ?? [];
+        $current['telegram_bot_token'] = $value;
+        $this->settings = $current;
+    }
+
+    public function getTelegramChatIdAttribute(): ?string
+    {
+        return $this->settings['telegram_chat_id'] ?? null;
+    }
+
+    public function setTelegramChatIdAttribute(?string $value): void
+    {
+        $current = $this->settings ?? [];
+        $current['telegram_chat_id'] = $value;
+        $this->settings = $current;
+    }
+
+    public function getTelegramNotifyShiftCloseAttribute(): bool
+    {
+        return (bool) ($this->settings['telegram_notify_shift_close'] ?? true);
+    }
+
+    public function setTelegramNotifyShiftCloseAttribute(bool $value): void
+    {
+        $current = $this->settings ?? [];
+        $current['telegram_notify_shift_close'] = $value;
+        $this->settings = $current;
+    }
+
+    public function getTelegramNotifyLowStockAttribute(): bool
+    {
+        return (bool) ($this->settings['telegram_notify_low_stock'] ?? true);
+    }
+
+    public function setTelegramNotifyLowStockAttribute(bool $value): void
+    {
+        $current = $this->settings ?? [];
+        $current['telegram_notify_low_stock'] = $value;
+        $this->settings = $current;
+    }
+
+    public function getTelegramNotifySalesAttribute(): bool
+    {
+        return (bool) ($this->settings['telegram_notify_sales'] ?? false);
+    }
+
+    public function setTelegramNotifySalesAttribute(bool $value): void
+    {
+        $current = $this->settings ?? [];
+        $current['telegram_notify_sales'] = $value;
+        $this->settings = $current;
+    }
+
     public function getLogoUrlAttribute(): ?string
     {
         if (! $this->logo_path) {

@@ -129,7 +129,9 @@ Route::middleware('auth')->group(function () {
 
     // 6. Settings & Permissions (إعدادات النظام والمستخدمين والصلاحيات)
     Route::get('/settings', [CompanySettingController::class, 'index'])->name('settings.index');
-    Route::post('/settings', [CompanySettingController::class, 'update'])->name('settings.update');
+    Route::match(['post', 'put'], '/settings', [CompanySettingController::class, 'update'])->name('settings.update');
+    Route::match(['post', 'put'], '/settings/barcode', [CompanySettingController::class, 'updateBarcode'])->name('settings.barcode.update');
+    Route::match(['post', 'put'], '/settings/printers', [CompanySettingController::class, 'updatePrinters'])->name('settings.printers.update');
 
     Route::resource('users', UserController::class);
 

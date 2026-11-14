@@ -73,12 +73,12 @@
 
 .ai-chat-drawer {
     position: fixed;
-    bottom: 80px;
+    bottom: 24px;
     left: 24px;
     width: 440px;
     max-width: calc(100vw - 32px);
     height: 580px;
-    max-height: calc(100vh - 120px);
+    max-height: calc(100vh - 48px);
     background: #ffffff;
     border-radius: 16px;
     box-shadow: 0 20px 40px rgba(0, 0, 0, 0.25);
@@ -295,25 +295,13 @@
         left: 16px;
     }
 
-    .ai-launcher-btn {
-        width: 44px;
-        height: 44px;
-        padding: 0;
-        justify-content: center;
-        border-radius: 50%;
-    }
-
-    .ai-launcher-btn .ai-btn-label {
-        display: none;
-    }
-
     .ai-chat-drawer {
-        bottom: calc(124px + env(safe-area-inset-bottom, 0px));
+        bottom: calc(72px + env(safe-area-inset-bottom, 0px));
         left: 12px;
         right: 12px;
         width: calc(100vw - 24px);
         max-width: 100%;
-        height: calc(100vh - 160px);
+        height: calc(100vh - 100px);
         border-radius: 14px;
     }
 }

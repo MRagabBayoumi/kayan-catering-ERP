@@ -28,7 +28,7 @@ class DashboardAndAiViewTest extends TestCase
         $response->assertSee('منظومة كيان لإعاشة وتغذية المستشفيات');
         $response->assertSee('Kayan AI Copilot');
         $response->assertSee('erp-sidebar-footer');
-        $response->assertSee('ai-launcher-btn');
+        $response->assertDontSee('ai-launcher-btn');
     }
 
     public function test_ai_copilot_endpoint_returns_json_response(): void
@@ -78,5 +78,19 @@ class DashboardAndAiViewTest extends TestCase
         $warehouseResponse->assertSee('أذون التحميل والصرف (السيارات)');
         $warehouseResponse->assertSee('الجرد الأعمى (Blind Audit)');
         $warehouseResponse->assertSee('تسويات رحلات المناديب ومخرجات الـ ERP');
+    }
+
+    public function test_settings_can_be_updated_via_put_request(): void
+    {
+        $user = User::factory()->create(['role' => User::ROLE_ADMIN]);
+
+        $response = $this->actingAs($user)->put('/settings', [
+            'company_name' => 'شركة كيان لإعاشة المستشفيات',
+            'company_phone' => '01000000000',
+            'program_status' => 'active',
+        ]);
+
+        $response->assertStatus(302);
+        $response->assertSessionHas('status', 'success');
     }
 }

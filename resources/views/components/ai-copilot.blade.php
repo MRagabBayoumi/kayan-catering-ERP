@@ -1,14 +1,5 @@
-<!-- Kayan Catering AI Copilot Floating Widget -->
+<!-- Kayan Catering AI Copilot Widget -->
 <div id="aiCopilotWidget" class="ai-copilot-container" dir="rtl">
-    <!-- Floating Launcher Trigger Button -->
-    <button id="aiLauncherBtn" class="ai-launcher-btn" type="button" title="مساعد كيان الذكي (AI Copilot)">
-        <span class="ai-btn-icon">
-            <x-icon name="sparkles" size="18" />
-        </span>
-        <span class="ai-btn-label">مساعد كيان الذكي</span>
-        <span class="ai-pulse-dot"></span>
-    </button>
-
     <!-- Slide-over AI Chat Panel -->
     <div id="aiChatDrawer" class="ai-chat-drawer hidden">
         <!-- Drawer Header -->
