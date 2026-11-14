@@ -56,6 +56,51 @@
     @endphp
     <x-module-nav :tabs="$salesTabs" />
 
+    <!-- Fast Status KPI Ribbon (Sales & Hospitals Overview) -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3.5">
+        <div class="kpi-card">
+            <div class="kpi-header mb-1">
+                <span class="kpi-label">المستشفيات والجهات المتعاقدة</span>
+                <span class="kpi-icon text-cyan-600 bg-cyan-50 dark:bg-cyan-950/40"><x-icon name="building-2" size="18" /></span>
+            </div>
+            <div class="kpi-value font-numeric text-2xl font-black text-[var(--text-main)]">{{ $hospitals->total() }}</div>
+            <div class="kpi-note font-numeric text-xs text-[var(--text-muted)]">عقود توريد أغذية معتمدة</div>
+        </div>
+
+        <div class="kpi-card">
+            <div class="kpi-header mb-1">
+                <span class="kpi-label">الطاقة الاستيعابية اليومية</span>
+                <span class="kpi-icon text-emerald-600 bg-emerald-50 dark:bg-emerald-950/40"><x-icon name="users" size="18" /></span>
+            </div>
+            <div class="kpi-value font-numeric text-2xl font-black text-[var(--text-main)]">
+                {{ number_format($hospitals->sum('daily_patient_capacity')) }} <span class="text-xs font-normal text-[var(--text-muted)]">نزيل/يوم</span>
+            </div>
+            <div class="kpi-note font-numeric text-xs text-[var(--text-muted)]">إجمالي وجبات المرضى اليومية</div>
+        </div>
+
+        <div class="kpi-card">
+            <div class="kpi-header mb-1">
+                <span class="kpi-label">المستشفيات النشطة حالياً</span>
+                <span class="kpi-icon text-indigo-600 bg-indigo-50 dark:bg-indigo-950/40"><x-icon name="check-circle" size="18" /></span>
+            </div>
+            <div class="kpi-value font-numeric text-2xl font-black text-[var(--text-main)]">
+                {{ $hospitals->where('is_active', true)->count() }}
+            </div>
+            <div class="kpi-note font-numeric text-xs text-[var(--text-muted)]">مواقع توريد جارية ومنتظمة</div>
+        </div>
+
+        <div class="kpi-card">
+            <div class="kpi-header mb-1">
+                <span class="kpi-label">المستودعات الفرعية المربوطة</span>
+                <span class="kpi-icon text-amber-600 bg-amber-50 dark:bg-amber-950/40"><x-icon name="warehouse" size="18" /></span>
+            </div>
+            <div class="kpi-value font-numeric text-2xl font-black text-[var(--text-main)]">
+                {{ $hospitals->whereNotNull('site_warehouse_id')->count() }}
+            </div>
+            <div class="kpi-note font-numeric text-xs text-[var(--text-muted)]">مخازن فرعية داخل مواقع المستشفيات</div>
+        </div>
+    </div>
+
     @if(session('success'))
         <div class="erp-alert erp-alert-success">
             <x-icon name="check" size="16" />

@@ -32,6 +32,51 @@
 <div class="space-y-5" dir="rtl">
     <x-finance-nav />
 
+    <!-- Fast Status KPI Ribbon (Finance & Suppliers Overview) -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3.5">
+        <div class="kpi-card">
+            <div class="kpi-header mb-1">
+                <span class="kpi-label">إجمالي الموردين المعتمدين</span>
+                <span class="kpi-icon text-purple-600 bg-purple-50 dark:bg-purple-950/40"><x-icon name="truck" size="18" /></span>
+            </div>
+            <div class="kpi-value font-numeric text-2xl font-black text-[var(--text-main)]">{{ $suppliers->total() }}</div>
+            <div class="kpi-note font-numeric text-xs text-[var(--text-muted)]">موردي اللحوم والدواجن والأغذية</div>
+        </div>
+
+        <div class="kpi-card">
+            <div class="kpi-header mb-1">
+                <span class="kpi-label">إجمالي أرصدة الموردين</span>
+                <span class="kpi-icon text-rose-600 bg-rose-50 dark:bg-rose-950/40"><x-icon name="wallet" size="18" /></span>
+            </div>
+            <div class="kpi-value font-numeric text-2xl font-black text-[var(--text-main)]">
+                {{ number_format((float) $suppliers->sum('current_balance'), 2) }} <span class="text-xs font-normal text-[var(--text-muted)]">ج.م</span>
+            </div>
+            <div class="kpi-note font-numeric text-xs text-[var(--text-muted)]">مستحقات آجلة قيد الجدولة والسداد</div>
+        </div>
+
+        <div class="kpi-card">
+            <div class="kpi-header mb-1">
+                <span class="kpi-label">موردين عليهم مستحقات</span>
+                <span class="kpi-icon text-amber-600 bg-amber-50 dark:bg-amber-950/40"><x-icon name="credit-card" size="18" /></span>
+            </div>
+            <div class="kpi-value font-numeric text-2xl font-black text-[var(--text-main)]">
+                {{ $suppliers->where('current_balance', '>', 0)->count() }}
+            </div>
+            <div class="kpi-note font-numeric text-xs text-[var(--text-muted)]">موردين بأرصدة دائنة نشطة</div>
+        </div>
+
+        <div class="kpi-card">
+            <div class="kpi-header mb-1">
+                <span class="kpi-label">جدولة السداد المعلقة</span>
+                <span class="kpi-icon text-blue-600 bg-blue-50 dark:bg-blue-950/40"><x-icon name="calendar" size="18" /></span>
+            </div>
+            <div class="kpi-value font-numeric text-2xl font-black text-[var(--text-main)]">
+                {{ $suppliers->sum(fn ($s) => $s->paymentSchedules?->where('status', 'pending')->count() ?? 0) }}
+            </div>
+            <div class="kpi-note font-numeric text-xs text-[var(--text-muted)]">دفعات مجدولة بانتظار الإذن والصرف</div>
+        </div>
+    </div>
+
     @if(session('success'))
         <div class="erp-alert erp-alert-success">
             <x-icon name="check" size="16" />

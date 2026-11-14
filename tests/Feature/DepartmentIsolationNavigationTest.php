@@ -35,6 +35,8 @@ class DepartmentIsolationNavigationTest extends TestCase
         $response->assertSee('العودة لكل التطبيقات');
 
         // Subsections inside Warehouse
+        $response->assertSee('نظرة عامة');
+        $response->assertSee('نظرة عامة على المخازن');
         $response->assertSee('حركة المخزون والتشغيلات');
         $response->assertSee('تشغيلات الشراء (Batches FIFO)');
         $response->assertSee('الصلاحيات وتنبيهات FEFO');
@@ -63,6 +65,8 @@ class DepartmentIsolationNavigationTest extends TestCase
         $response->assertSee('العودة لكل التطبيقات');
 
         // Subsections inside Costing
+        $response->assertSee('نظرة عامة');
+        $response->assertSee('نظرة عامة على التكاليف');
         $response->assertSee('المقننات والطلبيات القياسية');
         $response->assertSee('المقننات القياسية للوجبات (BOM)');
         $response->assertSee('حساب طلبيات المطبخ (المقنن)');
@@ -88,6 +92,8 @@ class DepartmentIsolationNavigationTest extends TestCase
         $response->assertSee('العودة لكل التطبيقات');
 
         // Subsections inside Finance
+        $response->assertSee('نظرة عامة');
+        $response->assertSee('نظرة عامة على المالية');
         $response->assertSee('الموردين والمديونيات');
         $response->assertSee('الخزينة والعهد النقدية');
         $response->assertSee('الحسابات العامة والتقفيل');

@@ -48,23 +48,12 @@
 @endphp
 
 <aside id="erpSidebar" class="erp-sidebar" dir="rtl">
-    <!-- Company Box -->
+    <!-- Sidebar Header: Back to Apps Hub + Collapse Toggle -->
     <div class="erp-sidebar-header">
-        <div class="erp-company-card">
-            @if(!empty($globalCompanySetting?->logo_url))
-                <img src="{{ $globalCompanySetting->logo_url }}" alt="{{ $globalCompanySetting?->company_name }}" class="erp-company-logo erp-company-logo-img">
-            @else
-                <div class="erp-company-logo">KC</div>
-            @endif
-            <div class="erp-company-info">
-                <div class="erp-company-name" title="{{ $globalCompanySetting?->company_name_ar ?? 'كيان للكيترينج والتغذية' }}">
-                    {{ $globalCompanySetting?->company_name_ar ?? 'كيان للكيترينج والتغذية' }}
-                </div>
-                <div class="erp-company-sub">
-                    <span>توريد الأغذية وإعاشة المستشفيات</span>
-                </div>
-            </div>
-        </div>
+        <a href="{{ route('home') }}" class="erp-sidebar-home-btn" title="العودة لشاشة التطبيقات الرئيسية (Home)">
+            <x-icon name="arrow-right" size="14" />
+            <span>العودة لكل التطبيقات</span>
+        </a>
         <button id="sidebarDesktopToggle" class="erp-sidebar-toggle-btn" type="button" title="طي / توسيع القائمة" aria-label="طي أو توسيع القائمة الجانبية">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
                 <polyline points="15 18 9 12 15 6"></polyline>
@@ -72,12 +61,8 @@
         </button>
     </div>
 
-    <!-- Active Module Banner & Return to Home Button (Odoo Architecture) -->
+    <!-- Active Module Identity Banner -->
     <div class="erp-sidebar-module-banner">
-        <a href="{{ route('home') }}" class="erp-sidebar-home-btn" title="العودة لشاشة التطبيقات الرئيسية (Home)">
-            <x-icon name="arrow-right" size="14" />
-            <span>العودة لكل التطبيقات</span>
-        </a>
         <div class="erp-sidebar-module-info">
             <span class="erp-sidebar-module-icon {{ $moduleColorClass }}">
                 <x-icon :name="$moduleIcon" size="18" />
@@ -92,6 +77,19 @@
         {{-- 1. WAREHOUSE MODULE SUB-SECTIONS --}}
         @if($currentModule === 'warehouse')
             @can('manage-warehouse')
+            <!-- نظرة عامة على القسم -->
+            <div class="erp-nav-section is-open" data-section="warehouse-overview">
+                <div class="erp-nav-section-title">نظرة عامة</div>
+                <div class="erp-nav-section-items">
+                    <a href="{{ route('warehouse.index') }}" class="erp-nav-item {{ request()->routeIs('warehouse.index') ? 'active' : '' }}" title="نظرة عامة على حركة وتشغيلات المخازن">
+                        <div class="erp-nav-content">
+                            <span class="erp-nav-icon"><x-icon name="layout-dashboard" size="18" /></span>
+                            <span class="erp-nav-label">نظرة عامة على المخازن</span>
+                        </div>
+                    </a>
+                </div>
+            </div>
+
             <!-- القسم الفرعي 1: حركة المخزون والتشغيلات -->
             <div class="erp-nav-section is-open" data-section="warehouse-stock">
                 <div class="erp-nav-section-title">حركة المخزون والتشغيلات</div>
@@ -149,6 +147,19 @@
         {{-- 2. COSTING MODULE SUB-SECTIONS --}}
         @if($currentModule === 'costing')
             @can('manage-costing')
+            <!-- نظرة عامة على القسم -->
+            <div class="erp-nav-section is-open" data-section="costing-overview">
+                <div class="erp-nav-section-title">نظرة عامة</div>
+                <div class="erp-nav-section-items">
+                    <a href="{{ route('costing.recipes.index') }}" class="erp-nav-item {{ request()->routeIs('costing.recipes.index') ? 'active' : '' }}" title="نظرة عامة على التكاليف والمقننات">
+                        <div class="erp-nav-content">
+                            <span class="erp-nav-icon"><x-icon name="layout-dashboard" size="18" /></span>
+                            <span class="erp-nav-label">نظرة عامة على التكاليف</span>
+                        </div>
+                    </a>
+                </div>
+            </div>
+
             <!-- القسم الفرعي 1: المقننات والطلبيات -->
             <div class="erp-nav-section is-open" data-section="costing-recipes">
                 <div class="erp-nav-section-title">المقننات والطلبيات القياسية</div>
@@ -192,6 +203,19 @@
         {{-- 3. SITE OPERATIONS SUB-SECTIONS --}}
         @if($currentModule === 'site')
             @can('manage-site-operations')
+            <!-- نظرة عامة على القسم -->
+            <div class="erp-nav-section is-open" data-section="site-overview">
+                <div class="erp-nav-section-title">نظرة عامة</div>
+                <div class="erp-nav-section-items">
+                    <a href="{{ route('site.census.index') }}" class="erp-nav-item {{ request()->routeIs('site.census.index') ? 'active' : '' }}" title="نظرة عامة على تشغيل الموقع">
+                        <div class="erp-nav-content">
+                            <span class="erp-nav-icon"><x-icon name="layout-dashboard" size="18" /></span>
+                            <span class="erp-nav-label">نظرة عامة على المواقع</span>
+                        </div>
+                    </a>
+                </div>
+            </div>
+
             <div class="erp-nav-section is-open" data-section="site-ops">
                 <div class="erp-nav-section-title">تشغيل المواقع والمطابخ</div>
                 <div class="erp-nav-section-items">
@@ -215,6 +239,19 @@
         {{-- 4. SALES & TENDERS SUB-SECTIONS --}}
         @if($currentModule === 'sales')
             @can('manage-sales')
+            <!-- نظرة عامة على القسم -->
+            <div class="erp-nav-section is-open" data-section="sales-overview">
+                <div class="erp-nav-section-title">نظرة عامة</div>
+                <div class="erp-nav-section-items">
+                    <a href="{{ route('sales.hospitals.index') }}" class="erp-nav-item {{ request()->routeIs('sales.hospitals.index') ? 'active' : '' }}" title="نظرة عامة على المبيعات والمستشفيات">
+                        <div class="erp-nav-content">
+                            <span class="erp-nav-icon"><x-icon name="layout-dashboard" size="18" /></span>
+                            <span class="erp-nav-label">نظرة عامة على المبيعات</span>
+                        </div>
+                    </a>
+                </div>
+            </div>
+
             <!-- القسم الفرعي 1: عقود المستشفيات -->
             <div class="erp-nav-section is-open" data-section="sales-hospitals">
                 <div class="erp-nav-section-title">عقود المستشفيات والجهات</div>
@@ -252,6 +289,19 @@
         {{-- 5. PROCUREMENT SUB-SECTIONS --}}
         @if($currentModule === 'procurement')
             @can('manage-procurement')
+            <!-- نظرة عامة على القسم -->
+            <div class="erp-nav-section is-open" data-section="procurement-overview">
+                <div class="erp-nav-section-title">نظرة عامة</div>
+                <div class="erp-nav-section-items">
+                    <a href="{{ route('procurement.orders.index') }}" class="erp-nav-item {{ request()->routeIs('procurement.orders.index') ? 'active' : '' }}" title="نظرة عامة على المشتريات والتوريدات">
+                        <div class="erp-nav-content">
+                            <span class="erp-nav-icon"><x-icon name="layout-dashboard" size="18" /></span>
+                            <span class="erp-nav-label">نظرة عامة على المشتريات</span>
+                        </div>
+                    </a>
+                </div>
+            </div>
+
             <!-- القسم الفرعي 1: أوامر التوريد والشراء -->
             <div class="erp-nav-section is-open" data-section="procurement-orders">
                 <div class="erp-nav-section-title">أوامر التوريد والشراء</div>
@@ -283,6 +333,19 @@
         {{-- 6. FINANCE & ACCOUNTS SUB-SECTIONS --}}
         @if($currentModule === 'finance')
             @can('manage-finance')
+            <!-- نظرة عامة على القسم -->
+            <div class="erp-nav-section is-open" data-section="finance-overview">
+                <div class="erp-nav-section-title">نظرة عامة</div>
+                <div class="erp-nav-section-items">
+                    <a href="{{ route('finance.suppliers.index') }}" class="erp-nav-item {{ request()->routeIs('finance.suppliers.index') ? 'active' : '' }}" title="نظرة عامة على الحسابات والمالية">
+                        <div class="erp-nav-content">
+                            <span class="erp-nav-icon"><x-icon name="layout-dashboard" size="18" /></span>
+                            <span class="erp-nav-label">نظرة عامة على المالية</span>
+                        </div>
+                    </a>
+                </div>
+            </div>
+
             <!-- القسم الفرعي 1: الخزينة والعهد النقدية -->
             <div class="erp-nav-section is-open" data-section="finance-cash">
                 <div class="erp-nav-section-title">الخزينة والعهد النقدية</div>
@@ -364,6 +427,19 @@
 
         {{-- 7. SETTINGS & USERS SUB-SECTIONS --}}
         @if($currentModule === 'settings')
+            <!-- نظرة عامة على القسم -->
+            <div class="erp-nav-section is-open" data-section="settings-overview">
+                <div class="erp-nav-section-title">نظرة عامة</div>
+                <div class="erp-nav-section-items">
+                    <a href="{{ route('settings.index') }}" class="erp-nav-item {{ request()->routeIs('settings.index') ? 'active' : '' }}" title="نظرة عامة على إعدادات المنظومة">
+                        <div class="erp-nav-content">
+                            <span class="erp-nav-icon"><x-icon name="layout-dashboard" size="18" /></span>
+                            <span class="erp-nav-label">نظرة عامة على الإعدادات</span>
+                        </div>
+                    </a>
+                </div>
+            </div>
+
             @can('manage-company-settings')
             <!-- القسم الفرعي 1: إدارة المستخدمين والدخول -->
             <div class="erp-nav-section is-open" data-section="settings-users">
@@ -385,7 +461,7 @@
             </div>
 
             <!-- القسم الفرعي 2: تهيئة النظام والشركة -->
-            <div class="erp-nav-section is-open" data-section="settings-company">
+            <div class="erp-nav-section is-open" data-section="settings-system">
                 <div class="erp-nav-section-title">تهيئة النظام والشركة</div>
                 <div class="erp-nav-section-items">
                     <a href="{{ route('settings.index') }}" class="erp-nav-item {{ request()->routeIs('settings*') ? 'active' : '' }}" title="إعدادات الشركة والنظام">

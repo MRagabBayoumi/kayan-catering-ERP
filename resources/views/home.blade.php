@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('module_name', 'الرئيسية (Odoo Apps Hub)')
+@section('module_name', 'الرئيسية')
 
 @section('content')
 <div data-page="home-apps" class="odoo-launcher-container" dir="rtl">

@@ -41,7 +41,7 @@ class HomeController extends Controller
         ];
 
         return view('home', array_merge([
-            'title' => 'تطبيقات المنظومة (Odoo Apps Hub)',
+            'title' => 'تطبيقات المنظومة',
             'user' => $user,
         ], $stats));
     }
