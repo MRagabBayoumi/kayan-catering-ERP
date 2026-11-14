@@ -26,6 +26,7 @@
     <!-- Navigation List (Collapsible Sections) -->
     <nav class="erp-sidebar-nav">
         <!-- Overview -->
+        @can('manage-dashboard')
         <div class="erp-nav-section mb-2">
             <div class="erp-nav-section-title">نظرة عامة</div>
             <div class="erp-nav-section-items">
@@ -37,8 +38,10 @@
                 </a>
             </div>
         </div>
+        @endcan
 
         <!-- 1. Warehouse Department (إدارة المخازن والـ FIFO) -->
+        @can('manage-warehouse')
         <div class="erp-nav-section is-open" data-section="warehouse">
             <button type="button" class="erp-nav-section-header" aria-expanded="true">
                 <span class="erp-nav-section-title">إدارة المخازن والتشغيلات (FIFO)</span>
@@ -53,6 +56,12 @@
                         <span class="erp-nav-label">تشغيلات الشراء (Batches FIFO)</span>
                     </div>
                 </a>
+                <a href="{{ route('warehouse.expiry') }}" class="erp-nav-item {{ request()->routeIs('warehouse.expiry*') ? 'active' : '' }}" title="محرك الصلاحيات وتنبيهات FEFO الذكية">
+                    <div class="erp-nav-content">
+                        <span class="erp-nav-icon"><x-icon name="alert-triangle" size="18" /></span>
+                        <span class="erp-nav-label">الصلاحيات وتنبيهات FEFO</span>
+                    </div>
+                </a>
                 <a href="{{ route('warehouse.dispatches') }}" class="erp-nav-item {{ request()->routeIs('warehouse.dispatches*') ? 'active' : '' }}" title="أذون التحميل والصرف لسيارات المناديب">
                     <div class="erp-nav-content">
                         <span class="erp-nav-icon"><x-icon name="truck" size="18" /></span>
@@ -65,16 +74,20 @@
                         <span class="erp-nav-label">الجرد اليومي الأعمى (Blind Audit)</span>
                     </div>
                 </a>
+                @can('manage-settlements')
                 <a href="{{ route('warehouse.settlements.index') }}" class="erp-nav-item {{ request()->routeIs('warehouse.settlements*') ? 'active' : '' }}" title="تسوية عهدة السائق ومخرجات الـ ERP">
                     <div class="erp-nav-content">
                         <span class="erp-nav-icon"><x-icon name="receipt" size="18" /></span>
                         <span class="erp-nav-label">تسوية عهد المناديب (محاسب المخزن)</span>
                     </div>
                 </a>
+                @endcan
             </div>
         </div>
+        @endcan
 
         <!-- 2. Costing Department (إدارة التكاليف والمقننات) -->
+        @can('manage-costing')
         <div class="erp-nav-section is-open" data-section="costing">
             <button type="button" class="erp-nav-section-header" aria-expanded="true">
                 <span class="erp-nav-section-title">إدارة التكاليف والمقننات (BOM)</span>
@@ -103,8 +116,10 @@
                 </a>
             </div>
         </div>
+        @endcan
 
         <!-- 3. Sales & Tenders Department (إدارة المبيعات والمناقصات) -->
+        @can('manage-sales')
         <div class="erp-nav-section is-open" data-section="sales">
             <button type="button" class="erp-nav-section-header" aria-expanded="true">
                 <span class="erp-nav-section-title">إدارة المبيعات والمناقصات والعقود</span>
@@ -133,8 +148,10 @@
                 </a>
             </div>
         </div>
+        @endcan
 
         <!-- 4. Procurement Department (إدارة المشتريات والتوريدات) -->
+        @can('manage-procurement')
         <div class="erp-nav-section {{ request()->is('procurement*') ? 'is-open' : '' }}" data-section="procurement">
             <button type="button" class="erp-nav-section-header" aria-expanded="{{ request()->is('procurement*') ? 'true' : 'false' }}">
                 <span class="erp-nav-section-title">إدارة المشتريات والتوريدات</span>
@@ -157,8 +174,10 @@
                 </a>
             </div>
         </div>
+        @endcan
 
         <!-- 5. Finance & Accounts Department (إدارة الحسابات والمالية) -->
+        @can('manage-finance')
         <div class="erp-nav-section {{ request()->is('finance*') ? 'is-open' : '' }}" data-section="finance">
             <button type="button" class="erp-nav-section-header" aria-expanded="{{ request()->is('finance*') ? 'true' : 'false' }}">
                 <span class="erp-nav-section-title">إدارة الحسابات والمالية</span>
@@ -167,10 +186,16 @@
                 </svg>
             </button>
             <div class="erp-nav-section-items">
-                <a href="{{ route('finance.suppliers.index') }}" class="erp-nav-item {{ request()->routeIs('finance.suppliers*') ? 'active' : '' }}" title="حسابات الموردين وجدولة السداد">
+                <a href="{{ route('finance.disbursements.index') }}" class="erp-nav-item {{ request()->routeIs('finance.disbursements*') ? 'active' : '' }}" title="أذونات الصرف اللحظية من الإدارة لأمين الخزنة">
                     <div class="erp-nav-content">
-                        <span class="erp-nav-icon"><x-icon name="credit-card" size="18" /></span>
-                        <span class="erp-nav-label">حسابات الموردين والآجل</span>
+                        <span class="erp-nav-icon"><x-icon name="truck" size="18" /></span>
+                        <span class="erp-nav-label">أذونات الصرف اللحظية</span>
+                    </div>
+                </a>
+                <a href="{{ route('finance.receipts.index') }}" class="erp-nav-item {{ request()->routeIs('finance.receipts*') ? 'active' : '' }}" title="الوارد واعتماد التحصيلات والترصيد">
+                    <div class="erp-nav-content">
+                        <span class="erp-nav-icon"><x-icon name="arrow-down" size="18" /></span>
+                        <span class="erp-nav-label">الوارد واعتماد التحصيلات</span>
                     </div>
                 </a>
                 <a href="{{ route('finance.treasury.index') }}" class="erp-nav-item {{ request()->routeIs('finance.treasury*') ? 'active' : '' }}" title="الخزينة والبنوك وعهد المواقع">
@@ -179,16 +204,48 @@
                         <span class="erp-nav-label">الخزينة وعهد المواقع النقدية</span>
                     </div>
                 </a>
-                <a href="{{ route('finance.closing.index') }}" class="erp-nav-item {{ request()->routeIs('finance.closing*') ? 'active' : '' }}" title="التقفيل اليومي لصاحب العمل">
+                <a href="{{ route('finance.closing.index') }}" class="erp-nav-item {{ request()->routeIs('finance.closing*') ? 'active' : '' }}" title="محضر تقفيل اليومية ومطابقة العجز">
                     <div class="erp-nav-content">
                         <span class="erp-nav-icon"><x-icon name="pie-chart" size="18" /></span>
-                        <span class="erp-nav-label">اليومية والتقفيل لصاحب العمل</span>
+                        <span class="erp-nav-label">اليومية والتقفيل ومحضر العجز</span>
+                    </div>
+                </a>
+                <a href="{{ route('finance.journal.index') }}" class="erp-nav-item {{ request()->routeIs('finance.journal*') ? 'active' : '' }}" title="دفتر اليومية العامة والقيود التلقائية">
+                    <div class="erp-nav-content">
+                        <span class="erp-nav-icon"><x-icon name="file-text" size="18" /></span>
+                        <span class="erp-nav-label">دفتر اليومية والقيود التلقائية</span>
+                    </div>
+                </a>
+                <a href="{{ route('finance.ledger.index') }}" class="erp-nav-item {{ request()->routeIs('finance.ledger*') ? 'active' : '' }}" title="دفتر الأستاذ العام وكشوف الحسابات">
+                    <div class="erp-nav-content">
+                        <span class="erp-nav-icon"><x-icon name="book-open" size="18" /></span>
+                        <span class="erp-nav-label">دفتر الأستاذ العام</span>
+                    </div>
+                </a>
+                <a href="{{ route('finance.settlements.index') }}" class="erp-nav-item {{ request()->routeIs('finance.settlements*') ? 'active' : '' }}" title="ترصيد وتسوية الموردين والعهد">
+                    <div class="erp-nav-content">
+                        <span class="erp-nav-icon"><x-icon name="clipboard-check" size="18" /></span>
+                        <span class="erp-nav-label">ترصيد الموردين والعهد</span>
+                    </div>
+                </a>
+                <a href="{{ route('finance.breakdown.index') }}" class="erp-nav-item {{ request()->routeIs('finance.breakdown*') ? 'active' : '' }}" title="التفريدة والتحليل الشهري للجهات">
+                    <div class="erp-nav-content">
+                        <span class="erp-nav-icon"><x-icon name="calendar" size="18" /></span>
+                        <span class="erp-nav-label">التفريدة الشهرية للجهات</span>
+                    </div>
+                </a>
+                <a href="{{ route('finance.suppliers.index') }}" class="erp-nav-item {{ request()->routeIs('finance.suppliers*') ? 'active' : '' }}" title="حسابات الموردين وجدولة السداد">
+                    <div class="erp-nav-content">
+                        <span class="erp-nav-icon"><x-icon name="credit-card" size="18" /></span>
+                        <span class="erp-nav-label">حسابات الموردين والآجل</span>
                     </div>
                 </a>
             </div>
         </div>
+        @endcan
 
         <!-- 6. System Settings & Permissions (إعدادات النظام والصلاحيات) -->
+        @can('manage-company-settings')
         <div class="erp-nav-section {{ (request()->is('settings*') || request()->is('users*') || request()->is('roles*')) ? 'is-open' : '' }}" data-section="settings">
             <button type="button" class="erp-nav-section-header" aria-expanded="{{ (request()->is('settings*') || request()->is('users*') || request()->is('roles*')) ? 'true' : 'false' }}">
                 <span class="erp-nav-section-title">إعدادات النظام والصلاحيات</span>
@@ -217,9 +274,11 @@
                 </a>
             </div>
         </div>
+        @endcan
     </nav>
 
     <!-- Sidebar Footer: Persistent AI Copilot Trigger -->
+    @can('use-ai-copilot')
     <div class="erp-sidebar-footer">
         <button type="button" data-action="open-ai-copilot" class="erp-sidebar-ai-btn" title="مساعد كيان الذكي (AI Copilot)" aria-label="فتح مساعد كيان الذكي">
             <span class="erp-sidebar-ai-icon-box">
@@ -232,4 +291,5 @@
             </div>
         </button>
     </div>
+    @endcan
 </aside>

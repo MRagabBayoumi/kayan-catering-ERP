@@ -60,6 +60,10 @@ Route::middleware('auth')->group(function () {
     // 1. Warehouse & FIFO Department Routes
     Route::prefix('warehouse')->name('warehouse.')->group(function () {
         Route::get('/', [WarehouseController::class, 'index'])->name('index');
+        Route::get('/expiry', [WarehouseController::class, 'expiry'])->name('expiry');
+        Route::get('/expiry/suggest/{batch}', [WarehouseController::class, 'suggestBatchConsumption'])->name('expiry.suggest');
+        Route::get('/recipes/{recipe}/bom', [WarehouseController::class, 'calculateRecipeBom'])->name('recipes.bom');
+        Route::post('/sync-barcodes', [WarehouseController::class, 'syncBarcodes'])->name('sync-barcodes');
 
         // Dispatches to Driver Vans
         Route::get('/dispatches', [WarehouseController::class, 'dispatches'])->name('dispatches');
@@ -119,13 +123,38 @@ Route::middleware('auth')->group(function () {
 
     // 5. Finance & Accounts Department Routes (إدارة الحسابات والمالية)
     Route::prefix('finance')->name('finance.')->group(function () {
-        Route::get('/suppliers', [FinanceController::class, 'suppliers'])->name('suppliers.index');
+        // 1. Disbursement Orders (أذونات الصرف اللحظية)
+        Route::get('/disbursements', [FinanceController::class, 'disbursements'])->name('disbursements.index');
+        Route::post('/disbursements', [FinanceController::class, 'storeDisbursement'])->name('disbursements.store');
+        Route::get('/disbursements/{id}/execute', [FinanceController::class, 'executeDisbursementView'])->name('disbursements.execute.view');
+        Route::post('/disbursements/{id}/execute', [FinanceController::class, 'executeDisbursement'])->name('disbursements.execute');
 
-        Route::get('/treasury', [FinanceController::class, 'treasury'])->name('treasury.index');
-        Route::post('/treasury/vouchers', [FinanceController::class, 'storeVoucher'])->name('treasury.vouchers.store');
+        // 2. Receipts & Inflows (الوارد وترصيده واشعار المدير)
+        Route::get('/receipts', [FinanceController::class, 'receipts'])->name('receipts.index');
+        Route::post('/receipts', [FinanceController::class, 'storeReceipt'])->name('receipts.store');
+        Route::post('/receipts/{id}/review', [FinanceController::class, 'reviewReceipt'])->name('receipts.review');
 
+        // 3. Daily Cash Closing & Audit (التقفيل واليومية للمالك)
         Route::get('/closing', [FinanceController::class, 'closing'])->name('closing.index');
         Route::post('/closing', [FinanceController::class, 'storeClosing'])->name('closing.store');
+        Route::post('/closing/{id}/review', [FinanceController::class, 'reviewClosing'])->name('closing.review');
+
+        // 4. Automated Journal Entries (دفتر اليومية العامة والقيود التلقائية)
+        Route::get('/journal-entries', [FinanceController::class, 'journalEntries'])->name('journal.index');
+
+        // 5. General Ledger (دفتر الأستاذ العام لكل الحسابات)
+        Route::get('/ledger', [FinanceController::class, 'ledger'])->name('ledger.index');
+
+        // 6. Settlements for Custodies & Suppliers (ترصيد الموردين والعهد)
+        Route::get('/settlements', [FinanceController::class, 'settlements'])->name('settlements.index');
+
+        // 7. Monthly Itemized Breakdown (التفريدة الشهرية للجهات والأشخاص)
+        Route::get('/monthly-breakdown', [FinanceController::class, 'monthlyBreakdown'])->name('breakdown.index');
+
+        // 8. Suppliers & Treasuries Legacy Views
+        Route::get('/suppliers', [FinanceController::class, 'suppliers'])->name('suppliers.index');
+        Route::get('/treasury', [FinanceController::class, 'treasury'])->name('treasury.index');
+        Route::post('/treasury/vouchers', [FinanceController::class, 'storeVoucher'])->name('treasury.vouchers.store');
     });
 
     // 6. Settings & Permissions (إعدادات النظام والمستخدمين والصلاحيات)

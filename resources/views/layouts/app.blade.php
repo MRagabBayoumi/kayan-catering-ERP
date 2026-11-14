@@ -61,25 +61,31 @@
     <x-topbar :module-name="$activeModuleName" />
 
     <!-- Application Body (Sidebar + Main View) -->
-    <div class="erp-body-layout">
-        <!-- Sidebar Navigation -->
-        <x-sidebar />
-        <div id="sidebarOverlay" class="erp-sidebar-overlay" aria-hidden="true"></div>
+    <div class="erp-body-layout {{ request()->routeIs('home') ? 'erp-body-home' : '' }}">
+        @if(!request()->routeIs('home'))
+            <!-- Sidebar Navigation -->
+            <x-sidebar />
+            <div id="sidebarOverlay" class="erp-sidebar-overlay" aria-hidden="true"></div>
+        @endif
 
         <!-- Main Work Area -->
-        <main class="erp-main">
-            @yield('control_panel')
+        <main class="erp-main {{ request()->routeIs('home') ? 'erp-main-home' : '' }}">
+            @if(!request()->routeIs('home'))
+                @yield('control_panel')
+            @endif
 
-            <div class="erp-content">
+            <div class="erp-content {{ request()->routeIs('home') ? 'erp-content-home' : '' }}">
                 @yield('content')
             </div>
 
-            <!-- Footer -->
-            <footer class="erp-footer">
-                <div><a href="#">Kayan ERP</a> © {{ date('Y') }}</div>
-                <span class="erp-footer-sep">·</span>
-                <div class="font-numeric">الإصدار 1.0</div>
-            </footer>
+            @if(!request()->routeIs('home'))
+                <!-- Footer -->
+                <footer class="erp-footer">
+                    <div><a href="#">{{ $globalCompanySetting?->company_name ?? 'Kayan Catering ERP' }}</a> © {{ date('Y') }}</div>
+                    <span class="erp-footer-sep">·</span>
+                    <div class="font-numeric">الإصدار 1.0</div>
+                </footer>
+            @endif
         </main>
     </div>
 

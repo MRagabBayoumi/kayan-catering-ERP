@@ -254,3 +254,54 @@
     background-color: var(--border-color, #cbd5e1);
     border-radius: 4px;
 }
+
+/* ========================================================
+   Print Media Styling (A4 Financial Statements & Audit)
+   ======================================================== */
+@media print {
+    .no-print,
+    .erp-topbar,
+    .erp-sidebar,
+    .erp-footer,
+    .erp-control-panel-actions,
+    .erp-sidebar-overlay,
+    .ai-copilot-launcher,
+    #aiCopilotDrawer,
+    .erp-tab-nav-card {
+        display: none !important;
+    }
+
+    .print-block {
+        display: block !important;
+    }
+
+    body,
+    .erp-app-wrapper,
+    .erp-body-layout,
+    .erp-main,
+    .erp-content {
+        margin: 0 !important;
+        padding: 0 !important;
+        background: #ffffff !important;
+        color: #0f172a !important;
+        width: 100% !important;
+    }
+
+    .erp-card {
+        box-shadow: none !important;
+        border: 1px solid #cbd5e1 !important;
+        page-break-inside: avoid;
+    }
+
+    .erp-table {
+        width: 100% !important;
+        border-collapse: collapse !important;
+    }
+
+    .erp-table th,
+    .erp-table td {
+        border: 1px solid #cbd5e1 !important;
+        color: #0f172a !important;
+        padding: 6px 10px !important;
+    }
+}

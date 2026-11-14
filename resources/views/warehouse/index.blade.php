@@ -1,24 +1,31 @@
 @extends('layouts.app')
 
 @section('control_panel')
-    <x-control-panel title="إدارة المخازن وتشغيلات الـ FIFO" :breadcrumbs="['إدارة المخازن' => route('warehouse.index'), 'التشغيلات والباتشات' => route('warehouse.index')]">
+    <x-control-panel title="إدارة المخازن وتشغيلات الـ FIFO / FEFO" :breadcrumbs="['إدارة المخازن' => route('warehouse.index'), 'التشغيلات والباتشات' => route('warehouse.index')]">
         <x-slot:actions>
             @can('create-dispatch')
             <a href="{{ route('warehouse.dispatches.create') }}" class="erp-btn erp-btn-primary">
                 <x-icon name="truck" size="16" />
-                <span>إذن تحميل سيارة</span>
+                <span>إذن تحميل وصرف</span>
             </a>
             @endcan
+            <a href="{{ route('warehouse.expiry') }}" class="erp-btn erp-btn-secondary text-amber-700 dark:text-amber-400">
+                <x-icon name="alert-triangle" size="16" />
+                <span>محرك الصلاحيات وFEFO</span>
+            </a>
+            <form action="{{ route('warehouse.sync-barcodes') }}" method="POST" class="inline">
+                @csrf
+                <button type="submit" class="erp-btn erp-btn-secondary" title="استيراد وتحديث الباركود من قاعدة بيانات KAYAN ERP">
+                    <x-icon name="barcode" size="16" />
+                    <span>مزامنة باركود ERP</span>
+                </button>
+            </form>
             @can('perform-blind-audit')
             <a href="{{ route('warehouse.audits.create') }}" class="erp-btn erp-btn-secondary">
                 <x-icon name="clipboard-check" size="16" />
                 <span>جلسة جرد أعمى</span>
             </a>
             @endcan
-            <a href="{{ route('warehouse.settlements.index') }}" class="erp-btn erp-btn-secondary">
-                <x-icon name="receipt" size="16" />
-                <span>تسويات المناديب</span>
-            </a>
         </x-slot:actions>
 
         <x-slot:extra>
@@ -43,7 +50,15 @@
                 'badge_class' => 'erp-badge-primary',
             ],
             [
-                'label' => 'أذون التحميل والصرف (السيارات)',
+                'label' => 'الصلاحيات وتنبيهات FEFO',
+                'url' => route('warehouse.expiry'),
+                'icon' => 'alert-triangle',
+                'active' => request()->routeIs('warehouse.expiry*'),
+                'badge' => $criticalBatchesCount > 0 ? $criticalBatchesCount : null,
+                'badge_class' => 'erp-badge-danger',
+            ],
+            [
+                'label' => 'أذون التحميل والصرف (السيارات والمطابخ)',
                 'url' => route('warehouse.dispatches'),
                 'icon' => 'truck',
                 'active' => request()->routeIs('warehouse.dispatches*'),
@@ -90,18 +105,20 @@
                 <span class="kpi-icon text-rose-600 bg-rose-50 dark:bg-rose-950/40"><x-icon name="alert-triangle" size="18" /></span>
             </div>
             <div class="kpi-value font-numeric text-2xl font-black text-rose-600">
-                {{ $batches->filter(fn($b) => $b->expiry_date && \Carbon\Carbon::parse($b->expiry_date)->lte(\Carbon\Carbon::now()->addDays(5)))->count() }}
+                {{ $criticalBatchesCount }}
             </div>
-            <div class="kpi-note font-numeric text-xs text-rose-600 font-medium">أولوية الصرف الفوري FIFO</div>
+            <div class="kpi-note font-numeric text-xs text-rose-600 font-medium">
+                <a href="{{ route('warehouse.expiry', ['status' => 'critical']) }}" class="underline hover:text-rose-700">فحص تشغيلات FEFO الحرجة</a>
+            </div>
         </div>
 
         <div class="kpi-card">
             <div class="kpi-header mb-1">
-                <span class="kpi-label">آلية تسعير المخزون</span>
-                <span class="kpi-icon text-emerald-600 bg-emerald-50 dark:bg-emerald-950/40"><x-icon name="check-circle" size="18" /></span>
+                <span class="kpi-label">أصناف بباركود ERP</span>
+                <span class="kpi-icon text-emerald-600 bg-emerald-50 dark:bg-emerald-950/40"><x-icon name="barcode" size="18" /></span>
             </div>
-            <div class="kpi-value font-numeric text-base font-bold text-emerald-600">Strict FIFO</div>
-            <div class="kpi-note font-numeric text-xs text-[var(--text-muted)]">الوارد أولاً يصرف أولاً</div>
+            <div class="kpi-value font-numeric text-2xl font-bold text-emerald-600">{{ $barcodedProductsCount }}</div>
+            <div class="kpi-note font-numeric text-xs text-[var(--text-muted)]">مزامنة من KAYAN ERP</div>
         </div>
     </div>
 
@@ -131,27 +148,67 @@
                     <thead>
                         <tr>
                             <th>رقم التشغيلة (Batch)</th>
-                            <th>الصنف الغذائي</th>
+                            <th>الصنف الغذائي والباركود</th>
                             <th>المخزن</th>
                             <th>سعر شراء الوحدة</th>
                             <th>الكمية المتبقية</th>
-                            <th>تاريخ الدخول</th>
-                            <th>تاريخ الصلاحية</th>
+                            <th>تاريخ الاستلام</th>
+                            <th>الصلاحية وFEFO</th>
                         </tr>
                     </thead>
                     <tbody>
                         @forelse($batches as $b)
                             <tr>
-                                <td class="font-numeric font-bold text-[var(--primary)] text-xs">{{ $b->batch_number }}</td>
-                                <td class="font-bold text-[var(--text-main)]">{{ $b->product->name ?? 'صنف' }}</td>
+                                <td class="font-numeric font-bold text-[var(--primary)] text-xs">
+                                    {{ $b->batch_number }}
+                                </td>
+                                <td>
+                                    <div class="font-bold text-[var(--text-main)]">{{ $b->product->name ?? 'صنف' }}</div>
+                                    <div class="text-[11px] text-[var(--text-muted)] font-mono flex items-center gap-2 mt-0.5">
+                                        <span>SKU: {{ $b->product->sku ?? '-' }}</span>
+                                        @if(!empty($b->product->barcode))
+                                            <span>·</span>
+                                            <span class="inline-flex items-center gap-1 text-slate-700 dark:text-slate-300">
+                                                <x-icon name="barcode" size="12" />
+                                                {{ $b->product->barcode }}
+                                            </span>
+                                        @endif
+                                    </div>
+                                </td>
                                 <td>{{ $b->warehouse->name ?? '-' }}</td>
                                 <td class="font-numeric font-bold">{{ number_format($b->cost_price, 2) }} ج.م</td>
                                 <td class="font-numeric font-extrabold text-[var(--text-main)]">{{ number_format($b->remaining_quantity, 2) }} {{ $b->product->unit ?? 'كجم' }}</td>
-                                <td class="font-numeric text-xs text-[var(--text-muted)]">{{ $b->entry_date ?? '-' }}</td>
+                                <td class="font-numeric text-xs text-[var(--text-muted)]">{{ $b->received_at ? $b->received_at->format('Y-m-d') : '-' }}</td>
                                 <td>
-                                    <span class="erp-badge {{ \Carbon\Carbon::parse($b->expiry_date)->lte(\Carbon\Carbon::now()->addDays(5)) ? 'erp-badge-danger' : 'erp-badge-neutral' }} font-numeric">
-                                        {{ $b->expiry_date ?? 'بدون تاريخ' }}
-                                    </span>
+                                    @php
+                                        $days = $b->days_until_expiry;
+                                        $badgeClass = match($b->expiry_status) {
+                                            'expired' => 'erp-badge-danger',
+                                            'critical' => 'erp-badge-danger font-bold',
+                                            'warning' => 'erp-badge-warning',
+                                            'safe' => 'erp-badge-success',
+                                            default => 'erp-badge-neutral',
+                                        };
+                                        $label = match($b->expiry_status) {
+                                            'expired' => 'منتهي (' . abs($days) . ' يوم)',
+                                            'critical' => 'حرج (' . $days . ' يوم)',
+                                            'warning' => 'تحذير (' . $days . ' يوم)',
+                                            'safe' => 'آمن (' . $days . ' يوم)',
+                                            default => 'غير محدد',
+                                        };
+                                    @endphp
+                                    @if($b->expiry_date)
+                                        <div class="flex flex-col gap-1 items-start">
+                                            <span class="erp-badge {{ $badgeClass }} font-numeric text-[11px]">
+                                                {{ $label }}
+                                            </span>
+                                            <span class="text-[10px] text-[var(--text-muted)] font-mono">
+                                                {{ $b->expiry_date->format('Y-m-d') }}
+                                            </span>
+                                        </div>
+                                    @else
+                                        <span class="erp-badge erp-badge-neutral text-xs">بدون تاريخ</span>
+                                    @endif
                                 </td>
                             </tr>
                         @empty

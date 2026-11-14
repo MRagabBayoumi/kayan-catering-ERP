@@ -52,7 +52,7 @@ class AppServiceProvider extends ServiceProvider
 
         // 1. Warehouse Department Gates
         Gate::define('manage-warehouse', function (User $user) {
-            return in_array($user->role, [User::ROLE_ADMIN, User::ROLE_STORE_MANAGER, User::ROLE_STOREKEEPER]);
+            return in_array($user->role, [User::ROLE_ADMIN, User::ROLE_STORE_MANAGER, User::ROLE_STOREKEEPER, User::ROLE_ACCOUNTANT]);
         });
 
         Gate::define('create-dispatch', function (User $user) {
@@ -70,10 +70,44 @@ class AppServiceProvider extends ServiceProvider
 
         // 3. Sales & Tenders Department Gates
         Gate::define('manage-sales', function (User $user) {
-            return in_array($user->role, [User::ROLE_ADMIN]);
+            return in_array($user->role, [User::ROLE_ADMIN, User::ROLE_SALES_MANAGER]);
         });
 
-        // 4. Warehouse Accountant & Settlements Gates
+        Gate::define('manage-tenders', function (User $user) {
+            return in_array($user->role, [User::ROLE_ADMIN, User::ROLE_SALES_MANAGER]);
+        });
+
+        // 4. Procurement Department Gates
+        Gate::define('manage-procurement', function (User $user) {
+            return in_array($user->role, [User::ROLE_ADMIN, User::ROLE_PROCUREMENT_MANAGER]);
+        });
+
+        // 5. Finance & Closing Department Gates
+        Gate::define('manage-finance', function (User $user) {
+            return in_array($user->role, [User::ROLE_ADMIN, User::ROLE_ACCOUNTANT]);
+        });
+
+        Gate::define('manage-closing', function (User $user) {
+            return $user->isAdmin();
+        });
+
+        Gate::define('manage-dashboard', function (User $user) {
+            return $user->isAdmin();
+        });
+
+        Gate::define('manage-users', function (User $user) {
+            return $user->isAdmin();
+        });
+
+        Gate::define('manage-company-settings', function (User $user) {
+            return $user->isAdmin();
+        });
+
+        Gate::define('use-ai-copilot', function (User $user) {
+            return ! $user->isDriver();
+        });
+
+        // 6. Warehouse Accountant & Settlements Gates
         Gate::define('manage-settlements', function (User $user) {
             return in_array($user->role, [User::ROLE_ADMIN, User::ROLE_ACCOUNTANT]);
         });

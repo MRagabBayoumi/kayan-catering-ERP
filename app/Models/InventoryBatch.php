@@ -16,19 +16,11 @@ class InventoryBatch extends Model
         'batch_number',
         'product_id',
         'warehouse_id',
-        'purchase_invoice_id',
         'initial_quantity',
         'remaining_quantity',
         'cost_price',
-        'retail_price',
-        'wholesale_price',
-        'distributor_price',
-        'total_initial_cost',
-        'accumulated_cogs_deducted',
-        'unit_id',
-        'conversion_factor',
-        'source_type',
-        'source_id',
+        'production_date',
+        'expiry_date',
         'received_at',
         'is_exhausted',
         'notes',
@@ -40,12 +32,8 @@ class InventoryBatch extends Model
             'initial_quantity' => 'decimal:4',
             'remaining_quantity' => 'decimal:4',
             'cost_price' => 'decimal:4',
-            'retail_price' => 'decimal:2',
-            'wholesale_price' => 'decimal:2',
-            'distributor_price' => 'decimal:2',
-            'total_initial_cost' => 'decimal:2',
-            'accumulated_cogs_deducted' => 'decimal:2',
-            'conversion_factor' => 'decimal:4',
+            'production_date' => 'date',
+            'expiry_date' => 'date',
             'received_at' => 'datetime',
             'is_exhausted' => 'boolean',
         ];
@@ -61,29 +49,23 @@ class InventoryBatch extends Model
         return $this->belongsTo(Warehouse::class);
     }
 
-    public function unit(): BelongsTo
-    {
-        return $this->belongsTo(Unit::class);
-    }
-
-    public function purchaseInvoice(): BelongsTo
-    {
-        return $this->belongsTo(PurchaseInvoice::class);
-    }
-
     public function movements(): HasMany
     {
         return $this->hasMany(StockMovement::class, 'batch_id');
     }
 
-    public function costMovements(): HasMany
+    /**
+     * Scope query to active (non-exhausted) batches ordered by FEFO:
+     * Earliest expiring first, then oldest received for identical or unset expiries.
+     */
+    public function scopeAvailableFEFO(Builder $query): Builder
     {
-        return $this->hasMany(BatchCostMovement::class, 'batch_id');
-    }
-
-    public function salesAllocations(): HasMany
-    {
-        return $this->hasMany(SalesInvoiceItemBatch::class, 'inventory_batch_id');
+        return $query->where('is_exhausted', false)
+            ->where('remaining_quantity', '>', 0)
+            ->orderByRaw('CASE WHEN expiry_date IS NOT NULL THEN 0 ELSE 1 END ASC')
+            ->orderBy('expiry_date', 'asc')
+            ->orderBy('received_at', 'asc')
+            ->orderBy('id', 'asc');
     }
 
     /**
@@ -91,10 +73,53 @@ class InventoryBatch extends Model
      */
     public function scopeAvailableFIFO(Builder $query): Builder
     {
-        return $query->where('is_exhausted', false)
-            ->where('remaining_quantity', '>', 0)
-            ->orderBy('received_at', 'asc')
-            ->orderBy('id', 'asc');
+        return $this->scopeAvailableFEFO($query);
+    }
+
+    /**
+     * Calculate days remaining until expiry.
+     */
+    public function getDaysUntilExpiryAttribute(): ?int
+    {
+        if (! $this->expiry_date) {
+            return null;
+        }
+
+        return (int) now()->startOfDay()->diffInDays($this->expiry_date->startOfDay(), false);
+    }
+
+    /**
+     * Expiry category: expired, critical (<7d), warning (<30d), safe (>30d), or none.
+     */
+    public function getExpiryStatusAttribute(): string
+    {
+        $days = $this->days_until_expiry;
+
+        if ($days === null) {
+            return 'none';
+        }
+
+        if ($days < 0) {
+            return 'expired';
+        }
+
+        if ($days <= 7) {
+            return 'critical';
+        }
+
+        if ($days <= 30) {
+            return 'warning';
+        }
+
+        return 'safe';
+    }
+
+    /**
+     * Total remaining value of the batch.
+     */
+    public function getTotalValueAttribute(): float
+    {
+        return round((float) $this->remaining_quantity * (float) $this->cost_price, 2);
     }
 
     /**

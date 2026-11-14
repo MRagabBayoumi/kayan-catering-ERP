@@ -71,6 +71,8 @@ class CateringLogisticsService
                 'dispatch_number' => $dispatchNumber,
                 'supply_order_id' => $header['supply_order_id'] ?? null,
                 'hospital_id' => $header['hospital_id'],
+                'recipe_id' => $header['recipe_id'] ?? null,
+                'planned_meals_count' => ! empty($header['planned_meals_count']) ? (int) $header['planned_meals_count'] : null,
                 'source_warehouse_id' => $header['source_warehouse_id'],
                 'transit_warehouse_id' => $header['transit_warehouse_id'], // Van Warehouse
                 'driver_id' => $header['driver_id'],
@@ -96,10 +98,7 @@ class CateringLogisticsService
 
                 $batches = InventoryBatch::where('product_id', $productId)
                     ->where('warehouse_id', $header['source_warehouse_id'])
-                    ->where('is_exhausted', false)
-                    ->where('remaining_quantity', '>', 0)
-                    ->orderBy('received_at', 'asc') // FIFO by receipt date
-                    ->orderBy('id', 'asc')
+                    ->availableFEFO()
                     ->lockForUpdate()
                     ->get();
 

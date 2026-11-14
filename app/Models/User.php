@@ -30,6 +30,8 @@ class User extends Authenticatable
 
     public const ROLE_SALES_MANAGER = 'sales_manager';
 
+    public const ROLE_SITE_MANAGER = 'site_manager';
+
     public static function rolesList(): array
     {
         return [
@@ -41,6 +43,7 @@ class User extends Authenticatable
             self::ROLE_SALES_MANAGER => 'مدير المبيعات والمناقصات وعقود المستشفيات',
             self::ROLE_PROCUREMENT_MANAGER => 'مسؤول المشتريات ومتابعة الموردين',
             self::ROLE_ACCOUNTANT => 'محاسب المخزن والمالية (تسوية العهد)',
+            self::ROLE_SITE_MANAGER => 'مدير موقع ومطابخ المستشفى',
         ];
     }
 
@@ -57,6 +60,7 @@ class User extends Authenticatable
         'role',
         'phone',
         'assigned_warehouse_id',
+        'assigned_hospital_id',
         'is_active',
     ];
 
@@ -77,6 +81,11 @@ class User extends Authenticatable
     public function assignedWarehouse(): BelongsTo
     {
         return $this->belongsTo(Warehouse::class, 'assigned_warehouse_id');
+    }
+
+    public function assignedHospital(): BelongsTo
+    {
+        return $this->belongsTo(Hospital::class, 'assigned_hospital_id');
     }
 
     public function vanWarehouse(): BelongsTo

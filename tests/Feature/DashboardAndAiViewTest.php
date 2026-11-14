@@ -54,24 +54,35 @@ class DashboardAndAiViewTest extends TestCase
 
     public function test_home_odoo_apps_hub_renders_all_modules_and_subtabs(): void
     {
-        $user = User::factory()->create(['role' => User::ROLE_ADMIN]);
+        $admin = User::factory()->create(['role' => User::ROLE_ADMIN]);
 
-        $response = $this->actingAs($user)->get('/home');
+        $response = $this->actingAs($admin)->get('/home');
 
         $response->assertStatus(200);
-        $response->assertSee('إدارة المخازن والتشغيلات (FIFO)');
-        $response->assertSee('إدارة التكاليف والمقننات (BOM)');
-        $response->assertSee('المستشفيات والتعاقدات');
-        $response->assertSee('المناقصات والعطاءات (Tenders)');
-        $response->assertSee('إدارة المشتريات والتوريدات');
+        $response->assertSee('المخازن');
+        $response->assertSee('المقننات والتكاليف');
+        $response->assertSee('المستشفيات');
+        $response->assertSee('المناقصات');
+        $response->assertSee('المشتريات');
         $response->assertSee('الحسابات والمالية');
-        $response->assertSee('التقفيل واليومية للمالك');
-        $response->assertSee('مساعد كيان الذكي (AI Copilot)');
-        $response->assertSee('المستخدمين ومصفوفة الصلاحيات');
-        $response->assertSee('إعدادات المنظومة والشركة');
+        $response->assertSee('التقفيل للمالك');
+        $response->assertSee('مساعد كيان (AI)');
+        $response->assertSee('المستخدمين');
+        $response->assertSee('إعدادات النظام');
+
+        // Isolation test: Storekeeper can only see warehouse and NOT finance, costing, or closing
+        $storekeeper = User::factory()->create(['role' => User::ROLE_STOREKEEPER]);
+        $storekeeperHome = $this->actingAs($storekeeper)->get('/home');
+        $storekeeperHome->assertStatus(200);
+        $storekeeperHome->assertSee('data-app-name="المخازن والتشغيلات"', false);
+        $storekeeperHome->assertDontSee('data-app-name="التقفيل واليومية للمالك"', false);
+        $storekeeperHome->assertDontSee('data-app-name="الحسابات والمالية"', false);
+        $storekeeperHome->assertDontSee('data-app-name="المقننات والتكاليف"', false);
+        $storekeeperHome->assertDontSee('data-app-name="المناقصات والعطاءات"', false);
+        $storekeeperHome->assertDontSee('data-app-name="إعدادات المنظومة"', false);
 
         // Test entering warehouse module and seeing sub-navigation tabs
-        $warehouseResponse = $this->actingAs($user)->get('/warehouse');
+        $warehouseResponse = $this->actingAs($admin)->get('/warehouse');
         $warehouseResponse->assertStatus(200);
         $warehouseResponse->assertSee('erp-tab-nav-card');
         $warehouseResponse->assertSee('تشغيلات الشراء والـ FIFO');

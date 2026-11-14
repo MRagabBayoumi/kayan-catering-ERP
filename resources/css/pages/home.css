@@ -1,172 +1,221 @@
 /* ==========================================================================
-   BayoSoft ERP — Home Applications Hub Styling
+   Kayan ERP — Odoo-Inspired Fullscreen Desktop Applications Launcher
+   Clean minimal app icons, zero information leakage, responsive centered grid
    ========================================================================== */
 
-.home-hero-card {
-    background: var(--bg-surface);
-    border: 1px solid var(--border-color);
-    border-radius: var(--border-radius-lg, 12px);
-    padding: 24px;
+/* Fullscreen Launcher Canvas */
+.erp-body-home {
+    display: flex !important;
+    flex-direction: column !important;
+    width: 100% !important;
+    min-height: calc(100vh - var(--topbar-height, 50px)) !important;
+    background: radial-gradient(circle at 50% 25%, #f8f7fc 0%, #ebe8f3 100%) !important;
+}
+
+[data-theme="dark"] .erp-body-home {
+    background: radial-gradient(circle at 50% 25%, #1e1b2e 0%, #0f172a 100%) !important;
+}
+
+.erp-main-home {
+    margin-right: 0 !important;
+    margin-left: 0 !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    justify-content: center !important;
+    min-height: calc(100vh - var(--topbar-height, 50px)) !important;
+    padding: 30px 20px 60px !important;
+    background: transparent !important;
+    flex: 1 !important;
+}
+
+.erp-content-home {
+    width: 100% !important;
+    max-width: 860px !important;
+    padding: 0 !important;
+    background: transparent !important;
+}
+
+/* Odoo Launcher Centered Container */
+.odoo-launcher-container {
     display: flex;
+    flex-direction: column;
     align-items: center;
-    justify-content: space-between;
-    gap: 20px;
-    box-shadow: var(--shadow-sm);
+    justify-content: center;
+    width: 100%;
+}
+
+/* Subtle Floating App Search */
+.odoo-launcher-search {
+    width: 100%;
+    max-width: 360px;
+    margin-bottom: 45px;
     position: relative;
-    overflow: hidden;
 }
 
-.home-hero-card::after {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    height: 3px;
-    background: linear-gradient(90deg, #10b981, #3b82f6, #8b5cf6, #f59e0b);
-}
-
-.home-hero-badge {
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    padding: 4px 10px;
-    background: rgba(16, 185, 129, 0.12);
-    color: #10b981;
-    font-size: 11px;
-    font-weight: 700;
+.odoo-search-input {
+    width: 100%;
+    padding: 11px 44px 11px 20px;
     border-radius: 9999px;
-    margin-bottom: 8px;
-}
-
-.home-hero-title {
-    font-size: 22px;
-    font-weight: 800;
+    border: 1px solid rgba(0, 0, 0, 0.08);
+    background: rgba(255, 255, 255, 0.85);
+    backdrop-filter: blur(10px);
+    font-size: 13.5px;
     color: var(--text-main);
-    margin: 0 0 6px 0;
-}
-
-.home-hero-desc {
-    font-size: 13px;
-    color: var(--text-muted);
-    margin: 0;
-    max-width: 650px;
-    line-height: 1.6;
-}
-
-.home-hero-meta {
-    flex-shrink: 0;
-    background: var(--surface-muted, rgba(0, 0, 0, 0.03));
-    border: 1px solid var(--border-color);
-    border-radius: var(--border-radius-md, 8px);
-    padding: 12px 16px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.04);
+    transition: all 0.25s ease;
+    outline: none;
     text-align: right;
 }
 
-.home-hero-workplace {
-    display: flex;
-    flex-direction: column;
-    gap: 4px;
-}
-
-/* Applications Grid */
-.apps-hub-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-    gap: 18px;
-    margin-bottom: 28px;
-}
-
-.app-card {
-    background: var(--bg-surface);
-    border: 1px solid var(--border-color);
-    border-radius: var(--border-radius-lg, 12px);
-    padding: 20px;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
-    box-shadow: var(--shadow-sm);
-    position: relative;
-}
-
-.app-card:hover {
-    transform: translateY(-3px);
-    box-shadow: var(--shadow-md, 0 8px 20px rgba(0, 0, 0, 0.08));
+.odoo-search-input:focus {
+    background: #ffffff;
     border-color: var(--primary);
+    box-shadow: 0 4px 18px rgba(113, 75, 103, 0.15);
 }
 
-.app-card-header {
+[data-theme="dark"] .odoo-search-input {
+    background: rgba(30, 41, 59, 0.85);
+    border-color: rgba(255, 255, 255, 0.1);
+    color: #f8fafc;
+}
+
+.odoo-search-icon {
+    position: absolute;
+    right: 15px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #94a3b8;
+    pointer-events: none;
     display: flex;
     align-items: center;
-    justify-content: space-between;
-    margin-bottom: 14px;
 }
 
-.app-icon-box {
-    width: 52px;
-    height: 52px;
-    border-radius: 12px;
+/* Odoo Desktop App Icons Grid */
+.odoo-apps-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(115px, 1fr));
+    gap: 32px 20px;
+    width: 100%;
+    justify-items: center;
+    align-items: start;
+}
+
+.odoo-app-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    text-decoration: none;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    padding: 8px 4px;
+    border-radius: 16px;
+    transition: transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+    width: 115px;
+    user-select: none;
+}
+
+.odoo-app-item:hover {
+    transform: translateY(-6px);
+}
+
+.odoo-app-item:active {
+    transform: translateY(-1px) scale(0.96);
+}
+
+/* Rounded App Squircle */
+.odoo-app-icon {
+    width: 76px;
+    height: 76px;
+    border-radius: 20px;
     display: flex;
     align-items: center;
     justify-content: center;
-    flex-shrink: 0;
+    background: #ffffff;
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.06), 0 1px 3px rgba(0, 0, 0, 0.04);
+    border: 1px solid rgba(0, 0, 0, 0.05);
+    transition: all 0.25s ease;
+    position: relative;
 }
 
-.app-badge {
-    font-size: 11px;
+.odoo-app-item:hover .odoo-app-icon {
+    box-shadow: 0 12px 28px rgba(0, 0, 0, 0.12), 0 4px 10px rgba(0, 0, 0, 0.06);
+    border-color: rgba(0, 0, 0, 0.08);
+}
+
+[data-theme="dark"] .odoo-app-icon {
+    background: #1e293b;
+    border-color: rgba(255, 255, 255, 0.08);
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.35);
+}
+
+.odoo-app-label {
+    margin-top: 10px;
+    font-size: 13px;
     font-weight: 700;
-    padding: 3px 8px;
-    border-radius: 6px;
+    color: #1e293b;
+    line-height: 1.35;
+    text-shadow: 0 1px 2px rgba(255, 255, 255, 0.8);
+    transition: color 0.15s ease;
+    text-align: center;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
 }
 
-.badge-emerald { background: rgba(16, 185, 129, 0.12); color: #10b981; }
-.badge-blue { background: rgba(59, 130, 246, 0.12); color: #3b82f6; }
-.badge-purple { background: rgba(139, 92, 246, 0.12); color: #8b5cf6; }
-.badge-amber { background: rgba(245, 158, 11, 0.12); color: #f59e0b; }
-.badge-cyan { background: rgba(6, 182, 212, 0.12); color: #06b6d4; }
-.badge-indigo { background: rgba(99, 102, 241, 0.12); color: #6366f1; }
-.badge-teal { background: rgba(20, 184, 166, 0.12); color: #14b8a6; }
-.badge-rose { background: rgba(244, 63, 94, 0.12); color: #f43f5e; }
-.badge-violet { background: rgba(124, 58, 237, 0.12); color: #7c3aed; }
-.badge-neutral { background: var(--surface-muted); color: var(--text-muted); }
-
-.app-card-body {
-    flex-grow: 1;
-    margin-bottom: 16px;
+[data-theme="dark"] .odoo-app-label {
+    color: #f1f5f9;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.6);
 }
 
-.app-title {
-    font-size: 16px;
-    font-weight: 700;
-    color: var(--text-main);
-    margin: 0 0 6px 0;
+.odoo-app-item:hover .odoo-app-label {
+    color: var(--primary);
 }
 
-.app-desc {
-    font-size: 12px;
-    color: var(--text-muted);
-    line-height: 1.5;
-    margin: 0;
-}
+/* Odoo App Icon Pastel Gradients & Colors */
+.odoo-icon-blue { color: #1d4ed8; background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%); }
+.odoo-icon-emerald { color: #047857; background: linear-gradient(135deg, #ecfdf5 0%, #d1fae5 100%); }
+.odoo-icon-cyan { color: #0e7490; background: linear-gradient(135deg, #ecfeff 0%, #cffafe 100%); }
+.odoo-icon-amber { color: #b45309; background: linear-gradient(135deg, #fffbeb 0%, #fef3c7 100%); }
+.odoo-icon-teal { color: #0f766e; background: linear-gradient(135deg, #f0fdfa 0%, #ccfbf1 100%); }
+.odoo-icon-purple { color: #6d28d9; background: linear-gradient(135deg, #f5f3ff 0%, #ede9fe 100%); }
+.odoo-icon-indigo { color: #4338ca; background: linear-gradient(135deg, #eef2ff 0%, #e0e7ff 100%); }
+.odoo-icon-violet { color: #7e22ce; background: linear-gradient(135deg, #faf5ff 0%, #f3e8ff 100%); }
+.odoo-icon-rose { color: #be123c; background: linear-gradient(135deg, #fff1f2 0%, #ffe4e6 100%); }
+.odoo-icon-slate { color: #334155; background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%); }
+.odoo-icon-gray { color: #3f3f46; background: linear-gradient(135deg, #fafafa 0%, #f4f4f5 100%); }
 
-.app-card-footer {
-    margin-top: auto;
-}
+[data-theme="dark"] .odoo-icon-blue { color: #60a5fa; background: linear-gradient(135deg, #1e3a8a33 0%, #1d4ed833 100%); }
+[data-theme="dark"] .odoo-icon-emerald { color: #34d399; background: linear-gradient(135deg, #064e3b33 0%, #04785733 100%); }
+[data-theme="dark"] .odoo-icon-cyan { color: #22d3ee; background: linear-gradient(135deg, #164e6333 0%, #0e749033 100%); }
+[data-theme="dark"] .odoo-icon-amber { color: #fbbf24; background: linear-gradient(135deg, #78350f33 0%, #b4530933 100%); }
+[data-theme="dark"] .odoo-icon-teal { color: #2dd4bf; background: linear-gradient(135deg, #134e4a33 0%, #0f766e33 100%); }
+[data-theme="dark"] .odoo-icon-purple { color: #a78bfa; background: linear-gradient(135deg, #4c1d9533 0%, #6d28d933 100%); }
+[data-theme="dark"] .odoo-icon-indigo { color: #818cf8; background: linear-gradient(135deg, #312e8133 0%, #4338ca33 100%); }
+[data-theme="dark"] .odoo-icon-violet { color: #c084fc; background: linear-gradient(135deg, #581c8733 0%, #7e22ce33 100%); }
+[data-theme="dark"] .odoo-icon-rose { color: #fb7185; background: linear-gradient(135deg, #88133733 0%, #be123c33 100%); }
+[data-theme="dark"] .odoo-icon-slate { color: #94a3b8; background: linear-gradient(135deg, #1e293b33 0%, #33415533 100%); }
+[data-theme="dark"] .odoo-icon-gray { color: #a1a1aa; background: linear-gradient(135deg, #27272a33 0%, #3f3f4633 100%); }
 
-@media (max-width: 768px) {
-    .home-hero-card {
-        flex-direction: column;
-        align-items: flex-start;
-        padding: 16px;
-        gap: 12px;
+@media (max-width: 640px) {
+    .odoo-apps-grid {
+        grid-template-columns: repeat(3, 1fr);
+        gap: 20px 12px;
     }
-    .home-hero-meta {
+    .odoo-app-item {
         width: 100%;
-        max-width: 100%;
     }
-    .apps-hub-grid {
-        grid-template-columns: 1fr;
-        gap: 14px;
+    .odoo-app-icon {
+        width: 64px;
+        height: 64px;
+        border-radius: 16px;
+    }
+    .odoo-app-label {
+        font-size: 11.5px;
     }
 }

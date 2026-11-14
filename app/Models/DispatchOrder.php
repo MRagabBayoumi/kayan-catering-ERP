@@ -26,6 +26,8 @@ class DispatchOrder extends Model
         'dispatch_number',
         'supply_order_id',
         'hospital_id',
+        'recipe_id',
+        'planned_meals_count',
         'source_warehouse_id',
         'transit_warehouse_id',
         'driver_id',
@@ -40,7 +42,13 @@ class DispatchOrder extends Model
     {
         return [
             'dispatch_date' => 'datetime',
+            'planned_meals_count' => 'integer',
         ];
+    }
+
+    public function recipe(): BelongsTo
+    {
+        return $this->belongsTo(Recipe::class);
     }
 
     public function supplyOrder(): BelongsTo

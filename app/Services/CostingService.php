@@ -113,8 +113,7 @@ class CostingService
 
                 // Look up FIFO unit cost from latest active batch for this product
                 $fifoCost = (float) (InventoryBatch::where('product_id', $productId)
-                    ->where('is_exhausted', false)
-                    ->orderBy('received_at', 'asc')
+                    ->availableFEFO()
                     ->value('cost_price') ?? ($ing?->standard_unit_cost ?? 0.00));
 
                 $actualFifoCost = $actualConsumedQty * $fifoCost;
