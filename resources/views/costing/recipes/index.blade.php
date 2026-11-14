@@ -2,21 +2,37 @@
 
 @section('title', 'المقننات القياسية للوجبات (BOM)')
 
-@section('content')
-<div class="space-y-6">
-    <div class="flex items-center justify-between">
-        <div>
-            <h1 class="text-xl font-bold text-slate-800 dark:text-slate-100">المقننات الغذائية القياسية للوجبات (BOM)</h1>
-            <p class="text-xs text-slate-500 mt-1">تحديد أوزان الخامات المعيارية (جرام/وجبة) والتكلفة المستهدفة لكل مريض وطاقم طبي</p>
-        </div>
-        <a href="{{ route('costing.recipes.create') }}" class="erp-btn erp-btn-primary">
-            <x-icon name="plus" size="16" />
-            <span>إضافة مقنن وجبة جديد</span>
-        </a>
-    </div>
+@section('control_panel')
+    <x-control-panel title="المقننات الغذائية القياسية للوجبات (BOM)" :breadcrumbs="['إدارة التكاليف والمقننات' => route('costing.recipes.index'), 'المقننات' => route('costing.recipes.index')]">
+        <x-slot:actions>
+            <a href="{{ route('costing.recipes.create') }}" class="erp-btn erp-btn-primary">
+                <x-icon name="plus" size="16" />
+                <span>إضافة مقنن وجبة جديد</span>
+            </a>
+            <a href="{{ route('costing.daily-order') }}" class="erp-btn erp-btn-secondary">
+                <x-icon name="calculator" size="16" />
+                <span>حساب طلبيات المطبخ</span>
+            </a>
+            <a href="{{ route('costing.consumption.index') }}" class="erp-btn erp-btn-secondary">
+                <x-icon name="alert-triangle" size="16" />
+                <span>كشف انحرافات المقنن</span>
+            </a>
+        </x-slot:actions>
 
+        <x-slot:extra>
+            <span class="erp-badge erp-badge-neutral font-numeric px-2.5 py-1 text-xs">
+                <span>إجمالي المقننات:</span>
+                <strong>{{ count($recipes) }}</strong>
+            </span>
+        </x-slot:extra>
+    </x-control-panel>
+@endsection
+
+@section('content')
+<div class="space-y-5" dir="rtl">
     @if(session('success'))
         <div class="erp-alert erp-alert-success">
+            <x-icon name="check" size="16" />
             <span>{{ session('success') }}</span>
         </div>
     @endif

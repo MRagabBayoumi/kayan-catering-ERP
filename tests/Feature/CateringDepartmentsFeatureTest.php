@@ -170,4 +170,65 @@ class CateringDepartmentsFeatureTest extends TestCase
         $response->assertRedirect();
         $this->assertNotNull(DailyCashClosing::whereDate('closing_date', date('Y-m-d'))->first());
     }
+
+    public function test_procurement_department_isolated_lifecycle(): void
+    {
+        $this->actingAs($this->admin);
+
+        // 1. Procurement Orders index & create
+        $response = $this->get(route('procurement.orders.index'));
+        $response->assertStatus(200);
+
+        $response = $this->get(route('procurement.orders.create'));
+        $response->assertStatus(200);
+
+        // 2. Store purchase order
+        $response = $this->post(route('procurement.orders.store'), [
+            'order_number' => 'PO-TEST-101',
+            'order_date' => date('Y-m-d'),
+            'total_amount' => 15000.00,
+            'status' => 'pending',
+            'notes' => 'طلب شراء لحوم طازجة',
+        ]);
+        $response->assertRedirect(route('procurement.orders.index'));
+        $this->assertDatabaseHas('supply_orders', ['order_number' => 'PO-TEST-101']);
+
+        // 3. Procurement Suppliers directory & store
+        $response = $this->get(route('procurement.suppliers.index'));
+        $response->assertStatus(200);
+
+        $response = $this->post(route('procurement.suppliers.store'), [
+            'code' => 'SUP-TEST-99',
+            'name' => 'مورد دواجن تجريبي',
+            'phone' => '01099999999',
+            'payment_terms' => 'آجل 15 يوم',
+            'current_balance' => 0.00,
+        ]);
+        $response->assertRedirect(route('procurement.suppliers.index'));
+        $this->assertDatabaseHas('suppliers', ['code' => 'SUP-TEST-99']);
+    }
+
+    public function test_settings_and_permissions_matrix(): void
+    {
+        $this->actingAs($this->admin);
+
+        // 1. Settings index
+        $response = $this->get(route('settings.index'));
+        $response->assertStatus(200);
+
+        // 2. Users index & create
+        $response = $this->get(route('users.index'));
+        $response->assertStatus(200);
+
+        $response = $this->get(route('users.create'));
+        $response->assertStatus(200);
+
+        // 3. Roles and permissions matrix
+        $response = $this->get(route('roles.index'));
+        $response->assertStatus(200);
+        $response->assertSee('الأدوار ومصفوفة الصلاحيات');
+        $response->assertSee('مدير عام المنظومة');
+        $response->assertSee('مدير التكاليف والمقننات');
+        $response->assertSee('مدير المخازن');
+    }
 }

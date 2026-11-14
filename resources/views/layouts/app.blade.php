@@ -39,11 +39,13 @@
                 $activeModuleName = 'إدارة التكاليف والمقننات';
             } elseif (request()->is('sales*')) {
                 $activeModuleName = 'المبيعات والمناقصات';
+            } elseif (request()->is('procurement*')) {
+                $activeModuleName = 'إدارة المشتريات والتوريدات';
             } elseif (request()->is('finance*')) {
-                $activeModuleName = 'المشتريات والمالية';
+                $activeModuleName = 'إدارة الحسابات والمالية';
             } elseif (request()->is('settings*')) {
                 $activeModuleName = 'إعدادات النظام';
-            } elseif (request()->is('users*')) {
+            } elseif (request()->is('users*') || request()->is('roles*')) {
                 $activeModuleName = 'المستخدمين والصلاحيات';
             } else {
                 $activeModuleName = 'لوحة التحكم';

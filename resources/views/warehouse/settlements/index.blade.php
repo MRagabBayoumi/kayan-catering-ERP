@@ -1,70 +1,140 @@
 @extends('layouts.app')
 
-@section('content')
-<div class="p-6 space-y-6" dir="rtl">
-    <!-- Top Action Header -->
-    <div class="flex flex-col md:flex-row items-center justify-between gap-4 bg-white dark:bg-slate-800 p-5 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm">
-        <div>
-            <h1 class="text-xl font-bold text-slate-900 dark:text-white flex items-center gap-2">
-                <span>💰</span>
-                <span>تسويات رحلات المناديب ومخرجات الـ ERP</span>
-            </h1>
-            <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">
-                سجل تسوية عهد سيارات التوريد اليومية ومطابقة إذن التحميل مع إشعار استلام المستشفى واحتساب تكلفة الـ FIFO.
-            </p>
-        </div>
-    </div>
+@section('control_panel')
+    <x-control-panel title="تسويات رحلات المناديب ومخرجات الـ ERP" :breadcrumbs="['إدارة المخازن والتشغيلات' => route('warehouse.index'), 'تسويات المناديب' => route('warehouse.settlements.index')]">
+        <x-slot:actions>
+            <a href="{{ route('warehouse.settlements.create') }}" class="erp-btn erp-btn-primary">
+                <x-icon name="plus" size="16" />
+                <span>تسوية رحلة جديدة</span>
+            </a>
+            <a href="{{ route('warehouse.dispatches') }}" class="erp-btn erp-btn-secondary">
+                <x-icon name="truck" size="16" />
+                <span>أذون التحميل والتوزيع</span>
+            </a>
+            <a href="{{ route('warehouse.index') }}" class="erp-btn erp-btn-secondary">
+                <x-icon name="layers" size="16" />
+                <span>تشغيلات الشراء (FIFO)</span>
+            </a>
+        </x-slot:actions>
 
+        <x-slot:extra>
+            <span class="erp-badge erp-badge-neutral font-numeric px-2.5 py-1 text-xs">
+                <span>إجمالي التسويات:</span>
+                <strong>{{ count($settlements) }}</strong>
+            </span>
+        </x-slot:extra>
+    </x-control-panel>
+@endsection
+
+@section('content')
+<div class="space-y-5" dir="rtl">
     @if(session('success'))
-        <div class="p-4 bg-emerald-50 border border-emerald-200 text-emerald-800 rounded-xl text-xs font-semibold">
-            {{ session('success') }}
+        <div class="erp-alert erp-alert-success" role="alert">
+            <x-icon name="check" size="16" />
+            <div>{{ session('success') }}</div>
         </div>
     @endif
 
-    <!-- Settlements Table -->
-    <div class="bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm overflow-hidden">
-        <div class="overflow-x-auto">
-            <table class="w-full text-right text-xs">
-                <thead class="bg-slate-50 dark:bg-slate-900/50 text-slate-500 dark:text-slate-400 border-b border-slate-200 dark:border-slate-700">
-                    <tr>
-                        <th class="p-3.5">رقم التسوية</th>
-                        <th class="p-3.5">المستشفى</th>
-                        <th class="p-3.5">السائق / المندوب</th>
-                        <th class="p-3.5">محاسب المخزن</th>
-                        <th class="p-3.5 text-center">المحمل بالسيارة</th>
-                        <th class="p-3.5 text-center">المسلم للمستشفى</th>
-                        <th class="p-3.5 text-center">المرتجع للمخزن</th>
-                        <th class="p-3.5 text-center">تكلفة الـ FIFO المسلمة</th>
-                        <th class="p-3.5 text-center">رقم قيد الـ ERP</th>
-                    </tr>
-                </thead>
-                <tbody class="divide-y divide-slate-100 dark:divide-slate-700">
-                    @forelse($settlements as $st)
-                        <tr class="hover:bg-slate-50/50 dark:hover:bg-slate-900/30 transition">
-                            <td class="p-3.5 font-mono font-bold text-blue-600 dark:text-blue-400">{{ $st->settlement_number }}</td>
-                            <td class="p-3.5 font-bold text-slate-800 dark:text-slate-200">{{ $st->dispatchOrder->hospital->name ?? '-' }}</td>
-                            <td class="p-3.5 text-slate-600 dark:text-slate-400">{{ $st->driver->name ?? '-' }}</td>
-                            <td class="p-3.5 text-slate-600 dark:text-slate-400">{{ $st->accountant->name ?? '-' }}</td>
-                            <td class="p-3.5 font-mono text-center font-bold text-slate-700 dark:text-slate-300">{{ number_format($st->total_dispatched_qty, 2) }}</td>
-                            <td class="p-3.5 font-mono text-center font-bold text-emerald-600">{{ number_format($st->total_delivered_qty, 2) }}</td>
-                            <td class="p-3.5 font-mono text-center font-bold text-blue-600">{{ number_format($st->total_returned_qty, 2) }}</td>
-                            <td class="p-3.5 font-mono text-center font-extrabold text-slate-900 dark:text-white">{{ number_format($st->total_cogs_cost, 2) }} ج.م</td>
-                            <td class="p-3.5 font-mono text-center">
-                                <span class="px-2 py-0.5 rounded text-[11px] font-bold bg-indigo-50 text-indigo-700 dark:bg-indigo-950/40 dark:text-indigo-300">
-                                    {{ $st->erp_journal_voucher }}
-                                </span>
-                            </td>
-                        </tr>
-                    @empty
-                        <tr>
-                            <td colspan="9" class="p-8 text-center text-slate-400">لا توجد تسويات مسجلة حالياً.</td>
-                        </tr>
-                    @endforelse
-                </tbody>
-            </table>
+    <!-- Fast Status KPI Ribbon -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3.5">
+        <div class="kpi-card">
+            <div class="kpi-header mb-1">
+                <span class="kpi-label">إجمالي رحلات التسوية</span>
+                <span class="kpi-icon text-indigo-600 bg-indigo-50 dark:bg-indigo-950/40"><x-icon name="receipt" size="18" /></span>
+            </div>
+            <div class="kpi-value font-numeric text-2xl font-black text-[var(--text-main)]">{{ count($settlements) }}</div>
+            <div class="kpi-note font-numeric text-xs text-[var(--text-muted)]">رحلات تم مطابقتها واعتمادها</div>
         </div>
-        <div class="p-4 border-t border-slate-100 dark:border-slate-700">
-            {{ $settlements->links() }}
+
+        <div class="kpi-card">
+            <div class="kpi-header mb-1">
+                <span class="kpi-label">المسلم للمستشفيات</span>
+                <span class="kpi-icon text-emerald-600 bg-emerald-50 dark:bg-emerald-950/40"><x-icon name="check-circle" size="18" /></span>
+            </div>
+            <div class="kpi-value font-numeric text-2xl font-black text-emerald-600">
+                {{ number_format(collect($settlements)->sum('total_delivered_qty'), 2) }}
+            </div>
+            <div class="kpi-note font-numeric text-xs text-[var(--text-muted)]">كميات بإشعار استلام الموقع</div>
+        </div>
+
+        <div class="kpi-card">
+            <div class="kpi-header mb-1">
+                <span class="kpi-label">المرتجع للمخزن</span>
+                <span class="kpi-icon text-sky-600 bg-sky-50 dark:bg-sky-950/40"><x-icon name="rotate-ccw" size="18" /></span>
+            </div>
+            <div class="kpi-value font-numeric text-2xl font-black text-sky-600">
+                {{ number_format(collect($settlements)->sum('total_returned_qty'), 2) }}
+            </div>
+            <div class="kpi-note font-numeric text-xs text-[var(--text-muted)]">أعيد لرصيد المخزن المركزي</div>
+        </div>
+
+        <div class="kpi-card">
+            <div class="kpi-header mb-1">
+                <span class="kpi-label">تكلفة الـ FIFO المصروفة</span>
+                <span class="kpi-icon text-amber-600 bg-amber-50 dark:bg-amber-950/40"><x-icon name="wallet" size="18" /></span>
+            </div>
+            <div class="kpi-value font-numeric text-2xl font-black text-[var(--text-main)]">
+                {{ number_format(collect($settlements)->sum('total_cogs_cost'), 2) }} <span class="text-xs font-normal text-[var(--text-muted)]">ج.م</span>
+            </div>
+            <div class="kpi-note font-numeric text-xs text-[var(--text-muted)]">قيود تكلفة البضاعة المباعة</div>
+        </div>
+    </div>
+
+    <!-- Settlements Table Card -->
+    <div class="erp-card">
+        <div class="erp-card-header">
+            <div class="erp-card-title">
+                <x-icon name="receipt" size="16" class="text-[var(--primary)]" />
+                <span>سجل تسويات عهد سيارات التوريد اليومية ومطابقة إذن التحميل</span>
+            </div>
+            <a href="{{ route('warehouse.settlements.create') }}" class="erp-btn erp-btn-secondary text-xs">
+                <x-icon name="plus" size="12" />
+                <span>إجراء تسوية</span>
+            </a>
+        </div>
+        <div class="erp-card-body p-0">
+            <div class="erp-table-responsive">
+                <table class="erp-table">
+                    <thead>
+                        <tr>
+                            <th>رقم التسوية</th>
+                            <th>المستشفى / الموقع</th>
+                            <th>السائق / المندوب</th>
+                            <th>محاسب المخزن</th>
+                            <th class="text-center">المحمل بالسيارة</th>
+                            <th class="text-center">المسلم للمستشفى</th>
+                            <th class="text-center">المرتجع للمخزن</th>
+                            <th class="text-center">تكلفة FIFO المسلمة</th>
+                            <th class="text-center">رقم قيد الـ ERP</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @forelse($settlements as $st)
+                            <tr>
+                                <td class="font-numeric font-bold text-[var(--primary)]">{{ $st->settlement_number }}</td>
+                                <td class="font-bold text-[var(--text-main)]">{{ $st->dispatchOrder->hospital->name ?? '-' }}</td>
+                                <td>{{ $st->driver->name ?? '-' }}</td>
+                                <td>{{ $st->accountant->name ?? '-' }}</td>
+                                <td class="font-numeric text-center font-bold">{{ number_format($st->total_dispatched_qty, 2) }}</td>
+                                <td class="font-numeric text-center font-bold text-emerald-600">{{ number_format($st->total_delivered_qty, 2) }}</td>
+                                <td class="font-numeric text-center font-bold text-sky-600">{{ number_format($st->total_returned_qty, 2) }}</td>
+                                <td class="font-numeric text-center font-black text-[var(--text-main)]">{{ number_format($st->total_cogs_cost, 2) }} ج.م</td>
+                                <td class="text-center">
+                                    <span class="erp-badge erp-badge-info font-numeric font-bold text-xs">
+                                        {{ $st->erp_journal_voucher }}
+                                    </span>
+                                </td>
+                            </tr>
+                        @empty
+                            <tr>
+                                <td colspan="9" class="text-center py-8 text-[var(--text-muted)] text-xs">
+                                    لا توجد تسويات مسجلة حالياً
+                                </td>
+                            </tr>
+                        @endforelse
+                    </tbody>
+                </table>
+            </div>
         </div>
     </div>
 </div>

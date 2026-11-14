@@ -3,11 +3,15 @@
 use App\Http\Controllers\AiCopilotController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\BlindAuditController;
+use App\Http\Controllers\CompanySettingController;
 use App\Http\Controllers\CostingController;
 use App\Http\Controllers\DriverSettlementController;
 use App\Http\Controllers\FinanceController;
 use App\Http\Controllers\HospitalController;
+use App\Http\Controllers\ProcurementController;
+use App\Http\Controllers\RoleController;
 use App\Http\Controllers\TenderController;
+use App\Http\Controllers\UserController;
 use App\Http\Controllers\WarehouseController;
 use App\Models\DispatchOrder;
 use App\Models\Hospital;
@@ -101,7 +105,17 @@ Route::middleware('auth')->group(function () {
         Route::post('/competitors', [TenderController::class, 'storeCompetitor'])->name('competitors.store');
     });
 
-    // 4. Procurement & Finance Department Routes (المشتريات والمالية)
+    // 4. Procurement Department Routes (إدارة المشتريات والتوريدات)
+    Route::prefix('procurement')->name('procurement.')->group(function () {
+        Route::get('/orders', [ProcurementController::class, 'orders'])->name('orders.index');
+        Route::get('/orders/create', [ProcurementController::class, 'createOrder'])->name('orders.create');
+        Route::post('/orders', [ProcurementController::class, 'storeOrder'])->name('orders.store');
+
+        Route::get('/suppliers', [ProcurementController::class, 'suppliers'])->name('suppliers.index');
+        Route::post('/suppliers', [ProcurementController::class, 'storeSupplier'])->name('suppliers.store');
+    });
+
+    // 5. Finance & Accounts Department Routes (إدارة الحسابات والمالية)
     Route::prefix('finance')->name('finance.')->group(function () {
         Route::get('/suppliers', [FinanceController::class, 'suppliers'])->name('suppliers.index');
 
@@ -111,4 +125,12 @@ Route::middleware('auth')->group(function () {
         Route::get('/closing', [FinanceController::class, 'closing'])->name('closing.index');
         Route::post('/closing', [FinanceController::class, 'storeClosing'])->name('closing.store');
     });
+
+    // 6. Settings & Permissions (إعدادات النظام والمستخدمين والصلاحيات)
+    Route::get('/settings', [CompanySettingController::class, 'index'])->name('settings.index');
+    Route::post('/settings', [CompanySettingController::class, 'update'])->name('settings.update');
+
+    Route::resource('users', UserController::class);
+
+    Route::get('/roles', [RoleController::class, 'index'])->name('roles.index');
 });

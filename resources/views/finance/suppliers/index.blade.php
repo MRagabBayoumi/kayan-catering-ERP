@@ -2,17 +2,37 @@
 
 @section('title', 'حسابات الموردين وجدولة السداد')
 
-@section('content')
-<div class="space-y-6">
-    <div class="flex items-center justify-between">
-        <div>
-            <h1 class="text-xl font-bold text-slate-800 dark:text-slate-100">حسابات الموردين والآجل وجدولة السداد (إدارة المشتريات والمالية)</h1>
-            <p class="text-xs text-slate-500 mt-1">متابعة أرصدة الموردين، أوامر التوريد الآجلة، وتواريخ استحقاق الدفعات</p>
-        </div>
-    </div>
+@section('control_panel')
+    <x-control-panel title="حسابات الموردين والآجل وجدولة السداد (الحسابات والمالية)" :breadcrumbs="['الحسابات والمالية' => route('finance.suppliers.index'), 'حسابات الموردين' => route('finance.suppliers.index')]">
+        <x-slot:actions>
+            <a href="{{ route('finance.treasury.index') }}" class="erp-btn erp-btn-secondary">
+                <x-icon name="wallet" size="16" />
+                <span>الخزينة وعهد المواقع</span>
+            </a>
+            <a href="{{ route('finance.closing.index') }}" class="erp-btn erp-btn-secondary">
+                <x-icon name="pie-chart" size="16" />
+                <span>التقفيل واليومية</span>
+            </a>
+            <a href="{{ route('procurement.orders.index') }}" class="erp-btn erp-btn-secondary">
+                <x-icon name="shopping-bag" size="16" />
+                <span>طلبات الشراء</span>
+            </a>
+        </x-slot:actions>
 
+        <x-slot:extra>
+            <span class="erp-badge erp-badge-neutral font-numeric px-2.5 py-1 text-xs">
+                <span>إجمالي الموردين:</span>
+                <strong>{{ count($suppliers) }}</strong>
+            </span>
+        </x-slot:extra>
+    </x-control-panel>
+@endsection
+
+@section('content')
+<div class="space-y-5" dir="rtl">
     @if(session('success'))
         <div class="erp-alert erp-alert-success">
+            <x-icon name="check" size="16" />
             <span>{{ session('success') }}</span>
         </div>
     @endif

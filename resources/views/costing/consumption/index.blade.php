@@ -2,17 +2,26 @@
 
 @section('title', 'متابعة استهلاك المطبخ الفعلي وكشف الانحرافات')
 
-@section('content')
-<div class="space-y-6">
-    <div class="flex items-center justify-between">
-        <div>
-            <h1 class="text-xl font-bold text-slate-800 dark:text-slate-100">متابعة الاستهلاك الفعلي للمطبخ وانحرافات المقنن</h1>
-            <p class="text-xs text-slate-500 mt-1">مقارنة الكميات المنصرفة للمطبخ مع المقنن النظري المعتمد وكشف الهدر أو العجز</p>
-        </div>
-    </div>
+@section('control_panel')
+    <x-control-panel title="متابعة الاستهلاك الفعلي للمطبخ وانحرافات المقنن" :breadcrumbs="['إدارة التكاليف والمقننات' => route('costing.recipes.index'), 'انحرافات المقنن' => route('costing.consumption.index')]">
+        <x-slot:actions>
+            <a href="{{ route('costing.recipes.index') }}" class="erp-btn erp-btn-secondary">
+                <x-icon name="book-open" size="16" />
+                <span>المقننات القياسية (BOM)</span>
+            </a>
+            <a href="{{ route('costing.daily-order') }}" class="erp-btn erp-btn-secondary">
+                <x-icon name="calculator" size="16" />
+                <span>حساب طلبيات المطبخ</span>
+            </a>
+        </x-slot:actions>
+    </x-control-panel>
+@endsection
 
+@section('content')
+<div class="space-y-5" dir="rtl">
     @if(session('success'))
         <div class="erp-alert erp-alert-success">
+            <x-icon name="check" size="16" />
             <span>{{ session('success') }}</span>
         </div>
     @endif

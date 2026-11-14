@@ -2,17 +2,33 @@
 
 @section('title', 'الخزينة والبنوك وعهد المواقع')
 
-@section('content')
-<div class="space-y-6">
-    <div class="flex items-center justify-between">
-        <div>
-            <h1 class="text-xl font-bold text-slate-800 dark:text-slate-100">الخزينة والبنوك وعهد المواقع النقدية (الإدارة المالية)</h1>
-            <p class="text-xs text-slate-500 mt-1">متابعة أرصدة الخزن والبنوك وسندات صرف عهد المواقع (شراء الخبز والكايزر والثلج)</p>
-        </div>
-    </div>
+@section('control_panel')
+    <x-control-panel title="الخزينة والبنوك وعهد المواقع النقدية (الإدارة المالية)" :breadcrumbs="['الحسابات والمالية' => route('finance.treasury.index'), 'الخزينة وعهد المواقع' => route('finance.treasury.index')]">
+        <x-slot:actions>
+            <a href="{{ route('finance.closing.index') }}" class="erp-btn erp-btn-secondary">
+                <x-icon name="pie-chart" size="16" />
+                <span>التقفيل واليومية</span>
+            </a>
+            <a href="{{ route('finance.suppliers.index') }}" class="erp-btn erp-btn-secondary">
+                <x-icon name="factory" size="16" />
+                <span>حسابات الموردين</span>
+            </a>
+        </x-slot:actions>
 
+        <x-slot:extra>
+            <span class="erp-badge erp-badge-neutral font-numeric px-2.5 py-1 text-xs">
+                <span>إجمالي الخزن والعهد:</span>
+                <strong>{{ count($treasuries) }}</strong>
+            </span>
+        </x-slot:extra>
+    </x-control-panel>
+@endsection
+
+@section('content')
+<div class="space-y-5" dir="rtl">
     @if(session('success'))
         <div class="erp-alert erp-alert-success">
+            <x-icon name="check" size="16" />
             <span>{{ session('success') }}</span>
         </div>
     @endif

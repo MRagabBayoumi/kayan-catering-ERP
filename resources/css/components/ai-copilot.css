@@ -12,29 +12,31 @@
 }
 
 .ai-launcher-btn {
-    display: flex;
+    display: inline-flex;
     align-items: center;
     gap: 8px;
-    background: linear-gradient(135deg, #1e293b, #0f172a);
-    color: #f8fafc;
-    border: 1px solid rgba(255, 255, 255, 0.15);
-    padding: 10px 18px;
+    background-color: var(--primary, #714B67);
+    color: #ffffff;
+    border: 1px solid var(--primary-border, #d9c4d5);
+    padding: 8px 16px;
     border-radius: 9999px;
-    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.3), 0 0 15px rgba(59, 130, 246, 0.3);
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.15);
     cursor: pointer;
-    transition: all 0.25s ease;
+    transition: all 0.2s ease;
+    font-size: 13px;
+    font-weight: 700;
 }
 
 .ai-launcher-btn:hover {
+    background-color: var(--primary-hover, #5d3b54);
     transform: translateY(-2px);
-    box-shadow: 0 15px 30px -5px rgba(0, 0, 0, 0.4), 0 0 20px rgba(59, 130, 246, 0.5);
-    border-color: #3b82f6;
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.22);
 }
 
 .ai-btn-icon {
     display: flex;
     align-items: center;
-    color: #60a5fa;
+    color: #ffffff;
 }
 
 .ai-btn-label {

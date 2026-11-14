@@ -26,6 +26,29 @@ class User extends Authenticatable
 
     public const ROLE_ACCOUNTANT = 'accountant';
 
+    public const ROLE_PROCUREMENT_MANAGER = 'procurement_manager';
+
+    public const ROLE_SALES_MANAGER = 'sales_manager';
+
+    public static function rolesList(): array
+    {
+        return [
+            self::ROLE_ADMIN => 'مدير عام المنظومة (صلاحيات كاملة)',
+            self::ROLE_STORE_MANAGER => 'مدير المخازن والتشغيلات (FIFO)',
+            self::ROLE_STOREKEEPER => 'أمين المخزن الرئيسي (الجرد الأعمى والصرف)',
+            self::ROLE_DRIVER => 'سائق سيارة التوزيع ومندوب التوريد',
+            self::ROLE_COSTING_MANAGER => 'مدير التكاليف والمقننات القياسية (BOM)',
+            self::ROLE_SALES_MANAGER => 'مدير المبيعات والمناقصات وعقود المستشفيات',
+            self::ROLE_PROCUREMENT_MANAGER => 'مسؤول المشتريات ومتابعة الموردين',
+            self::ROLE_ACCOUNTANT => 'محاسب المخزن والمالية (تسوية العهد)',
+        ];
+    }
+
+    public function getRoleLabelAttribute(): string
+    {
+        return self::rolesList()[$this->role] ?? 'مستخدم نظام';
+    }
+
     protected $fillable = [
         'name',
         'username',

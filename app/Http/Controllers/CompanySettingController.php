@@ -5,10 +5,8 @@ namespace App\Http\Controllers;
 use App\Models\BarcodeSetting;
 use App\Models\Category;
 use App\Models\CompanySetting;
-use App\Models\PrintTemplate;
 use App\Services\CategoryImportService;
 use App\Services\Printing\PythonPrintEngineService;
-use App\Services\PrintTemplateService;
 use App\Services\TelegramNotificationService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
@@ -26,63 +24,39 @@ class CompanySettingController extends Controller
     public function index(): View
     {
         $settings = CompanySetting::getSettings();
-        $barcodeSettings = BarcodeSetting::getSettings();
+        $barcodeSettings = (object) [
+            'prefix' => '21',
+            'barcode_type' => 'CODE128',
+            'label_width' => 40,
+            'label_height' => 25,
+            'include_name' => true,
+            'include_price' => true,
+        ];
         $activeTab = request('tab', 'company');
 
-        $printTemplateData = [];
-        if ($activeTab === 'print_templates') {
-            $service = app(PrintTemplateService::class);
-            if (PrintTemplate::count() === 0) {
-                $service->seedDefaultTemplates();
-            }
-            $docType = request('doc_type', PrintTemplate::DOC_SALES_INVOICE);
-            $paperFormat = request('paper_format', PrintTemplate::FORMAT_A4);
-            $templateId = request('template_id') ? (int) request('template_id') : null;
+        $printTemplateData = [
+            'currentDocType' => 'sales_invoice',
+            'currentPaperFormat' => 'a4',
+            'currentTemplate' => (object) [],
+            'sampleData' => [],
+            'defaults' => [],
+            'templatesList' => collect([]),
+            'docTypeLabels' => [],
+            'paperFormatLabels' => [],
+        ];
 
-            if (! in_array($docType, PrintTemplateService::SUPPORTED_DOCUMENTS, true)) {
-                $docType = PrintTemplate::DOC_SALES_INVOICE;
-            }
-            if (! in_array($paperFormat, PrintTemplateService::SUPPORTED_FORMATS, true)) {
-                $paperFormat = PrintTemplate::FORMAT_A4;
-            }
+        $departmentsData = [
+            'categoriesList' => Category::with('parent')->withCount('products')->orderBy('name')->get(),
+            'importPreview' => session('department_import_preview'),
+        ];
 
-            $printTemplateData = [
-                'currentDocType' => $docType,
-                'currentPaperFormat' => $paperFormat,
-                'currentTemplate' => $service->getEffectiveTemplate($docType, $paperFormat, $templateId),
-                'sampleData' => $service->getPreviewSampleData($docType, $paperFormat),
-                'defaults' => $service->getDefaultSettings($docType, $paperFormat),
-                'templatesList' => PrintTemplate::forDocument($docType)
-                    ->forFormat($paperFormat)
-                    ->orderByDesc('is_default')
-                    ->orderBy('name')
-                    ->get(),
-                'docTypeLabels' => PrintTemplate::getDocumentTypeLabels(),
-                'paperFormatLabels' => PrintTemplate::getPaperFormatLabels(),
-            ];
-        }
+        $backupsData = [
+            'backupsList' => [],
+        ];
 
-        $departmentsData = [];
-        if ($activeTab === 'departments') {
-            $departmentsData = [
-                'categoriesList' => Category::with('parent')->withCount('products')->orderBy('name')->get(),
-                'importPreview' => session('department_import_preview'),
-            ];
-        }
-
-        $backupsData = [];
-        if ($activeTab === 'backups') {
-            $backupsData = [
-                'backupsList' => app(BackupController::class)->getBackupsList(),
-            ];
-        }
-
-        $printersData = [];
-        if ($activeTab === 'printers') {
-            $printersData = [
-                'systemPrinters' => app(PythonPrintEngineService::class)->getSystemPrinters(),
-            ];
-        }
+        $printersData = [
+            'systemPrinters' => [],
+        ];
 
         return view('settings.index', array_merge([
             'title' => 'إعدادات الشركة والنظام',

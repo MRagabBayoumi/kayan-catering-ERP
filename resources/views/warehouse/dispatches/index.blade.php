@@ -1,81 +1,145 @@
 @extends('layouts.app')
 
-@section('content')
-<div class="p-6 space-y-6" dir="rtl">
-    <!-- Top Action Header -->
-    <div class="flex flex-col md:flex-row items-center justify-between gap-4 bg-white dark:bg-slate-800 p-5 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm">
-        <div>
-            <h1 class="text-xl font-bold text-slate-900 dark:text-white flex items-center gap-2">
-                <span>🚚</span>
-                <span>أذون التحميل والتوريد لسيارات المناديب</span>
-            </h1>
-            <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">
-                سجل أذون خروج البضاعة من المخزن الرئيسي إلى عهدة سيارات التوريد متضمنة نسبة الأمان (Buffer).
-            </p>
-        </div>
-        <div class="flex items-center gap-3">
+@section('control_panel')
+    <x-control-panel title="أذون التحميل والتوريد لسيارات المناديب" :breadcrumbs="['إدارة المخازن والتشغيلات' => route('warehouse.index'), 'أذون التحميل' => route('warehouse.dispatches')]">
+        <x-slot:actions>
             @can('create-dispatch')
-            <a href="{{ route('warehouse.dispatches.create') }}" class="px-4 py-2 bg-blue-600 hover:bg-blue-500 text-white font-medium text-xs rounded-xl shadow-sm transition flex items-center gap-2">
-                <span>➕</span>
+            <a href="{{ route('warehouse.dispatches.create') }}" class="erp-btn erp-btn-primary">
+                <x-icon name="plus" size="16" />
                 <span>إصدار إذن تحميل جديد</span>
             </a>
             @endcan
+            <a href="{{ route('warehouse.index') }}" class="erp-btn erp-btn-secondary">
+                <x-icon name="layers" size="16" />
+                <span>تشغيلات الشراء (FIFO)</span>
+            </a>
+            <a href="{{ route('warehouse.settlements.index') }}" class="erp-btn erp-btn-secondary">
+                <x-icon name="receipt" size="16" />
+                <span>تسويات عهد المناديب</span>
+            </a>
+        </x-slot:actions>
+
+        <x-slot:extra>
+            <span class="erp-badge erp-badge-neutral font-numeric px-2.5 py-1 text-xs">
+                <span>إجمالي الأذون:</span>
+                <strong>{{ count($dispatches) }}</strong>
+            </span>
+        </x-slot:extra>
+    </x-control-panel>
+@endsection
+
+@section('content')
+<div class="space-y-5" dir="rtl">
+    @if(session('success'))
+        <div class="erp-alert erp-alert-success" role="alert">
+            <x-icon name="check" size="16" />
+            <div>{{ session('success') }}</div>
+        </div>
+    @endif
+
+    <!-- Fast Status KPI Ribbon -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3.5">
+        <div class="kpi-card">
+            <div class="kpi-header mb-1">
+                <span class="kpi-label">أذون التحميل الصادرة</span>
+                <span class="kpi-icon text-indigo-600 bg-indigo-50 dark:bg-indigo-950/40"><x-icon name="truck" size="18" /></span>
+            </div>
+            <div class="kpi-value font-numeric text-2xl font-black text-[var(--text-main)]">{{ count($dispatches) }}</div>
+            <div class="kpi-note font-numeric text-xs text-[var(--text-muted)]">حركة سيارات التوزيع</div>
+        </div>
+
+        <div class="kpi-card">
+            <div class="kpi-header mb-1">
+                <span class="kpi-label">سيارات في الطريق</span>
+                <span class="kpi-icon text-amber-600 bg-amber-50 dark:bg-amber-950/40"><x-icon name="navigation" size="18" /></span>
+            </div>
+            <div class="kpi-value font-numeric text-2xl font-black text-amber-600">
+                {{ collect($dispatches)->whereIn('status', ['prepared', 'in_transit'])->count() }}
+            </div>
+            <div class="kpi-note font-numeric text-xs text-[var(--text-muted)]">بعهدة السائقين قيد التسليم</div>
+        </div>
+
+        <div class="kpi-card">
+            <div class="kpi-header mb-1">
+                <span class="kpi-label">أذون تم تسليمها للمستشفيات</span>
+                <span class="kpi-icon text-emerald-600 bg-emerald-50 dark:bg-emerald-950/40"><x-icon name="check-circle" size="18" /></span>
+            </div>
+            <div class="kpi-value font-numeric text-2xl font-black text-emerald-600">
+                {{ collect($dispatches)->where('status', 'delivered')->count() }}
+            </div>
+            <div class="kpi-note font-numeric text-xs text-[var(--text-muted)]">استلمها مشرف الموقع</div>
+        </div>
+
+        <div class="kpi-card">
+            <div class="kpi-header mb-1">
+                <span class="kpi-label">أذون تمت تسويتها محاسبياً</span>
+                <span class="kpi-icon text-sky-600 bg-sky-50 dark:bg-sky-950/40"><x-icon name="receipt" size="18" /></span>
+            </div>
+            <div class="kpi-value font-numeric text-2xl font-black text-sky-600">
+                {{ collect($dispatches)->where('status', 'settled')->count() }}
+            </div>
+            <div class="kpi-note font-numeric text-xs text-[var(--text-muted)]">أغلقت بالـ ERP</div>
         </div>
     </div>
 
-    <!-- Dispatches Table -->
-    <div class="bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm overflow-hidden">
-        <div class="overflow-x-auto">
-            <table class="w-full text-right text-xs">
-                <thead class="bg-slate-50 dark:bg-slate-900/50 text-slate-500 dark:text-slate-400 border-b border-slate-200 dark:border-slate-700">
-                    <tr>
-                        <th class="p-3.5">رقم الإذن</th>
-                        <th class="p-3.5">المستشفى المستهدفة</th>
-                        <th class="p-3.5">المخزن المصدر</th>
-                        <th class="p-3.5">سيارة المندوب (المخزن المتنقل)</th>
-                        <th class="p-3.5">تاريخ ووقت الخروج</th>
-                        <th class="p-3.5">الحالة</th>
-                        <th class="p-3.5 text-center">إجراءات</th>
-                    </tr>
-                </thead>
-                <tbody class="divide-y divide-slate-100 dark:divide-slate-700">
-                    @forelse($dispatches as $dsp)
-                        <tr class="hover:bg-slate-50/50 dark:hover:bg-slate-900/30 transition">
-                            <td class="p-3.5 font-mono font-bold text-blue-600 dark:text-blue-400">{{ $dsp->dispatch_number }}</td>
-                            <td class="p-3.5 font-bold text-slate-800 dark:text-slate-200">{{ $dsp->hospital->name ?? '-' }}</td>
-                            <td class="p-3.5 text-slate-600 dark:text-slate-400">{{ $dsp->sourceWarehouse->name ?? '-' }}</td>
-                            <td class="p-3.5">
-                                <span class="font-semibold text-slate-800 dark:text-slate-200 block">{{ $dsp->transitWarehouse->name ?? '-' }}</span>
-                                <span class="text-[11px] text-slate-400">السائق: {{ $dsp->driver->name ?? '-' }}</span>
-                            </td>
-                            <td class="p-3.5 font-mono text-slate-600 dark:text-slate-400">{{ $dsp->dispatch_date ? $dsp->dispatch_date->format('Y-m-d H:i') : '-' }}</td>
-                            <td class="p-3.5">
-                                <span class="px-2.5 py-1 text-xs rounded-full font-medium {{ $dsp->status === 'settled' ? 'bg-emerald-100 text-emerald-800' : ($dsp->status === 'delivered' ? 'bg-blue-100 text-blue-800' : 'bg-amber-100 text-amber-800') }}">
-                                    {{ $dsp->status === 'settled' ? 'تمت التسوية والمطابقة' : ($dsp->status === 'delivered' ? 'تم التسليم بالموقع' : 'في الطريق بالسيارة') }}
-                                </span>
-                            </td>
-                            <td class="p-3.5 text-center">
-                                @if($dsp->status !== 'settled')
-                                    @can('manage-settlements')
-                                    <a href="{{ route('warehouse.settlements.create', ['dispatch_id' => $dsp->id]) }}" class="px-3 py-1 bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg text-xs font-semibold shadow-sm transition inline-block">
-                                        اعتماد التسوية اليومية
-                                    </a>
-                                    @endcan
-                                @else
-                                    <span class="text-xs text-slate-400 font-semibold">مغلق ومسوى</span>
-                                @endif
-                            </td>
-                        </tr>
-                    @empty
-                        <tr>
-                            <td colspan="7" class="p-8 text-center text-slate-400">لا توجد أذون تحميل مسجلة.</td>
-                        </tr>
-                    @endforelse
-                </tbody>
-            </table>
+    <!-- Dispatches Table Card -->
+    <div class="erp-card">
+        <div class="erp-card-header">
+            <div class="erp-card-title">
+                <x-icon name="truck" size="16" class="text-[var(--primary)]" />
+                <span>سجل أذون خروج البضاعة من المخزن الرئيسي لسيارات التوريد</span>
+            </div>
+            @can('create-dispatch')
+            <a href="{{ route('warehouse.dispatches.create') }}" class="erp-btn erp-btn-secondary text-xs">
+                <x-icon name="plus" size="12" />
+                <span>إذن جديد</span>
+            </a>
+            @endcan
         </div>
-        <div class="p-4 border-t border-slate-100 dark:border-slate-700">
-            {{ $dispatches->links() }}
+        <div class="erp-card-body p-0">
+            <div class="erp-table-responsive">
+                <table class="erp-table">
+                    <thead>
+                        <tr>
+                            <th>رقم الإذن</th>
+                            <th>المستشفى المستهدفة</th>
+                            <th>المخزن المصدر</th>
+                            <th>سيارة المندوب والسائق</th>
+                            <th>تاريخ ووقت الخروج</th>
+                            <th>حالة الإذن</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @forelse($dispatches as $dsp)
+                            <tr>
+                                <td class="font-numeric font-bold text-[var(--primary)]">{{ $dsp->dispatch_number }}</td>
+                                <td class="font-bold text-[var(--text-main)]">{{ $dsp->hospital->name ?? '-' }}</td>
+                                <td>{{ $dsp->sourceWarehouse->name ?? '-' }}</td>
+                                <td>
+                                    <div class="font-semibold">{{ $dsp->transitWarehouse->name ?? '-' }}</div>
+                                    <small class="text-xs text-[var(--text-muted)]">السائق: {{ $dsp->driver->name ?? '-' }}</small>
+                                </td>
+                                <td class="font-numeric text-xs">{{ $dsp->dispatched_at ? $dsp->dispatched_at->format('Y-m-d H:i') : '-' }}</td>
+                                <td>
+                                    @if($dsp->status === 'delivered')
+                                        <span class="erp-badge erp-badge-success">تم التسليم للمستشفى</span>
+                                    @elseif($dsp->status === 'settled')
+                                        <span class="erp-badge erp-badge-neutral">تمت التسوية محاسبياً</span>
+                                    @else
+                                        <span class="erp-badge erp-badge-warning">في الطريق (عهدة سيارة)</span>
+                                    @endif
+                                </td>
+                            </tr>
+                        @empty
+                            <tr>
+                                <td colspan="6" class="text-center py-8 text-[var(--text-muted)] text-xs">
+                                    لا توجد أذون تحميل مسجلة حالياً
+                                </td>
+                            </tr>
+                        @endforelse
+                    </tbody>
+                </table>
+            </div>
         </div>
     </div>
 </div>

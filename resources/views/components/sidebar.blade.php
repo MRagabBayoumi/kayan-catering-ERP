@@ -140,31 +140,85 @@
             </div>
         </div>
 
-        <!-- 4. Procurement & Finance Section -->
-        <div class="erp-nav-section" data-section="finance">
-            <button type="button" class="erp-nav-section-header" aria-expanded="false">
-                <span class="erp-nav-section-title">المشتريات والحسابات والمالية</span>
+        <!-- 4. Procurement Department (إدارة المشتريات والتوريدات) -->
+        <div class="erp-nav-section {{ request()->is('procurement*') ? 'is-open' : '' }}" data-section="procurement">
+            <button type="button" class="erp-nav-section-header" aria-expanded="{{ request()->is('procurement*') ? 'true' : 'false' }}">
+                <span class="erp-nav-section-title">إدارة المشتريات والتوريدات</span>
                 <svg class="erp-section-arrow" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
                     <polyline points="6 9 12 15 18 9"></polyline>
                 </svg>
             </button>
             <div class="erp-nav-section-items">
-                <a href="{{ Route::has('finance.suppliers.index') ? route('finance.suppliers.index') : url('/finance/suppliers') }}" class="erp-nav-item {{ request()->routeIs('finance.suppliers*') ? 'active' : '' }}" title="حسابات الموردين وجدولة السداد">
+                <a href="{{ route('procurement.orders.index') }}" class="erp-nav-item {{ request()->routeIs('procurement.orders*') ? 'active' : '' }}" title="طلبات الشراء وعروض الأسعار">
+                    <div class="erp-nav-content">
+                        <span class="erp-nav-icon"><x-icon name="shopping-bag" size="18" /></span>
+                        <span class="erp-nav-label">طلبات الشراء وعروض الأسعار</span>
+                    </div>
+                </a>
+                <a href="{{ route('procurement.suppliers.index') }}" class="erp-nav-item {{ request()->routeIs('procurement.suppliers*') ? 'active' : '' }}" title="دليل وتكويد الموردين المعتمدين">
                     <div class="erp-nav-content">
                         <span class="erp-nav-icon"><x-icon name="factory" size="18" /></span>
+                        <span class="erp-nav-label">دليل وتكويد الموردين</span>
+                    </div>
+                </a>
+            </div>
+        </div>
+
+        <!-- 5. Finance & Accounts Department (إدارة الحسابات والمالية) -->
+        <div class="erp-nav-section {{ request()->is('finance*') ? 'is-open' : '' }}" data-section="finance">
+            <button type="button" class="erp-nav-section-header" aria-expanded="{{ request()->is('finance*') ? 'true' : 'false' }}">
+                <span class="erp-nav-section-title">إدارة الحسابات والمالية</span>
+                <svg class="erp-section-arrow" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                    <polyline points="6 9 12 15 18 9"></polyline>
+                </svg>
+            </button>
+            <div class="erp-nav-section-items">
+                <a href="{{ route('finance.suppliers.index') }}" class="erp-nav-item {{ request()->routeIs('finance.suppliers*') ? 'active' : '' }}" title="حسابات الموردين وجدولة السداد">
+                    <div class="erp-nav-content">
+                        <span class="erp-nav-icon"><x-icon name="credit-card" size="18" /></span>
                         <span class="erp-nav-label">حسابات الموردين والآجل</span>
                     </div>
                 </a>
-                <a href="{{ Route::has('finance.treasury.index') ? route('finance.treasury.index') : url('/finance/treasury') }}" class="erp-nav-item {{ request()->routeIs('finance.treasury*') ? 'active' : '' }}" title="الخزينة والبنوك وعهد المواقع">
+                <a href="{{ route('finance.treasury.index') }}" class="erp-nav-item {{ request()->routeIs('finance.treasury*') ? 'active' : '' }}" title="الخزينة والبنوك وعهد المواقع">
                     <div class="erp-nav-content">
                         <span class="erp-nav-icon"><x-icon name="wallet" size="18" /></span>
                         <span class="erp-nav-label">الخزينة وعهد المواقع النقدية</span>
                     </div>
                 </a>
-                <a href="{{ Route::has('finance.closing.index') ? route('finance.closing.index') : url('/finance/closing') }}" class="erp-nav-item {{ request()->routeIs('finance.closing*') ? 'active' : '' }}" title="التقفيل اليومي لصاحب العمل">
+                <a href="{{ route('finance.closing.index') }}" class="erp-nav-item {{ request()->routeIs('finance.closing*') ? 'active' : '' }}" title="التقفيل اليومي لصاحب العمل">
                     <div class="erp-nav-content">
                         <span class="erp-nav-icon"><x-icon name="pie-chart" size="18" /></span>
                         <span class="erp-nav-label">اليومية والتقفيل لصاحب العمل</span>
+                    </div>
+                </a>
+            </div>
+        </div>
+
+        <!-- 6. System Settings & Permissions (إعدادات النظام والصلاحيات) -->
+        <div class="erp-nav-section {{ (request()->is('settings*') || request()->is('users*') || request()->is('roles*')) ? 'is-open' : '' }}" data-section="settings">
+            <button type="button" class="erp-nav-section-header" aria-expanded="{{ (request()->is('settings*') || request()->is('users*') || request()->is('roles*')) ? 'true' : 'false' }}">
+                <span class="erp-nav-section-title">إعدادات النظام والصلاحيات</span>
+                <svg class="erp-section-arrow" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                    <polyline points="6 9 12 15 18 9"></polyline>
+                </svg>
+            </button>
+            <div class="erp-nav-section-items">
+                <a href="{{ route('users.index') }}" class="erp-nav-item {{ request()->routeIs('users*') ? 'active' : '' }}" title="إدارة المستخدمين وحسابات الدخول">
+                    <div class="erp-nav-content">
+                        <span class="erp-nav-icon"><x-icon name="users" size="18" /></span>
+                        <span class="erp-nav-label">المستخدمين وحسابات الدخول</span>
+                    </div>
+                </a>
+                <a href="{{ route('roles.index') }}" class="erp-nav-item {{ request()->routeIs('roles*') ? 'active' : '' }}" title="الأدوار ومصفوفة الصلاحيات">
+                    <div class="erp-nav-content">
+                        <span class="erp-nav-icon"><x-icon name="shield" size="18" /></span>
+                        <span class="erp-nav-label">الأدوار ومصفوفة الصلاحيات</span>
+                    </div>
+                </a>
+                <a href="{{ route('settings.index') }}" class="erp-nav-item {{ request()->routeIs('settings*') ? 'active' : '' }}" title="إعدادات الشركة والنظام">
+                    <div class="erp-nav-content">
+                        <span class="erp-nav-icon"><x-icon name="settings" size="18" /></span>
+                        <span class="erp-nav-label">إعدادات الشركة والنظام</span>
                     </div>
                 </a>
             </div>

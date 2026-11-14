@@ -38,6 +38,16 @@ class CompanySetting extends Model
         );
     }
 
+    public static function getSettings(): self
+    {
+        return self::instance();
+    }
+
+    public function isMaintenance(): bool
+    {
+        return (bool) ($this->settings['maintenance_mode'] ?? false);
+    }
+
     public function getLogoUrlAttribute(): ?string
     {
         if (! $this->logo_path) {

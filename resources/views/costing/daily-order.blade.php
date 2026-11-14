@@ -2,12 +2,27 @@
 
 @section('title', 'حساب طلبيات المطبخ والمقننات')
 
+@section('control_panel')
+    <x-control-panel title="حساب طلبيات المطبخ والمقننات اليومية" :breadcrumbs="['إدارة التكاليف والمقننات' => route('costing.recipes.index'), 'حساب الطلبيات' => route('costing.daily-order')]">
+        <x-slot:actions>
+            <a href="{{ route('costing.recipes.index') }}" class="erp-btn erp-btn-secondary">
+                <x-icon name="book-open" size="16" />
+                <span>المقننات القياسية (BOM)</span>
+            </a>
+            <a href="{{ route('costing.consumption.index') }}" class="erp-btn erp-btn-secondary">
+                <x-icon name="alert-triangle" size="16" />
+                <span>كشف انحرافات المقنن</span>
+            </a>
+            <a href="{{ route('warehouse.dispatches.create') }}" class="erp-btn erp-btn-primary">
+                <x-icon name="truck" size="16" />
+                <span>إصدار إذن صرف للمطبخ</span>
+            </a>
+        </x-slot:actions>
+    </x-control-panel>
+@endsection
+
 @section('content')
-<div class="space-y-6">
-    <div>
-        <h1 class="text-xl font-bold text-slate-800 dark:text-slate-100">حاسبة طلبيات المطبخ بناء على عدد النزلاء والمقنن</h1>
-        <p class="text-xs text-slate-500 mt-1">حساب كميات الخامات المطلوبة صرفها من المخزن للمطبخ (إعداد الوجبات = عدد النزلاء × مقنن الوجبة)</p>
-    </div>
+<div class="space-y-5" dir="rtl">
 
     <!-- Filter & Calculator Input Form -->
     <div class="erp-card p-6">

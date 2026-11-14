@@ -1,70 +1,138 @@
 @extends('layouts.app')
 
-@section('content')
-<div class="p-6 space-y-6" dir="rtl">
-    <!-- Top Action Header -->
-    <div class="flex flex-col md:flex-row items-center justify-between gap-4 bg-white dark:bg-slate-800 p-5 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm">
-        <div>
-            <h1 class="text-xl font-bold text-slate-900 dark:text-white flex items-center gap-2">
-                <span>📋</span>
-                <span>محاضر الجرد اليومي الأعمى (Blind Stock Audits)</span>
-            </h1>
-            <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">
-                نظام الجرد المحمي الذي يمنع التلاعب عبر إخفاء الرصيد الدفتري برمجياً عن أمين المخزن أثناء العد الفعلي.
-            </p>
-        </div>
-        <div class="flex items-center gap-3">
+@section('control_panel')
+    <x-control-panel title="محاضر الجرد اليومي الأعمى (Blind Stock Audits)" :breadcrumbs="['إدارة المخازن والتشغيلات' => route('warehouse.index'), 'الجرد الأعمى' => route('warehouse.audits.index')]">
+        <x-slot:actions>
             @can('perform-blind-audit')
-            <a href="{{ route('warehouse.audits.create') }}" class="px-4 py-2 bg-blue-600 hover:bg-blue-500 text-white font-medium text-xs rounded-xl shadow-sm transition flex items-center gap-2">
-                <span>➕</span>
+            <a href="{{ route('warehouse.audits.create') }}" class="erp-btn erp-btn-primary">
+                <x-icon name="plus" size="16" />
                 <span>بدء جلسة جرد أعمى جديدة</span>
             </a>
             @endcan
+            <a href="{{ route('warehouse.index') }}" class="erp-btn erp-btn-secondary">
+                <x-icon name="layers" size="16" />
+                <span>تشغيلات الشراء (FIFO)</span>
+            </a>
+            <a href="{{ route('warehouse.settlements.index') }}" class="erp-btn erp-btn-secondary">
+                <x-icon name="receipt" size="16" />
+                <span>تسويات عهد المناديب</span>
+            </a>
+        </x-slot:actions>
+
+        <x-slot:extra>
+            <span class="erp-badge erp-badge-neutral font-numeric px-2.5 py-1 text-xs">
+                <span>إجمالي المحاضر:</span>
+                <strong>{{ count($audits) }}</strong>
+            </span>
+        </x-slot:extra>
+    </x-control-panel>
+@endsection
+
+@section('content')
+<div class="space-y-5" dir="rtl">
+    <!-- Fast Status KPI Ribbon -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3.5">
+        <div class="kpi-card">
+            <div class="kpi-header mb-1">
+                <span class="kpi-label">جلسات الجرد المنفذة</span>
+                <span class="kpi-icon text-indigo-600 bg-indigo-50 dark:bg-indigo-950/40"><x-icon name="clipboard-check" size="18" /></span>
+            </div>
+            <div class="kpi-value font-numeric text-2xl font-black text-[var(--text-main)]">{{ count($audits) }}</div>
+            <div class="kpi-note font-numeric text-xs text-[var(--text-muted)]">محاضر جرد مخزني فعلي</div>
+        </div>
+
+        <div class="kpi-card">
+            <div class="kpi-header mb-1">
+                <span class="kpi-label">حماية الرصيد الدفتري</span>
+                <span class="kpi-icon text-emerald-600 bg-emerald-50 dark:bg-emerald-950/40"><x-icon name="shield" size="18" /></span>
+            </div>
+            <div class="kpi-value font-numeric text-base font-bold text-emerald-600">Blind Stocktake</div>
+            <div class="kpi-note font-numeric text-xs text-[var(--text-muted)]">إخفاء الأرصدة عن أمين المخزن</div>
+        </div>
+
+        <div class="kpi-card">
+            <div class="kpi-header mb-1">
+                <span class="kpi-label">جلسات قيد المراجعة</span>
+                <span class="kpi-icon text-amber-600 bg-amber-50 dark:bg-amber-950/40"><x-icon name="alert-triangle" size="18" /></span>
+            </div>
+            <div class="kpi-value font-numeric text-2xl font-black text-amber-600">
+                {{ collect($audits)->where('status', 'submitted')->count() }}
+            </div>
+            <div class="kpi-note font-numeric text-xs text-[var(--text-muted)]">بانتظار مطابقة المحاسب</div>
+        </div>
+
+        <div class="kpi-card">
+            <div class="kpi-header mb-1">
+                <span class="kpi-label">جلسات تمت تسويتها</span>
+                <span class="kpi-icon text-sky-600 bg-sky-50 dark:bg-sky-950/40"><x-icon name="check-circle" size="18" /></span>
+            </div>
+            <div class="kpi-value font-numeric text-2xl font-black text-sky-600">
+                {{ collect($audits)->where('status', 'settled')->count() }}
+            </div>
+            <div class="kpi-note font-numeric text-xs text-[var(--text-muted)]">مطابقة دقيقة بدون فروقات</div>
         </div>
     </div>
 
-    <!-- Audits Table -->
-    <div class="bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm overflow-hidden">
-        <div class="overflow-x-auto">
-            <table class="w-full text-right text-xs">
-                <thead class="bg-slate-50 dark:bg-slate-900/50 text-slate-500 dark:text-slate-400 border-b border-slate-200 dark:border-slate-700">
-                    <tr>
-                        <th class="p-3.5">رقم المحضر</th>
-                        <th class="p-3.5">المخزن المجرود</th>
-                        <th class="p-3.5">أمين المخزن القائم بالعد</th>
-                        <th class="p-3.5">تاريخ ووقت الجرد</th>
-                        <th class="p-3.5">الحالة</th>
-                        <th class="p-3.5 text-center">إجراءات</th>
-                    </tr>
-                </thead>
-                <tbody class="divide-y divide-slate-100 dark:divide-slate-700">
-                    @forelse($audits as $audit)
-                        <tr class="hover:bg-slate-50/50 dark:hover:bg-slate-900/30 transition">
-                            <td class="p-3.5 font-mono font-bold text-blue-600 dark:text-blue-400">{{ $audit->audit_number }}</td>
-                            <td class="p-3.5 font-bold text-slate-800 dark:text-slate-200">{{ $audit->warehouse->name ?? '-' }}</td>
-                            <td class="p-3.5 text-slate-600 dark:text-slate-400">{{ $audit->storekeeper->name ?? '-' }}</td>
-                            <td class="p-3.5 font-mono text-slate-600 dark:text-slate-400">{{ $audit->audited_at ? $audit->audited_at->format('Y-m-d H:i') : '-' }}</td>
-                            <td class="p-3.5">
-                                <span class="px-2.5 py-1 text-xs rounded-full font-medium {{ $audit->status === 'settled' ? 'bg-emerald-100 text-emerald-800' : ($audit->status === 'reviewed' ? 'bg-blue-100 text-blue-800' : 'bg-amber-100 text-amber-800') }}">
-                                    {{ $audit->status === 'settled' ? 'تمت التسوية' : ($audit->status === 'reviewed' ? 'راجعها المحاسب' : 'مقدمة بانتظار المطابقة') }}
-                                </span>
-                            </td>
-                            <td class="p-3.5 text-center">
-                                <a href="{{ route('warehouse.audits.show', $audit->id) }}" class="px-3 py-1 bg-slate-100 hover:bg-slate-200 dark:bg-slate-700 dark:hover:bg-slate-600 text-slate-700 dark:text-slate-200 rounded-lg text-xs font-semibold transition inline-block">
-                                    عرض ومطابقة الفوارق
-                                </a>
-                            </td>
-                        </tr>
-                    @empty
-                        <tr>
-                            <td colspan="6" class="p-8 text-center text-slate-400">لا توجد محاضر جرد مسجلة.</td>
-                        </tr>
-                    @endforelse
-                </tbody>
-            </table>
+    <!-- Audits Table Card -->
+    <div class="erp-card">
+        <div class="erp-card-header">
+            <div class="erp-card-title">
+                <x-icon name="clipboard-check" size="16" class="text-[var(--primary)]" />
+                <span>سجل محاضر الجرد الأعمى لمطابقة الأغذية والخامات المخزنة</span>
+            </div>
+            @can('perform-blind-audit')
+            <a href="{{ route('warehouse.audits.create') }}" class="erp-btn erp-btn-secondary text-xs">
+                <x-icon name="plus" size="12" />
+                <span>جلسة جرد</span>
+            </a>
+            @endcan
         </div>
-        <div class="p-4 border-t border-slate-100 dark:border-slate-700">
-            {{ $audits->links() }}
+        <div class="erp-card-body p-0">
+            <div class="erp-table-responsive">
+                <table class="erp-table">
+                    <thead>
+                        <tr>
+                            <th>رقم المحضر</th>
+                            <th>المخزن المجرود</th>
+                            <th>أمين المخزن القائم بالعد</th>
+                            <th>تاريخ ووقت الجرد</th>
+                            <th>الحالة والاعتماد</th>
+                            <th class="text-center">الإجراءات</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @forelse($audits as $audit)
+                            <tr>
+                                <td class="font-numeric font-bold text-[var(--primary)]">{{ $audit->audit_number }}</td>
+                                <td class="font-bold text-[var(--text-main)]">{{ $audit->warehouse->name ?? '-' }}</td>
+                                <td>{{ $audit->storekeeper->name ?? '-' }}</td>
+                                <td class="font-numeric text-xs">{{ $audit->audited_at ? $audit->audited_at->format('Y-m-d H:i') : '-' }}</td>
+                                <td>
+                                    @if($audit->status === 'settled')
+                                        <span class="erp-badge erp-badge-success">تمت التسوية</span>
+                                    @elseif($audit->status === 'reviewed')
+                                        <span class="erp-badge erp-badge-info">راجعها المحاسب</span>
+                                    @else
+                                        <span class="erp-badge erp-badge-warning">بانتظار المطابقة</span>
+                                    @endif
+                                </td>
+                                <td class="text-center">
+                                    <a href="{{ route('warehouse.audits.show', $audit->id) }}" class="erp-btn erp-btn-secondary text-xs py-1 px-2.5">
+                                        <x-icon name="eye" size="12" />
+                                        <span>عرض المحضر</span>
+                                    </a>
+                                </td>
+                            </tr>
+                        @empty
+                            <tr>
+                                <td colspan="6" class="text-center py-8 text-[var(--text-muted)] text-xs">
+                                    لا توجد محاضر جرد مسجلة حالياً
+                                </td>
+                            </tr>
+                        @endforelse
+                    </tbody>
+                </table>
+            </div>
         </div>
     </div>
 </div>

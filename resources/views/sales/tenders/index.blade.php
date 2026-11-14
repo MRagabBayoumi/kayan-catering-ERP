@@ -2,21 +2,37 @@
 
 @section('title', 'المناقصات والعطاءات (Tenders)')
 
-@section('content')
-<div class="space-y-6">
-    <div class="flex items-center justify-between">
-        <div>
-            <h1 class="text-xl font-bold text-slate-800 dark:text-slate-100">سجل المناقصات والعطاءات (إدارة المبيعات)</h1>
-            <p class="text-xs text-slate-500 mt-1">متابعة كراسات الشروط، موعد فتح المظاريف، التأمين الابتدائي، وحالة الترسية</p>
-        </div>
-        <a href="{{ route('sales.tenders.create') }}" class="erp-btn erp-btn-primary">
-            <x-icon name="plus" size="16" />
-            <span>تسجيل مناقصة جديدة</span>
-        </a>
-    </div>
+@section('control_panel')
+    <x-control-panel title="سجل المناقصات والعطاءات (إدارة المبيعات)" :breadcrumbs="['المبيعات والمناقصات' => route('sales.hospitals.index'), 'المناقصات' => route('sales.tenders.index')]">
+        <x-slot:actions>
+            <a href="{{ route('sales.tenders.create') }}" class="erp-btn erp-btn-primary">
+                <x-icon name="plus" size="16" />
+                <span>تسجيل مناقصة جديدة</span>
+            </a>
+            <a href="{{ route('sales.competitors.index') }}" class="erp-btn erp-btn-secondary">
+                <x-icon name="archive" size="16" />
+                <span>أرشيف أسعار المنافسين</span>
+            </a>
+            <a href="{{ route('sales.hospitals.index') }}" class="erp-btn erp-btn-secondary">
+                <x-icon name="building-2" size="16" />
+                <span>المستشفيات والتعاقدات</span>
+            </a>
+        </x-slot:actions>
 
+        <x-slot:extra>
+            <span class="erp-badge erp-badge-neutral font-numeric px-2.5 py-1 text-xs">
+                <span>إجمالي المناقصات:</span>
+                <strong>{{ count($tenders) }}</strong>
+            </span>
+        </x-slot:extra>
+    </x-control-panel>
+@endsection
+
+@section('content')
+<div class="space-y-5" dir="rtl">
     @if(session('success'))
         <div class="erp-alert erp-alert-success">
+            <x-icon name="check" size="16" />
             <span>{{ session('success') }}</span>
         </div>
     @endif

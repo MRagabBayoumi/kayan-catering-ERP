@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Role;
 use App\Models\User;
 use App\Models\Warehouse;
 use Illuminate\Http\RedirectResponse;
@@ -19,8 +18,7 @@ class UserController extends Controller
      */
     public function index(): View
     {
-        $users = User::where('role', '!=', User::ROLE_SALES_REP)
-            ->with(['roleRelation', 'warehouse'])
+        $users = User::with('assignedWarehouse')
             ->orderBy('id')
             ->paginate(15);
 
@@ -36,8 +34,8 @@ class UserController extends Controller
      */
     public function create(): View
     {
-        $roles = Role::where('slug', '!=', User::ROLE_SALES_REP)->orderBy('id')->get();
-        $warehouses = Warehouse::active()->orderBy('name')->get();
+        $roles = User::rolesList();
+        $warehouses = Warehouse::where('is_active', true)->orderBy('name')->get();
 
         return view('users.create', [
             'title' => 'إضافة مستخدم جديد',
@@ -54,12 +52,12 @@ class UserController extends Controller
     {
         $validated = $request->validate([
             'name' => ['required', 'string', 'max:255'],
+            'username' => ['nullable', 'string', 'max:50', 'unique:users,username'],
             'email' => ['required', 'string', 'email', 'max:255', 'unique:users,email'],
             'password' => ['required', 'string', 'min:6'],
-            'role_id' => ['required', 'exists:roles,id'],
-            'warehouse_id' => ['nullable', 'exists:warehouses,id'],
+            'role' => ['required', 'string', Rule::in(array_keys(User::rolesList()))],
+            'assigned_warehouse_id' => ['nullable', 'exists:warehouses,id'],
             'phone' => ['nullable', 'string', 'max:35'],
-            'can_access_all_warehouses' => ['sometimes', 'boolean'],
             'is_active' => ['sometimes', 'boolean'],
         ], [
             'name.required' => 'اسم المستخدم مطلوب.',
@@ -68,24 +66,18 @@ class UserController extends Controller
             'email.unique' => 'البريد الإلكتروني مسجل بالفعل لمستخدم آخر.',
             'password.required' => 'كلمة المرور مطلوبة.',
             'password.min' => 'كلمة المرور يجب ألا تقل عن 6 أحرف.',
-            'role_id.required' => 'يرجى اختيار دور المستخدم.',
-            'role_id.exists' => 'الدور المختار غير موجود في النظام.',
-            'warehouse_id.exists' => 'المستودع المختار غير صحيح.',
+            'role.required' => 'يرجى اختيار دور المستخدم.',
+            'role.in' => 'الدور المختار غير صالح.',
         ]);
 
-        $role = Role::findOrFail($validated['role_id']);
-
-        if ($role->slug === User::ROLE_SALES_REP) {
-            return redirect()->route('sales-reps.create')
-                ->with('info', 'تسجيل وإدارة حسابات مناديب المبيعات يتم بشكل مخصص ومستقل عبر صفحة مناديب المبيعات.');
-        }
-
-        $username = filled($request->input('username'))
-            ? Str::slug($request->input('username'), '_')
+        $username = filled($validated['username'] ?? null)
+            ? Str::slug($validated['username'], '_')
             : Str::slug(explode('@', $validated['email'])[0], '_');
+
         if (empty($username)) {
             $username = 'user_'.time();
         }
+
         $candidate = $username;
         $counter = 1;
         while (User::where('username', $candidate)->exists()) {
@@ -98,18 +90,14 @@ class UserController extends Controller
             'email' => $validated['email'],
             'phone' => filled($validated['phone'] ?? null) ? trim($validated['phone']) : null,
             'password' => Hash::make($validated['password']),
-            'role_id' => $role->id,
-            'role' => $role->slug, // Keep synced for backward compatibility
-            'warehouse_id' => $validated['warehouse_id'] ?? null,
-            'commission_rate' => 0.00,
-            'commission_type' => 'percentage',
-            'can_access_all_warehouses' => $request->boolean('can_access_all_warehouses', false),
+            'role' => $validated['role'],
+            'assigned_warehouse_id' => $validated['assigned_warehouse_id'] ?? null,
             'is_active' => $request->boolean('is_active', true),
         ]);
 
         return redirect()->route('users.index')
             ->with('status', 'success')
-            ->with('message', 'تمت إضافة المستخدم بنجاح.');
+            ->with('message', 'تم إنشاء حساب المستخدم بنجاح.');
     }
 
     /**
@@ -117,8 +105,8 @@ class UserController extends Controller
      */
     public function edit(User $user): View
     {
-        $roles = Role::where('slug', '!=', User::ROLE_SALES_REP)->orderBy('id')->get();
-        $warehouses = Warehouse::active()->orderBy('name')->get();
+        $roles = User::rolesList();
+        $warehouses = Warehouse::where('is_active', true)->orderBy('name')->get();
 
         return view('users.edit', [
             'title' => 'تعديل بيانات المستخدم: '.$user->name,
@@ -136,50 +124,30 @@ class UserController extends Controller
     {
         $validated = $request->validate([
             'name' => ['required', 'string', 'max:255'],
+            'username' => ['nullable', 'string', 'max:50', Rule::unique('users', 'username')->ignore($user->id)],
             'email' => ['required', 'string', 'email', 'max:255', Rule::unique('users', 'email')->ignore($user->id)],
             'password' => ['nullable', 'string', 'min:6'],
-            'role_id' => ['required', 'exists:roles,id'],
-            'warehouse_id' => ['nullable', 'exists:warehouses,id'],
+            'role' => ['required', 'string', Rule::in(array_keys(User::rolesList()))],
+            'assigned_warehouse_id' => ['nullable', 'exists:warehouses,id'],
             'phone' => ['nullable', 'string', 'max:35'],
-            'can_access_all_warehouses' => ['sometimes', 'boolean'],
             'is_active' => ['sometimes', 'boolean'],
-        ], [
-            'name.required' => 'اسم المستخدم مطلوب.',
-            'email.required' => 'البريد الإلكتروني مطلوب.',
-            'email.unique' => 'البريد الإلكتروني مسجل بالفعل لمستخدم آخر.',
-            'password.min' => 'كلمة المرور يجب ألا تقل عن 6 أحرف.',
-            'role_id.required' => 'يرجى اختيار دور المستخدم.',
-            'warehouse_id.exists' => 'المستودع المختار غير صحيح.',
         ]);
-
-        $role = Role::findOrFail($validated['role_id']);
-
-        if ($role->slug === User::ROLE_SALES_REP) {
-            return redirect()->route('sales-reps.index')
-                ->with('info', 'مناديب المبيعات يتم تعديلهم وحساب عمولاتهم من صفحة إدارة المناديب.');
-        }
 
         $updateData = [
             'name' => $validated['name'],
             'email' => $validated['email'],
             'phone' => filled($validated['phone'] ?? null) ? trim($validated['phone']) : null,
-            'role_id' => $role->id,
-            'role' => $role->slug,
-            'warehouse_id' => $validated['warehouse_id'] ?? null,
-            'commission_rate' => array_key_exists('commission_rate', $validated) ? (float) $validated['commission_rate'] : $user->commission_rate,
-            'commission_type' => $validated['commission_type'] ?? $user->commission_type ?? 'percentage',
-            'can_access_all_warehouses' => $request->boolean('can_access_all_warehouses', false),
+            'role' => $validated['role'],
+            'assigned_warehouse_id' => $validated['assigned_warehouse_id'] ?? null,
             'is_active' => $request->boolean('is_active', true),
         ];
 
-        // Only update password if a new one was provided
-        if (! empty($validated['password'])) {
-            $updateData['password'] = Hash::make($validated['password']);
+        if (filled($validated['username'] ?? null)) {
+            $updateData['username'] = Str::slug($validated['username'], '_');
         }
 
-        // Prevent admin from deactivating their own account
-        if ($user->id === auth()->id() && ! $updateData['is_active']) {
-            return back()->withInput()->withErrors(['is_active' => 'لا يمكنك تعطيل حسابك الحالي أثناء تسجيل الدخول منه.']);
+        if (filled($validated['password'] ?? null)) {
+            $updateData['password'] = Hash::make($validated['password']);
         }
 
         $user->update($updateData);
@@ -194,17 +162,10 @@ class UserController extends Controller
      */
     public function destroy(User $user): RedirectResponse
     {
-        if ($user->id === auth()->id()) {
+        if ($user->id === 1 || $user->id === auth()->id()) {
             return redirect()->route('users.index')
                 ->with('status', 'error')
-                ->with('message', 'لا يمكنك حذف حسابك الشخصي الحالي.');
-        }
-
-        // Prevent deleting the last remaining admin
-        if ($user->isAdmin() && User::where('role', User::ROLE_ADMIN)->count() <= 1) {
-            return redirect()->route('users.index')
-                ->with('status', 'error')
-                ->with('message', 'لا يمكن حذف مدير النظام الأخير في المؤسسة.');
+                ->with('message', 'لا يمكن حذف الحساب الإداري الرئيسي أو الحساب الحالي.');
         }
 
         $user->delete();

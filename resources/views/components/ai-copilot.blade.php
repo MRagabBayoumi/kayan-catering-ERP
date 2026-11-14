@@ -3,12 +3,7 @@
     <!-- Floating Launcher Trigger Button -->
     <button id="aiLauncherBtn" class="ai-launcher-btn" type="button" title="مساعد كيان الذكي (AI Copilot)">
         <span class="ai-btn-icon">
-            <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M12 2a10 10 0 0 1 10 10c0 5.523-4.477 10-10 10S2 17.523 2 12A10 10 0 0 1 12 2z"></path>
-                <path d="m9 12 2 2 4-4"></path>
-                <path d="M12 6v2"></path>
-                <path d="M12 16v2"></path>
-            </svg>
+            <x-icon name="sparkles" size="18" />
         </span>
         <span class="ai-btn-label">مساعد كيان الذكي</span>
         <span class="ai-pulse-dot"></span>
@@ -19,7 +14,9 @@
         <!-- Drawer Header -->
         <div class="ai-drawer-header">
             <div class="ai-header-title">
-                <div class="ai-avatar">🤖</div>
+                <div class="ai-avatar text-[var(--primary)] bg-white dark:bg-slate-800 rounded-lg p-1.5 shadow-sm">
+                    <x-icon name="sparkles" size="20" />
+                </div>
                 <div>
                     <h3 class="font-bold text-sm">Kayan AI Copilot</h3>
                     <p class="text-xs text-slate-400">مساعدك الذكي لإدارة المخازن والمقننات والتكاليف</p>

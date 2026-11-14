@@ -2,24 +2,40 @@
 
 @section('title', 'اليومية والتقفيل لصاحب العمل')
 
-@section('content')
-<div class="space-y-6">
-    <div class="flex items-center justify-between">
-        <div>
-            <h1 class="text-xl font-bold text-slate-800 dark:text-slate-100">اليومية والتقفيل المالي لصاحب العمل (Daily Closing)</h1>
-            <p class="text-xs text-slate-500 mt-1">تقرير الإقفال اليومي الشامل للوارد والمصروف وسداد الموردين ومصروفات عهد المواقع</p>
-        </div>
-        <form action="{{ route('finance.closing.index') }}" method="GET" class="flex gap-2">
-            <input type="date" name="date" class="erp-form-control text-sm" value="{{ $date }}">
-            <button type="submit" class="erp-btn erp-btn-secondary">
-                <x-icon name="search" size="14" />
-                <span>عرض اليومية</span>
-            </button>
-        </form>
-    </div>
+@section('control_panel')
+    <x-control-panel title="اليومية والتقفيل المالي لصاحب العمل (Daily Closing)" :breadcrumbs="['الحسابات والمالية' => route('finance.treasury.index'), 'التقفيل واليومية' => route('finance.closing.index')]">
+        <x-slot:actions>
+            <form action="{{ route('finance.closing.index') }}" method="GET" class="inline-flex items-center gap-2 m-0">
+                <input type="date" name="date" class="erp-input text-xs py-1 px-2.5" value="{{ $date }}">
+                <button type="submit" class="erp-btn erp-btn-secondary text-xs">
+                    <x-icon name="search" size="14" />
+                    <span>عرض اليومية</span>
+                </button>
+            </form>
+            <a href="{{ route('finance.treasury.index') }}" class="erp-btn erp-btn-secondary">
+                <x-icon name="wallet" size="16" />
+                <span>الخزينة وعهد المواقع</span>
+            </a>
+            <a href="{{ route('finance.suppliers.index') }}" class="erp-btn erp-btn-secondary">
+                <x-icon name="factory" size="16" />
+                <span>حسابات الموردين</span>
+            </a>
+        </x-slot:actions>
 
+        <x-slot:extra>
+            <span class="erp-badge erp-badge-neutral font-numeric px-2.5 py-1 text-xs">
+                <span>تاريخ اليومية:</span>
+                <strong>{{ $date }}</strong>
+            </span>
+        </x-slot:extra>
+    </x-control-panel>
+@endsection
+
+@section('content')
+<div class="space-y-5" dir="rtl">
     @if(session('success'))
         <div class="erp-alert erp-alert-success">
+            <x-icon name="check" size="16" />
             <span>{{ session('success') }}</span>
         </div>
     @endif

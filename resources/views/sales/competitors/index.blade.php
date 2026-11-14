@@ -2,17 +2,33 @@
 
 @section('title', 'أرشيف أسعار المنافسين للعام القادم')
 
-@section('content')
-<div class="space-y-6">
-    <div class="flex items-center justify-between">
-        <div>
-            <h1 class="text-xl font-bold text-slate-800 dark:text-slate-100">أرشيف أسعار المنافسين في المناقصات (العام القادم)</h1>
-            <p class="text-xs text-slate-500 mt-1">حصر وتخزين أسعار الشركات المنافسة في كل وجبة ومناقصة لبناء استراتيجية تسعير دقيقة للعام القادم</p>
-        </div>
-    </div>
+@section('control_panel')
+    <x-control-panel title="أرشيف أسعار المنافسين في المناقصات (العام القادم)" :breadcrumbs="['المبيعات والمناقصات' => route('sales.hospitals.index'), 'أسعار المنافسين' => route('sales.competitors.index')]">
+        <x-slot:actions>
+            <a href="{{ route('sales.tenders.index') }}" class="erp-btn erp-btn-secondary">
+                <x-icon name="file-text" size="16" />
+                <span>سجل المناقصات</span>
+            </a>
+            <a href="{{ route('sales.hospitals.index') }}" class="erp-btn erp-btn-secondary">
+                <x-icon name="building-2" size="16" />
+                <span>المستشفيات والتعاقدات</span>
+            </a>
+        </x-slot:actions>
 
+        <x-slot:extra>
+            <span class="erp-badge erp-badge-neutral font-numeric px-2.5 py-1 text-xs">
+                <span>إجمالي الأسعار المؤرشفة:</span>
+                <strong>{{ count($competitorPrices) }}</strong>
+            </span>
+        </x-slot:extra>
+    </x-control-panel>
+@endsection
+
+@section('content')
+<div class="space-y-5" dir="rtl">
     @if(session('success'))
         <div class="erp-alert erp-alert-success">
+            <x-icon name="check" size="16" />
             <span>{{ session('success') }}</span>
         </div>
     @endif

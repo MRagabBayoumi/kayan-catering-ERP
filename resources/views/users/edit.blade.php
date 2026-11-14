@@ -107,11 +107,11 @@
                             <label for="userRole" class="erp-form-label">
                                 الدور الوظيفي والصلاحيات <span class="text-[var(--danger)]">*</span>
                             </label>
-                            <select id="userRole" name="role_id" class="erp-input @error('role_id') erp-input-error @enderror" required>
+                            <select id="userRole" name="role" class="erp-input @error('role') erp-input-error @enderror" required>
                                 <option value="">-- اختر الدور الوظيفي --</option>
-                                @foreach($roles as $role)
-                                    <option value="{{ $role->id }}" data-slug="{{ $role->slug }}" {{ (string) old('role_id', $user->role_id ?? ($role->slug === $user->role ? $role->id : '')) === (string) $role->id ? 'selected' : '' }}>
-                                        {{ $role->name }} @if($role->description)— {{ $role->description }}@endif
+                                @foreach($roles as $key => $label)
+                                    <option value="{{ $key }}" {{ old('role', $user->role) === $key ? 'selected' : '' }}>
+                                        {{ $label }}
                                     </option>
                                 @endforeach
                             </select>
@@ -119,34 +119,32 @@
                         </div>
                     </div>
 
-
-
                     <!-- Row 3: Workplace & Warehouse Access Permissions -->
                     <div class="user-status-card mb-4">
                         <div class="w-full">
                             <div class="font-bold text-sm text-[var(--text-main)] flex items-center gap-1.5 mb-1">
                                 <x-icon name="home" size="16" class="text-[var(--primary)]" />
-                                <span>مكان العمل ومستودعات الصرف (نقطة البيع والكاشير)</span>
+                                <span>المخزن المعين وموقع العمل</span>
                             </div>
                             <div class="text-xs text-[var(--text-muted)] mb-3">
-                                حدد المستودع الأساسي لمكان عمل الموظف، أو امنحه صلاحية معالجة المعاملات والبيع من عدة مستودعات.
+                                حدد المخزن الرئيسي التابع له أمين المخزن أو السائق.
                             </div>
 
-                            <div class="erp-form-row-2col">
-                                <div class="erp-form-group mb-0">
-                                    <label for="userWarehouse" class="erp-form-label text-xs font-semibold">
-                                        مكان العمل / المستودع الافتراضي
-                                    </label>
-                                    <select id="userWarehouse" name="warehouse_id" class="erp-input @error('warehouse_id') erp-input-error @enderror">
-                                        <option value="">-- كل المستودعات أو غير محدد --</option>
-                                        @foreach($warehouses as $wh)
-                                            <option value="{{ $wh->id }}" {{ (string) old('warehouse_id', $user->warehouse_id ?? '') === (string) $wh->id ? 'selected' : '' }}>
-                                                {{ $wh->name }} {{ $wh->is_default ? '(المستودع الرئيسي)' : '' }}
-                                            </option>
-                                        @endforeach
-                                    </select>
-                                    <small class="text-[11px] text-[var(--text-muted)] mt-1">المستودع الذي يعمل به الكاشير ويتم الصرف منه تلقائياً</small>
-                                </div>
+                            <div class="erp-form-group mb-0">
+                                <label for="userWarehouse" class="erp-form-label text-xs font-semibold">
+                                    مكان العمل / المخزن التابع له
+                                </label>
+                                <select id="userWarehouse" name="assigned_warehouse_id" class="erp-input">
+                                    <option value="">-- كل المخازن أو غير محدد --</option>
+                                    @foreach($warehouses as $wh)
+                                        <option value="{{ $wh->id }}" {{ (string) old('assigned_warehouse_id', $user->assigned_warehouse_id ?? '') === (string) $wh->id ? 'selected' : '' }}>
+                                            {{ $wh->name }}
+                                        </option>
+                                    @endforeach
+                                </select>
+                            </div>
+                        </div>
+                    </div>
 
                                 <div class="erp-form-group mb-0 flex flex-col justify-center">
                                     <label class="erp-form-label text-xs font-semibold">صلاحية التبديل بين المستودعات</label>

@@ -11,9 +11,9 @@
                 <x-icon name="shield" size="16" />
                 <span>الأدوار ومصفوفة الصلاحيات</span>
             </a>
-            <a href="{{ route('sales-reps.index') }}" class="erp-btn erp-btn-secondary" title="إدارة مناديب المبيعات الميدانيين">
-                <x-icon name="users" size="16" class="text-[var(--primary)]" />
-                <span>إدارة مناديب المبيعات</span>
+            <a href="{{ route('settings.index') }}" class="erp-btn erp-btn-secondary">
+                <x-icon name="settings" size="16" />
+                <span>إعدادات النظام</span>
             </a>
         </x-slot:actions>
 
@@ -27,7 +27,7 @@
 @endsection
 
 @section('content')
-    <div data-page="users">
+    <div data-page="users" dir="rtl">
         @if(session('info'))
             <div class="erp-alert erp-alert-info mb-4" role="alert">
                 <x-icon name="info" size="16" />
@@ -48,16 +48,6 @@
                 <div>{{ session('message') }}</div>
             </div>
         @endif
-
-        <div class="p-3 mb-4 rounded-md bg-amber-50/70 border border-amber-200 text-amber-900 text-xs flex items-center justify-between flex-wrap gap-2">
-            <div class="flex items-center gap-2">
-                <x-icon name="info" size="16" class="text-amber-600 shrink-0" />
-                <span>هذه الصفحة مخصصة لمستخدمي النظام (المدير، أمناء المخازن، الكاشير). مناديب المبيعات مفصولون تماماً ويدارون من صفحة إدارة المناديب.</span>
-            </div>
-            <a href="{{ route('sales-reps.index') }}" class="font-bold text-[var(--primary)] hover:underline inline-flex items-center gap-1">
-                <span>الانتقال لإدارة المناديب &larr;</span>
-            </a>
-        </div>
 
         <!-- Summary KPI Cards -->
         <div class="users-kpi-grid">
@@ -144,22 +134,22 @@
                                 <td>
                                     @if($user->isAdmin())
                                         <span class="erp-badge erp-badge-primary">{{ $user->role_label }}</span>
-                                    @elseif($user->isWarehouse())
+                                    @elseif($user->isStorekeeper() || $user->isStoreManager())
                                         <span class="erp-badge erp-badge-warning">{{ $user->role_label }}</span>
                                     @else
                                         <span class="erp-badge erp-badge-neutral">{{ $user->role_label }}</span>
                                     @endif
                                 </td>
                                 <td>
-                                    @if($user->isAdmin() || $user->can_access_all_warehouses)
+                                    @if($user->isAdmin())
                                         <span class="erp-badge erp-badge-info text-xs">
                                             <x-icon name="globe" size="12" />
-                                            <span>كافة المستودعات</span>
+                                            <span>كافة المخازن والمواقع</span>
                                         </span>
-                                    @elseif($user->warehouse)
+                                    @elseif($user->assignedWarehouse)
                                         <span class="erp-badge erp-badge-neutral text-xs">
                                             <x-icon name="home" size="12" />
-                                            <span>{{ $user->warehouse->name }}</span>
+                                            <span>{{ $user->assignedWarehouse->name }}</span>
                                         </span>
                                     @else
                                         <span class="text-[var(--text-muted)] text-xs">—</span>
