@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\CashierShift;
 use App\Models\Customer;
+use App\Models\Hospital;
 use App\Models\InventoryBatch;
 use App\Models\Product;
 use App\Models\PurchaseInvoice;
@@ -12,7 +13,9 @@ use App\Models\SalesInvoiceItem;
 use App\Models\StockBalance;
 use App\Models\StockMovement;
 use App\Models\Supplier;
+use App\Models\Tender;
 use App\Models\Treasury;
+use App\Models\User;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -22,23 +25,25 @@ use Illuminate\View\View;
 class HomeController extends Controller
 {
     /**
-     * Display the official Kayan ERP Applications Hub (Home Launcher).
+     * Display the official Kayan Catering ERP Applications Hub (Odoo-Style Home Launcher).
      */
-    public function home(Request $request): View|RedirectResponse
+    public function home(Request $request): View
     {
         $user = auth()->user();
 
-        if ($user->isSalesRep()) {
-            return redirect()->route('portal.index');
-        }
+        $stats = [
+            'batches_count' => InventoryBatch::where('is_exhausted', false)->count(),
+            'hospitals_count' => Hospital::where('is_active', true)->count(),
+            'capacity_count' => (int) Hospital::where('is_active', true)->sum('daily_patient_capacity'),
+            'tenders_count' => Tender::count(),
+            'suppliers_count' => Supplier::count(),
+            'users_count' => User::count(),
+        ];
 
-        $activeShift = CashierShift::getActiveShift($user->id);
-
-        return view('home', [
-            'title' => 'تطبيقات Kayan ERP',
+        return view('home', array_merge([
+            'title' => 'تطبيقات المنظومة (Odoo Apps Hub)',
             'user' => $user,
-            'activeShift' => $activeShift,
-        ]);
+        ], $stats));
     }
 
     /**

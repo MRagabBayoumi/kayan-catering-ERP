@@ -26,6 +26,32 @@
 
 @section('content')
 <div class="space-y-5" dir="rtl">
+    @php
+        $salesTabs = [
+            [
+                'label' => 'المستشفيات والجهات المتعاقدة',
+                'url' => route('sales.hospitals.index'),
+                'icon' => 'building-2',
+                'active' => request()->routeIs('sales.hospitals*'),
+            ],
+            [
+                'label' => 'المناقصات والعطاءات (Tenders)',
+                'url' => route('sales.tenders.index'),
+                'icon' => 'file-text',
+                'active' => request()->routeIs('sales.tenders*'),
+            ],
+            [
+                'label' => 'أرشيف أسعار المنافسين',
+                'url' => route('sales.competitors.index'),
+                'icon' => 'archive',
+                'active' => request()->routeIs('sales.competitors*'),
+                'badge' => count($competitorPrices),
+                'badge_class' => 'erp-badge-primary',
+            ],
+        ];
+    @endphp
+    <x-module-nav :tabs="$salesTabs" />
+
     @if(session('success'))
         <div class="erp-alert erp-alert-success">
             <x-icon name="check" size="16" />

@@ -28,6 +28,7 @@ import { initPortalPage } from './pages/portal.js';
 import { initSalesRepsPage } from './pages/sales-reps.js';
 import { initCustomerInstallments } from './pages/customer-installments.js';
 import { initPackingListPage } from './pages/packing-list.js';
+import { initHomePage } from './pages/home.js';
 
 // Expose Turbo globally
 window.Turbo = Turbo;
@@ -95,6 +96,7 @@ document.addEventListener('turbo:load', () => {
     initSalesRepsPage();
     initCustomerInstallments();
     initPackingListPage();
+    initHomePage();
 });
 
 /**

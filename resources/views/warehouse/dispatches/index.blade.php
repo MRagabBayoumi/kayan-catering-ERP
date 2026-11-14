@@ -30,6 +30,38 @@
 
 @section('content')
 <div class="space-y-5" dir="rtl">
+    @php
+        $warehouseTabs = [
+            [
+                'label' => 'تشغيلات الشراء والـ FIFO',
+                'url' => route('warehouse.index'),
+                'icon' => 'package',
+                'active' => request()->routeIs('warehouse.index'),
+            ],
+            [
+                'label' => 'أذون التحميل والصرف (السيارات)',
+                'url' => route('warehouse.dispatches'),
+                'icon' => 'truck',
+                'active' => request()->routeIs('warehouse.dispatches*'),
+                'badge' => count($dispatches),
+                'badge_class' => 'erp-badge-primary',
+            ],
+            [
+                'label' => 'الجرد الأعمى (Blind Audit)',
+                'url' => route('warehouse.audits.index'),
+                'icon' => 'clipboard-check',
+                'active' => request()->routeIs('warehouse.audits*'),
+            ],
+            [
+                'label' => 'تسويات رحلات المناديب ومخرجات الـ ERP',
+                'url' => route('warehouse.settlements.index'),
+                'icon' => 'receipt',
+                'active' => request()->routeIs('warehouse.settlements*'),
+            ],
+        ];
+    @endphp
+    <x-module-nav :tabs="$warehouseTabs" />
+
     @if(session('success'))
         <div class="erp-alert erp-alert-success" role="alert">
             <x-icon name="check" size="16" />

@@ -30,6 +30,32 @@
 
 @section('content')
 <div class="space-y-5" dir="rtl">
+    @php
+        $costingTabs = [
+            [
+                'label' => 'مقننات الوجبات القياسية (BOM)',
+                'url' => route('costing.recipes.index'),
+                'icon' => 'file-text',
+                'active' => request()->routeIs('costing.recipes*'),
+                'badge' => count($recipes),
+                'badge_class' => 'erp-badge-primary',
+            ],
+            [
+                'label' => 'حساب طلبيات المطبخ اليومية',
+                'url' => route('costing.daily-order'),
+                'icon' => 'calculator',
+                'active' => request()->routeIs('costing.daily-order'),
+            ],
+            [
+                'label' => 'كشف انحرافات المقنن والهدر',
+                'url' => route('costing.consumption.index'),
+                'icon' => 'alert-triangle',
+                'active' => request()->routeIs('costing.consumption*'),
+            ],
+        ];
+    @endphp
+    <x-module-nav :tabs="$costingTabs" />
+
     @if(session('success'))
         <div class="erp-alert erp-alert-success">
             <x-icon name="check" size="16" />

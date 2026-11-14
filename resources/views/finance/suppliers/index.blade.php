@@ -30,6 +30,32 @@
 
 @section('content')
 <div class="space-y-5" dir="rtl">
+    @php
+        $financeTabs = [
+            [
+                'label' => 'كشوف حسابات الموردين والأعمار',
+                'url' => route('finance.suppliers.index'),
+                'icon' => 'users',
+                'active' => request()->routeIs('finance.suppliers*'),
+                'badge' => count($suppliers),
+                'badge_class' => 'erp-badge-primary',
+            ],
+            [
+                'label' => 'الخزينة وعهد النثريات النقدية (المواقع)',
+                'url' => route('finance.treasury.index'),
+                'icon' => 'wallet',
+                'active' => request()->routeIs('finance.treasury*'),
+            ],
+            [
+                'label' => 'التقفيل واليومية للمالك والأرباح',
+                'url' => route('finance.closing.index'),
+                'icon' => 'pie-chart',
+                'active' => request()->routeIs('finance.closing*'),
+            ],
+        ];
+    @endphp
+    <x-module-nav :tabs="$financeTabs" />
+
     @if(session('success'))
         <div class="erp-alert erp-alert-success">
             <x-icon name="check" size="16" />

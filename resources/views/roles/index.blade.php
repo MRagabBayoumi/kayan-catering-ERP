@@ -28,6 +28,32 @@
 
 @section('content')
 <div class="space-y-5" dir="rtl">
+    @php
+        $userTabs = [
+            [
+                'label' => 'دليل مستخدمي النظام',
+                'url' => route('users.index'),
+                'icon' => 'users',
+                'active' => request()->routeIs('users.index'),
+            ],
+            [
+                'label' => 'مصفوفة الصلاحيات والأدوار (RBAC)',
+                'url' => route('roles.index'),
+                'icon' => 'shield',
+                'active' => request()->routeIs('roles*'),
+                'badge' => count($roles),
+                'badge_class' => 'erp-badge-primary',
+            ],
+            [
+                'label' => 'إعدادات المنظومة والشركة',
+                'url' => route('settings.index'),
+                'icon' => 'settings',
+                'active' => request()->routeIs('settings*'),
+            ],
+        ];
+    @endphp
+    <x-module-nav :tabs="$userTabs" />
+
     <!-- Fast KPI Ribbon -->
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3.5">
         <div class="kpi-card">

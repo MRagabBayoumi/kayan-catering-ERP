@@ -28,6 +28,32 @@
 
 @section('content')
     <div data-page="users" dir="rtl">
+        @php
+            $userTabs = [
+                [
+                    'label' => 'دليل مستخدمي النظام',
+                    'url' => route('users.index'),
+                    'icon' => 'users',
+                    'active' => request()->routeIs('users.index'),
+                    'badge' => $users->total(),
+                    'badge_class' => 'erp-badge-primary',
+                ],
+                [
+                    'label' => 'مصفوفة الصلاحيات والأدوار (RBAC)',
+                    'url' => route('roles.index'),
+                    'icon' => 'shield',
+                    'active' => request()->routeIs('roles*'),
+                ],
+                [
+                    'label' => 'إعدادات المنظومة والشركة',
+                    'url' => route('settings.index'),
+                    'icon' => 'settings',
+                    'active' => request()->routeIs('settings*'),
+                ],
+            ];
+        @endphp
+        <x-module-nav :tabs="$userTabs" />
+
         @if(session('info'))
             <div class="erp-alert erp-alert-info mb-4" role="alert">
                 <x-icon name="info" size="16" />

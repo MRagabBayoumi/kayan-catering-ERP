@@ -7,6 +7,7 @@ use App\Http\Controllers\CompanySettingController;
 use App\Http\Controllers\CostingController;
 use App\Http\Controllers\DriverSettlementController;
 use App\Http\Controllers\FinanceController;
+use App\Http\Controllers\HomeController;
 use App\Http\Controllers\HospitalController;
 use App\Http\Controllers\ProcurementController;
 use App\Http\Controllers\RoleController;
@@ -51,7 +52,7 @@ Route::middleware('auth')->group(function () {
         return view('dashboard', $stats);
     })->name('dashboard');
 
-    Route::get('/home', fn () => redirect()->route('dashboard'))->name('home');
+    Route::get('/home', [HomeController::class, 'home'])->name('home');
 
     // AI Copilot Query Endpoint
     Route::post('/ai/ask', [AiCopilotController::class, 'ask'])->name('ai.ask');

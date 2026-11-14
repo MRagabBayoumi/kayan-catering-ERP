@@ -34,7 +34,7 @@ export function initAiCopilot() {
     sidebarAiTriggers.forEach(btn => {
         btn.addEventListener('click', (e) => {
             e.preventDefault();
-            openDrawer();
+            toggleDrawer();
         });
     });
 
@@ -43,6 +43,13 @@ export function initAiCopilot() {
             drawer.classList.add('hidden');
         });
     }
+
+    // Close on Escape key
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape' && !drawer.classList.contains('hidden')) {
+            drawer.classList.add('hidden');
+        }
+    });
 
     // Pill click
     pills.forEach(pill => {

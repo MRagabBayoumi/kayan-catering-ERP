@@ -23,6 +23,31 @@
 
 @section('content')
 <div class="space-y-5" dir="rtl">
+    @php
+        $costingTabs = [
+            [
+                'label' => 'مقننات الوجبات القياسية (BOM)',
+                'url' => route('costing.recipes.index'),
+                'icon' => 'file-text',
+                'active' => request()->routeIs('costing.recipes*'),
+            ],
+            [
+                'label' => 'حساب طلبيات المطبخ اليومية',
+                'url' => route('costing.daily-order'),
+                'icon' => 'calculator',
+                'active' => request()->routeIs('costing.daily-order'),
+                'badge' => 'سعة المستشفيات',
+                'badge_class' => 'erp-badge-info',
+            ],
+            [
+                'label' => 'كشف انحرافات المقنن والهدر',
+                'url' => route('costing.consumption.index'),
+                'icon' => 'alert-triangle',
+                'active' => request()->routeIs('costing.consumption*'),
+            ],
+        ];
+    @endphp
+    <x-module-nav :tabs="$costingTabs" />
 
     <!-- Filter & Calculator Input Form -->
     <div class="erp-card p-6">

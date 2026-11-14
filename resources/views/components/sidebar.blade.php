@@ -35,12 +35,6 @@
                         <span class="erp-nav-label">لوحة التحكم العامة</span>
                     </div>
                 </a>
-                <button type="button" data-action="open-ai-copilot" class="erp-nav-item erp-nav-item-ai w-full text-right">
-                    <div class="erp-nav-content">
-                        <span class="erp-nav-icon text-[var(--primary)]"><x-icon name="sparkles" size="18" /></span>
-                        <span class="erp-nav-label font-bold text-[var(--primary)]">مساعد كيان الذكي (AI)</span>
-                    </div>
-                </button>
             </div>
         </div>
 
@@ -224,4 +218,18 @@
             </div>
         </div>
     </nav>
+
+    <!-- Sidebar Footer: Persistent AI Copilot Trigger -->
+    <div class="erp-sidebar-footer">
+        <button type="button" data-action="open-ai-copilot" class="erp-sidebar-ai-btn" title="مساعد كيان الذكي (AI Copilot)" aria-label="فتح مساعد كيان الذكي">
+            <span class="erp-sidebar-ai-icon-box">
+                <x-icon name="sparkles" size="18" />
+                <span class="ai-pulse-dot"></span>
+            </span>
+            <div class="erp-sidebar-ai-info">
+                <span class="erp-sidebar-ai-title">مساعد كيان الذكي</span>
+                <span class="erp-sidebar-ai-badge">استعلامات وتشغيلات لحظية</span>
+            </div>
+        </button>
+    </div>
 </aside>

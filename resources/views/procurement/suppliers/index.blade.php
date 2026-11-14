@@ -24,6 +24,26 @@
 
 @section('content')
 <div class="space-y-5" dir="rtl">
+    @php
+        $procurementTabs = [
+            [
+                'label' => 'أوامر الشراء والتوريد',
+                'url' => route('procurement.orders.index'),
+                'icon' => 'shopping-bag',
+                'active' => request()->routeIs('procurement.orders*'),
+            ],
+            [
+                'label' => 'سجل الموردين والمعتمدين',
+                'url' => route('procurement.suppliers.index'),
+                'icon' => 'truck',
+                'active' => request()->routeIs('procurement.suppliers*'),
+                'badge' => $suppliers->total(),
+                'badge_class' => 'erp-badge-primary',
+            ],
+        ];
+    @endphp
+    <x-module-nav :tabs="$procurementTabs" />
+
     @if(session('status') === 'success')
         <div class="erp-alert erp-alert-success" role="alert">
             <x-icon name="check" size="16" />

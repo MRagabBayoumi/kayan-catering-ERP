@@ -9,28 +9,41 @@
     left: 24px;
     z-index: 9999;
     font-family: inherit;
+    direction: rtl;
 }
 
 .ai-launcher-btn {
     display: inline-flex;
     align-items: center;
-    gap: 8px;
-    background-color: var(--primary, #714B67);
+    gap: 9px;
+    background: linear-gradient(135deg, var(--primary, #714B67) 0%, #52314b 100%);
     color: #ffffff;
     border: 1px solid var(--primary-border, #d9c4d5);
-    padding: 8px 16px;
+    height: 46px;
+    padding: 0 16px;
     border-radius: 9999px;
-    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.15);
+    box-shadow: 0 4px 16px rgba(113, 75, 103, 0.32), 0 2px 6px rgba(0, 0, 0, 0.12);
     cursor: pointer;
-    transition: all 0.2s ease;
+    transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
     font-size: 13px;
     font-weight: 700;
+    user-select: none;
+}
+
+[data-theme="dark"] .ai-launcher-btn {
+    background: linear-gradient(135deg, var(--primary, #9B6C90) 0%, #3d2336 100%);
+    border-color: rgba(155, 108, 144, 0.45);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5), 0 0 16px rgba(155, 108, 144, 0.25);
 }
 
 .ai-launcher-btn:hover {
-    background-color: var(--primary-hover, #5d3b54);
-    transform: translateY(-2px);
-    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.22);
+    background: linear-gradient(135deg, var(--primary-hover, #5d3b54) 0%, #3f2338 100%);
+    transform: translateY(-2px) scale(1.02);
+    box-shadow: 0 8px 24px rgba(113, 75, 103, 0.42), 0 4px 8px rgba(0, 0, 0, 0.18);
+}
+
+.ai-launcher-btn:active {
+    transform: translateY(0) scale(0.98);
 }
 
 .ai-btn-icon {
@@ -271,4 +284,36 @@
 
 .ai-send-btn:hover {
     background: #1d4ed8;
+}
+
+/* ==========================================================================
+   Responsive Viewports & Mobile Bottom Nav Safe Zone
+   ========================================================================== */
+@media (max-width: 900px) {
+    .ai-copilot-container {
+        bottom: calc(72px + env(safe-area-inset-bottom, 0px));
+        left: 16px;
+    }
+
+    .ai-launcher-btn {
+        width: 44px;
+        height: 44px;
+        padding: 0;
+        justify-content: center;
+        border-radius: 50%;
+    }
+
+    .ai-launcher-btn .ai-btn-label {
+        display: none;
+    }
+
+    .ai-chat-drawer {
+        bottom: calc(124px + env(safe-area-inset-bottom, 0px));
+        left: 12px;
+        right: 12px;
+        width: calc(100vw - 24px);
+        max-width: 100%;
+        height: calc(100vh - 160px);
+        border-radius: 14px;
+    }
 }
