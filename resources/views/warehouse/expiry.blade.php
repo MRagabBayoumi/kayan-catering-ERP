@@ -148,13 +148,13 @@
                     <span class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none text-slate-400">
                         <x-icon name="search" size="15" />
                     </span>
-                    <input type="text" name="search" value="{{ $search }}" placeholder="ابحث برقم الباتش، اسم الصنف، الكود SKU، أو الباركود..." class="w-full text-xs pr-9 pl-3 py-2 rounded-xl border border-slate-300 dark:border-slate-600 bg-slate-50 dark:bg-slate-900 text-slate-800 dark:text-slate-200">
+                    <input type="text" name="search" value="{{ $search }}" placeholder="ابحث برقم الباتش، اسم الصنف، الكود SKU، أو الباركود..." class="erp-form-control pr-9 text-xs">
                 </div>
             </div>
 
             <!-- Warehouse Filter -->
             <div class="md:col-span-3">
-                <select name="warehouse_id" class="w-full text-xs p-2 rounded-xl border border-slate-300 dark:border-slate-600 bg-slate-50 dark:bg-slate-900 text-slate-800 dark:text-slate-200">
+                <select name="warehouse_id" class="erp-form-control text-xs">
                     <option value="">كافة المخازن ومستودعات التبريد</option>
                     @foreach($warehouses as $wh)
                         <option value="{{ $wh->id }}" {{ $selectedWarehouseId == $wh->id ? 'selected' : '' }}>{{ $wh->name }}</option>
@@ -164,7 +164,7 @@
 
             <!-- Expiry Status Filter -->
             <div class="md:col-span-2">
-                <select name="status" class="w-full text-xs p-2 rounded-xl border border-slate-300 dark:border-slate-600 bg-slate-50 dark:bg-slate-900 text-slate-800 dark:text-slate-200">
+                <select name="status" class="erp-form-control text-xs">
                     <option value="all" {{ $selectedStatus == 'all' ? 'selected' : '' }}>كل الحالات</option>
                     <option value="critical" {{ $selectedStatus == 'critical' ? 'selected' : '' }}>حرج (خلال 7 أيام)</option>
                     <option value="warning" {{ $selectedStatus == 'warning' ? 'selected' : '' }}>تحذير مبكر (8-30 يوم)</option>

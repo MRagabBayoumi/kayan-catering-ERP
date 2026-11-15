@@ -158,7 +158,33 @@
                         </div>
                     </div>
 
-                    <!-- Row 4: Account Active Status Card -->
+                    <!-- Row 4: Supervised Hospitals (صلاحيات المحاسب ومسؤول التكاليف) -->
+                    <div class="user-status-card mb-4">
+                        <div class="w-full">
+                            <div class="font-bold text-sm text-[var(--text-main)] flex items-center gap-1.5 mb-1">
+                                <x-icon name="building-2" size="16" class="text-[var(--primary)]" />
+                                <span>المستشفيات والجهات المشرف عليها (صلاحيات محاسب التكاليف)</span>
+                            </div>
+                            <div class="text-xs text-[var(--text-muted)] mb-3">
+                                حدد المستشفيات التي يحق للمحاسب الإشراف عليها والاطلاع على مقنناتها وتكاليفها وحساباتها (المدير العام يرى الكل تلقائياً).
+                            </div>
+
+                            @php
+                                $assignedHospitalIds = old('supervised_hospital_ids', $user->supervisedHospitals->pluck('id')->toArray());
+                            @endphp
+
+                            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2.5">
+                                @foreach($hospitals as $hosp)
+                                    <label class="flex items-center gap-2 p-2.5 border rounded-lg cursor-pointer hover:bg-slate-50 dark:hover:bg-slate-800/50 border-slate-200 dark:border-slate-700">
+                                        <input type="checkbox" name="supervised_hospital_ids[]" value="{{ $hosp->id }}" {{ in_array($hosp->id, $assignedHospitalIds) ? 'checked' : '' }} class="w-4 h-4 text-primary rounded">
+                                        <span class="text-xs font-semibold text-slate-800 dark:text-slate-100">{{ $hosp->name }}</span>
+                                    </label>
+                                @endforeach
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Row 5: Account Active Status Card -->
                     <div class="user-status-card">
                         <div>
                             <div class="font-bold text-sm text-[var(--text-main)]">حالة تفعيل الحساب</div>

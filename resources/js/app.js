@@ -31,6 +31,7 @@ import { initPackingListPage } from './pages/packing-list.js';
 import { initHomePage } from './pages/home.js';
 import { initFinancePage } from './pages/finance.js';
 import { initWarehousePage } from './pages/warehouse.js';
+import { initRecipeBuilder } from './pages/recipe-builder.js';
 
 // Expose Turbo globally
 window.Turbo = Turbo;
@@ -101,6 +102,7 @@ document.addEventListener('turbo:load', () => {
     initHomePage();
     initFinancePage();
     initWarehousePage();
+    initRecipeBuilder();
 });
 
 /**

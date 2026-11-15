@@ -5,7 +5,9 @@ namespace Tests\Feature;
 use App\Models\DailySiteCensus;
 use App\Models\DietSchedule;
 use App\Models\Hospital;
+use App\Models\MealType;
 use App\Models\Product;
+use App\Models\Recipe;
 use App\Models\Treasury;
 use App\Models\User;
 use App\Models\VehicleDispatchTrip;
@@ -198,5 +200,46 @@ class CostingAndSiteOperationsLifecycleTest extends TestCase
         // Expect over-consumption alert detected
         $response->assertSee('هدر وزيادة استهلاك');
         $response->assertSee('17.500');
+    }
+
+    public function test_recipe_creation_with_gram_unit_converts_correctly_to_kg_and_calculates_proper_cost(): void
+    {
+        $this->actingAs($this->costingManager);
+
+        $riceProduct = Product::where('name', 'LIKE', '%أرز%')->first() ?? Product::create([
+            'code' => 'TEST-RICE-01',
+            'name' => 'أرز مصري معبأ درجة أولى',
+            'unit' => 'kg',
+            'cost_price' => 32.00,
+        ]);
+
+        $mealType = MealType::first();
+
+        // Submit recipe with 100 grams of rice at 32 EGP/kg
+        $response = $this->post(route('costing.recipes.store'), [
+            'name' => 'وجبة تجريبية أرز 100 جرام',
+            'meal_type_id' => $mealType->id,
+            'hospital_id' => $this->hospital1->id,
+            'ingredients' => [
+                [
+                    'product_id' => $riceProduct->id,
+                    'raw_quantity_per_meal' => 100, // 100 grams
+                    'unit' => 'gm',
+                    'standard_unit_cost' => 32.00,
+                ],
+            ],
+        ]);
+
+        $response->assertRedirect(route('costing.recipes.index'));
+
+        // Assert recipe created with normalized standard cost = (100/1000) * 32 = 3.20 EGP (NOT 3200 EGP)
+        $recipe = Recipe::where('name', 'وجبة تجريبية أرز 100 جرام')->first();
+        $this->assertNotNull($recipe);
+        $this->assertEquals(3.20, (float) $recipe->standard_cost_per_meal);
+
+        $ingredient = $recipe->ingredients->first();
+        $this->assertNotNull($ingredient);
+        $this->assertEquals(0.100, (float) $ingredient->raw_quantity_per_meal);
+        $this->assertEquals('kg', $ingredient->unit);
     }
 }

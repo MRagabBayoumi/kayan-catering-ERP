@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Hospital;
 use App\Models\User;
 use App\Models\Warehouse;
 use Illuminate\Http\RedirectResponse;
@@ -36,12 +37,14 @@ class UserController extends Controller
     {
         $roles = User::rolesList();
         $warehouses = Warehouse::where('is_active', true)->orderBy('name')->get();
+        $hospitals = Hospital::where('is_active', true)->orderBy('name')->get();
 
         return view('users.create', [
             'title' => 'إضافة مستخدم جديد',
             'moduleName' => 'الإدارة والنظام',
             'roles' => $roles,
             'warehouses' => $warehouses,
+            'hospitals' => $hospitals,
         ]);
     }
 
@@ -57,6 +60,9 @@ class UserController extends Controller
             'password' => ['required', 'string', 'min:6'],
             'role' => ['required', 'string', Rule::in(array_keys(User::rolesList()))],
             'assigned_warehouse_id' => ['nullable', 'exists:warehouses,id'],
+            'assigned_hospital_id' => ['nullable', 'exists:hospitals,id'],
+            'supervised_hospital_ids' => ['nullable', 'array'],
+            'supervised_hospital_ids.*' => ['exists:hospitals,id'],
             'phone' => ['nullable', 'string', 'max:35'],
             'is_active' => ['sometimes', 'boolean'],
         ], [
@@ -84,7 +90,7 @@ class UserController extends Controller
             $candidate = $username.$counter++;
         }
 
-        User::create([
+        $newUser = User::create([
             'name' => $validated['name'],
             'username' => $candidate,
             'email' => $validated['email'],
@@ -92,8 +98,13 @@ class UserController extends Controller
             'password' => Hash::make($validated['password']),
             'role' => $validated['role'],
             'assigned_warehouse_id' => $validated['assigned_warehouse_id'] ?? null,
+            'assigned_hospital_id' => $validated['assigned_hospital_id'] ?? null,
             'is_active' => $request->boolean('is_active', true),
         ]);
+
+        if ($request->has('supervised_hospital_ids')) {
+            $newUser->supervisedHospitals()->sync($request->input('supervised_hospital_ids', []));
+        }
 
         return redirect()->route('users.index')
             ->with('status', 'success')
@@ -107,6 +118,8 @@ class UserController extends Controller
     {
         $roles = User::rolesList();
         $warehouses = Warehouse::where('is_active', true)->orderBy('name')->get();
+        $hospitals = Hospital::where('is_active', true)->orderBy('name')->get();
+        $user->load('supervisedHospitals');
 
         return view('users.edit', [
             'title' => 'تعديل بيانات المستخدم: '.$user->name,
@@ -114,6 +127,7 @@ class UserController extends Controller
             'user' => $user,
             'roles' => $roles,
             'warehouses' => $warehouses,
+            'hospitals' => $hospitals,
         ]);
     }
 
@@ -129,6 +143,9 @@ class UserController extends Controller
             'password' => ['nullable', 'string', 'min:6'],
             'role' => ['required', 'string', Rule::in(array_keys(User::rolesList()))],
             'assigned_warehouse_id' => ['nullable', 'exists:warehouses,id'],
+            'assigned_hospital_id' => ['nullable', 'exists:hospitals,id'],
+            'supervised_hospital_ids' => ['nullable', 'array'],
+            'supervised_hospital_ids.*' => ['exists:hospitals,id'],
             'phone' => ['nullable', 'string', 'max:35'],
             'is_active' => ['sometimes', 'boolean'],
         ]);
@@ -139,6 +156,7 @@ class UserController extends Controller
             'phone' => filled($validated['phone'] ?? null) ? trim($validated['phone']) : null,
             'role' => $validated['role'],
             'assigned_warehouse_id' => $validated['assigned_warehouse_id'] ?? null,
+            'assigned_hospital_id' => $validated['assigned_hospital_id'] ?? null,
             'is_active' => $request->boolean('is_active', true),
         ];
 
@@ -151,6 +169,10 @@ class UserController extends Controller
         }
 
         $user->update($updateData);
+
+        if ($request->has('supervised_hospital_ids')) {
+            $user->supervisedHospitals()->sync($request->input('supervised_hospital_ids', []));
+        }
 
         return redirect()->route('users.index')
             ->with('status', 'success')

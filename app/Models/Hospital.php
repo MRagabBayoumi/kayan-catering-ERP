@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 
@@ -77,6 +78,11 @@ class Hospital extends Model
     public function consumptionLogs(): HasMany
     {
         return $this->hasMany(ConsumptionLog::class);
+    }
+
+    public function supervisingUsers(): BelongsToMany
+    {
+        return $this->belongsToMany(User::class, 'hospital_user');
     }
 
     public function siteWarehouse(): HasOne

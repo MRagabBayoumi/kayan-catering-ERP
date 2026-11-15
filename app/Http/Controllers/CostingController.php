@@ -3,7 +3,6 @@
 namespace App\Http\Controllers;
 
 use App\Models\ConsumptionLog;
-use App\Models\Hospital;
 use App\Models\MealType;
 use App\Models\Product;
 use App\Models\Recipe;
@@ -24,7 +23,13 @@ class CostingController extends Controller
     {
         Gate::authorize('manage-costing');
 
+        $accessibleHospitalIds = auth()->user()->accessibleHospitals()->pluck('id');
+
         $recipes = Recipe::with(['mealType', 'hospital', 'ingredients.product'])
+            ->where(function ($q) use ($accessibleHospitalIds) {
+                $q->whereNull('hospital_id')
+                    ->orWhereIn('hospital_id', $accessibleHospitalIds);
+            })
             ->orderBy('id', 'desc')
             ->paginate(15);
 
@@ -39,7 +44,7 @@ class CostingController extends Controller
         Gate::authorize('manage-costing');
 
         $mealTypes = MealType::where('is_active', true)->get();
-        $hospitals = Hospital::where('is_active', true)->get();
+        $hospitals = auth()->user()->accessibleHospitals();
         $products = Product::where('is_active', true)->orderBy('name')->get();
 
         return view('costing.recipes.create', compact('mealTypes', 'hospitals', 'products'));
@@ -82,7 +87,7 @@ class CostingController extends Controller
     {
         Gate::authorize('manage-costing');
 
-        $hospitals = Hospital::where('is_active', true)->get();
+        $hospitals = auth()->user()->accessibleHospitals();
         $recipes = Recipe::with('mealType')->where('is_active', true)->get();
 
         $selectedRecipe = null;

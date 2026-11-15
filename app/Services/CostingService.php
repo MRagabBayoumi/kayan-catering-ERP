@@ -37,12 +37,19 @@ class CostingService
 
             foreach ($ingredients as $ing) {
                 $rawQty = (float) $ing['raw_quantity_per_meal'];
+                $unit = strtolower((string) ($ing['unit'] ?? 'kg'));
                 $product = Product::find($ing['product_id']);
 
                 // Sourced automatically from Procurement Department / Product Master
                 $unitCost = (float) ($ing['standard_unit_cost'] ?? 0.00);
                 if ($unitCost <= 0.00 && $product) {
                     $unitCost = (float) $product->cost_price;
+                }
+
+                // If unit was passed as grams while product unit is kg, normalize to kg for warehouse inventory consistency
+                if (in_array($unit, ['gm', 'g', 'gram', 'grams'])) {
+                    $rawQty = $rawQty >= 1.0 ? ($rawQty / 1000) : $rawQty;
+                    $unit = 'kg';
                 }
 
                 $totalEstCost += ($rawQty * $unitCost);
@@ -52,7 +59,7 @@ class CostingService
                     'product_id' => $ing['product_id'],
                     'raw_quantity_per_meal' => $rawQty,
                     'cooked_yield_quantity' => $ing['cooked_yield_quantity'] ?? null,
-                    'unit' => $ing['unit'] ?? 'kg',
+                    'unit' => $unit,
                     'standard_unit_cost' => $unitCost,
                     'notes' => $ing['notes'] ?? null,
                 ]);

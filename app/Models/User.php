@@ -5,9 +5,11 @@ namespace App\Models;
 use Database\Factories\UserFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Support\Collection;
 
 class User extends Authenticatable
 {
@@ -86,6 +88,36 @@ class User extends Authenticatable
     public function assignedHospital(): BelongsTo
     {
         return $this->belongsTo(Hospital::class, 'assigned_hospital_id');
+    }
+
+    public function supervisedHospitals(): BelongsToMany
+    {
+        return $this->belongsToMany(Hospital::class, 'hospital_user');
+    }
+
+    /**
+     * Get the hospitals this user is authorized to manage/supervise.
+     *
+     * @return \Illuminate\Database\Eloquent\Collection<int, Hospital>|Collection<int, Hospital>
+     */
+    public function accessibleHospitals()
+    {
+        if ($this->isAdmin()) {
+            return Hospital::where('is_active', true)->orderBy('name')->get();
+        }
+
+        if ($this->role === self::ROLE_SITE_MANAGER && $this->assignedHospital) {
+            return collect([$this->assignedHospital]);
+        }
+
+        $supervised = $this->supervisedHospitals()->where('is_active', true)->orderBy('name')->get();
+
+        if ($supervised->isNotEmpty()) {
+            return $supervised;
+        }
+
+        // Fallback for general accountants/staff if no specific hospital was assigned
+        return Hospital::where('is_active', true)->orderBy('name')->get();
     }
 
     public function vanWarehouse(): BelongsTo
