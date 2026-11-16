@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\User;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\View\View;
 
 class RoleController extends Controller
@@ -12,6 +13,8 @@ class RoleController extends Controller
      */
     public function index(): View
     {
+        Gate::authorize('manage-roles');
+
         $rolesData = [
             [
                 'slug' => User::ROLE_ADMIN,

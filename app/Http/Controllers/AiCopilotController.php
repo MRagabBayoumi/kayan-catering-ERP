@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Services\CateringAiService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Gate;
 
 class AiCopilotController extends Controller
 {
@@ -14,6 +15,8 @@ class AiCopilotController extends Controller
 
     public function ask(Request $request): JsonResponse
     {
+        Gate::authorize('use-ai-copilot');
+
         $validated = $request->validate([
             'prompt' => 'required|string|max:1000',
         ]);

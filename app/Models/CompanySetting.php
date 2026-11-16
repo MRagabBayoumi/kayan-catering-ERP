@@ -2,11 +2,14 @@
 
 namespace App\Models;
 
+use App\Traits\Auditable;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Storage;
 
 class CompanySetting extends Model
 {
+    use Auditable;
+
     protected $table = 'company_settings';
 
     protected $fillable = [

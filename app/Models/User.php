@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Traits\Auditable;
 use Database\Factories\UserFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -14,7 +15,7 @@ use Illuminate\Support\Collection;
 class User extends Authenticatable
 {
     /** @use HasFactory<UserFactory> */
-    use HasFactory, Notifiable;
+    use Auditable, HasFactory, Notifiable;
 
     public const ROLE_ADMIN = 'admin';
 
@@ -102,11 +103,7 @@ class User extends Authenticatable
      */
     public function accessibleHospitals()
     {
-        if ($this->isAdmin()) {
-            return Hospital::where('is_active', true)->orderBy('name')->get();
-        }
-
-        if ($this->role === self::ROLE_SITE_MANAGER && $this->assignedHospital) {
+        if ($this->assignedHospital) {
             return collect([$this->assignedHospital]);
         }
 
@@ -116,8 +113,26 @@ class User extends Authenticatable
             return $supervised;
         }
 
-        // Fallback for general accountants/staff if no specific hospital was assigned
-        return Hospital::where('is_active', true)->orderBy('name')->get();
+        if ($this->isAdmin() || in_array($this->role, [self::ROLE_COSTING_MANAGER, self::ROLE_SALES_MANAGER])) {
+            return Hospital::where('is_active', true)->orderBy('name')->get();
+        }
+
+        // Strictly isolate: operational staff (site manager, storekeeper, driver) without hospital assignments receive empty collection
+        return collect([]);
+    }
+
+    /**
+     * Check if user has explicit access to a specific hospital.
+     */
+    public function hasAccessToHospital(Hospital|int|null $hospital): bool
+    {
+        if (! $hospital) {
+            return false;
+        }
+
+        $hospitalId = $hospital instanceof Hospital ? $hospital->id : (int) $hospital;
+
+        return $this->accessibleHospitals()->pluck('id')->contains($hospitalId);
     }
 
     public function vanWarehouse(): BelongsTo

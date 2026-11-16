@@ -21,15 +21,19 @@ class SiteDailyCensusController extends Controller
 
         $user = auth()->user();
 
-        // 1. Identify hospital: Site Manager is locked to assigned hospital
-        if ($user->role === 'site_manager' && $user->assignedHospital) {
-            $hospital = $user->assignedHospital;
-            $allHospitals = collect([$hospital]);
-        } else {
-            $allHospitals = Hospital::where('is_active', true)->orderBy('name')->get();
-            $hospitalId = $request->input('hospital_id', $allHospitals->first()?->id);
-            $hospital = $allHospitals->firstWhere('id', (int) $hospitalId) ?? $allHospitals->first();
+        // 1. Identify hospitals using strict accessibility isolation
+        $allHospitals = $user->accessibleHospitals();
+        $requestedHospitalId = $request->input('hospital_id');
+        $hospital = null;
+
+        if ($requestedHospitalId) {
+            $hospital = $allHospitals->firstWhere('id', (int) $requestedHospitalId);
+            if (! $hospital && ! $user->isAdmin()) {
+                abort(403, 'غير مصرح لك بالوصول لبيانات هذا المستشفى.');
+            }
         }
+
+        $hospital = $hospital ?? $allHospitals->first();
 
         // 2. Date defaults to today
         $date = $request->input('date', Carbon::today()->toDateString());
@@ -95,9 +99,13 @@ class SiteDailyCensusController extends Controller
         Gate::authorize('manage-site-operations');
 
         $user = auth()->user();
-        $hospitalId = ($user->role === 'site_manager' && $user->assigned_hospital_id)
-            ? $user->assigned_hospital_id
-            : $request->input('hospital_id');
+        $targetHospitalId = (int) $request->input('hospital_id');
+
+        if (! $user->hasAccessToHospital($targetHospitalId)) {
+            abort(403, 'غير مصرح لك بتسجيل أو تعديل بيانات هذا المستشفى.');
+        }
+
+        $hospitalId = $targetHospitalId;
 
         $validated = $request->validate([
             'hospital_id' => 'required|exists:hospitals,id',

@@ -12,6 +12,12 @@ use Illuminate\Support\Facades\DB;
 
 class CostingService
 {
+    public function __construct(
+        protected ?UnitConversionService $uomService = null
+    ) {
+        $this->uomService = $this->uomService ?? app(UnitConversionService::class);
+    }
+
     /**
      * 1. Create or Update a Standard Recipe / Portion BOM.
      */
@@ -46,11 +52,10 @@ class CostingService
                     $unitCost = (float) $product->cost_price;
                 }
 
-                // If unit was passed as grams while product unit is kg, normalize to kg for warehouse inventory consistency
-                if (in_array($unit, ['gm', 'g', 'gram', 'grams'])) {
-                    $rawQty = $rawQty >= 1.0 ? ($rawQty / 1000) : $rawQty;
-                    $unit = 'kg';
-                }
+                // Normalize unit and quantity for standard warehouse inventory consistency (e.g. g -> kg, ml -> l)
+                $normalized = $this->uomService->normalizeForRecipe($rawQty, $unit);
+                $rawQty = $normalized['quantity'];
+                $unit = $normalized['unit'];
 
                 $totalEstCost += ($rawQty * $unitCost);
 

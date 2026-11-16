@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Services\UnitConversionService;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -158,7 +159,8 @@ class Product extends Model
             return 1.0;
         }
 
-        $unitModel = Unit::where('name', $cleanUnit)->first();
+        $conversionService = app(UnitConversionService::class);
+        $unitModel = $conversionService->resolveUnit($cleanUnit);
         if ($unitModel && (float) $unitModel->conversion_factor > 0) {
             return (float) $unitModel->conversion_factor;
         }

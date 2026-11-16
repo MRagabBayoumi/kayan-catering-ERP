@@ -7,6 +7,7 @@ use App\Models\User;
 use App\Models\Warehouse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
@@ -19,6 +20,8 @@ class UserController extends Controller
      */
     public function index(): View
     {
+        Gate::authorize('manage-users');
+
         $users = User::with('assignedWarehouse')
             ->orderBy('id')
             ->paginate(15);
@@ -35,6 +38,8 @@ class UserController extends Controller
      */
     public function create(): View
     {
+        Gate::authorize('manage-users');
+
         $roles = User::rolesList();
         $warehouses = Warehouse::where('is_active', true)->orderBy('name')->get();
         $hospitals = Hospital::where('is_active', true)->orderBy('name')->get();
@@ -53,6 +58,8 @@ class UserController extends Controller
      */
     public function store(Request $request): RedirectResponse
     {
+        Gate::authorize('manage-users');
+
         $validated = $request->validate([
             'name' => ['required', 'string', 'max:255'],
             'username' => ['nullable', 'string', 'max:50', 'unique:users,username'],
@@ -116,6 +123,8 @@ class UserController extends Controller
      */
     public function edit(User $user): View
     {
+        Gate::authorize('manage-users');
+
         $roles = User::rolesList();
         $warehouses = Warehouse::where('is_active', true)->orderBy('name')->get();
         $hospitals = Hospital::where('is_active', true)->orderBy('name')->get();
@@ -136,6 +145,8 @@ class UserController extends Controller
      */
     public function update(Request $request, User $user): RedirectResponse
     {
+        Gate::authorize('manage-users');
+
         $validated = $request->validate([
             'name' => ['required', 'string', 'max:255'],
             'username' => ['nullable', 'string', 'max:50', Rule::unique('users', 'username')->ignore($user->id)],
@@ -149,6 +160,20 @@ class UserController extends Controller
             'phone' => ['nullable', 'string', 'max:35'],
             'is_active' => ['sometimes', 'boolean'],
         ]);
+
+        if ($user->id === auth()->id() && $validated['role'] !== auth()->user()->role) {
+            return redirect()->back()
+                ->withInput()
+                ->with('status', 'error')
+                ->with('message', 'لا يمكنك تعديل دور حسابك الخاص لمنع قفل النظام بالخطأ.');
+        }
+
+        if ($user->id === auth()->id() && ! $request->boolean('is_active', true)) {
+            return redirect()->back()
+                ->withInput()
+                ->with('status', 'error')
+                ->with('message', 'لا يمكنك تعطيل حسابك الحالي.');
+        }
 
         $updateData = [
             'name' => $validated['name'],
@@ -184,6 +209,8 @@ class UserController extends Controller
      */
     public function destroy(User $user): RedirectResponse
     {
+        Gate::authorize('manage-users');
+
         if ($user->id === 1 || $user->id === auth()->id()) {
             return redirect()->route('users.index')
                 ->with('status', 'error')

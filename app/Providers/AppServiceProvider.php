@@ -91,6 +91,10 @@ class AppServiceProvider extends ServiceProvider
             return $user->isAdmin();
         });
 
+        Gate::define('access-dashboard', function (User $user) {
+            return $user->isAdmin();
+        });
+
         Gate::define('manage-dashboard', function (User $user) {
             return $user->isAdmin();
         });
@@ -99,8 +103,20 @@ class AppServiceProvider extends ServiceProvider
             return $user->isAdmin();
         });
 
+        Gate::define('manage-roles', function (User $user) {
+            return $user->isAdmin();
+        });
+
         Gate::define('manage-company-settings', function (User $user) {
             return $user->isAdmin();
+        });
+
+        Gate::define('manage-warehouses', function (User $user) {
+            return in_array($user->role, [User::ROLE_ADMIN, User::ROLE_STORE_MANAGER]);
+        });
+
+        Gate::define('approve-inventory-adjustments', function (User $user) {
+            return in_array($user->role, [User::ROLE_ADMIN, User::ROLE_STORE_MANAGER]);
         });
 
         Gate::define('use-ai-copilot', function (User $user) {

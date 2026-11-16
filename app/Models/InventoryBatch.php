@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Traits\Auditable;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -10,7 +11,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class InventoryBatch extends Model
 {
-    use HasFactory;
+    use Auditable, HasFactory;
 
     protected $fillable = [
         'batch_number',
@@ -55,13 +56,18 @@ class InventoryBatch extends Model
     }
 
     /**
-     * Scope query to active (non-exhausted) batches ordered by FEFO:
+     * Scope query to active (non-exhausted, non-expired) batches ordered by FEFO:
      * Earliest expiring first, then oldest received for identical or unset expiries.
+     * Expired batches are strictly excluded for hospital food safety.
      */
     public function scopeAvailableFEFO(Builder $query): Builder
     {
         return $query->where('is_exhausted', false)
             ->where('remaining_quantity', '>', 0)
+            ->where(function ($q) {
+                $q->whereNull('expiry_date')
+                    ->orWhereDate('expiry_date', '>=', now()->toDateString());
+            })
             ->orderByRaw('CASE WHEN expiry_date IS NOT NULL THEN 0 ELSE 1 END ASC')
             ->orderBy('expiry_date', 'asc')
             ->orderBy('received_at', 'asc')
@@ -69,11 +75,43 @@ class InventoryBatch extends Model
     }
 
     /**
-     * Scope query to active (non-exhausted) batches ordered by FIFO (oldest received first).
+     * Scope query to active (non-exhausted, non-expired) batches ordered by pure FIFO:
+     * Oldest received date first, completely decoupled from FEFO.
      */
     public function scopeAvailableFIFO(Builder $query): Builder
     {
-        return $this->scopeAvailableFEFO($query);
+        return $query->where('is_exhausted', false)
+            ->where('remaining_quantity', '>', 0)
+            ->where(function ($q) {
+                $q->whereNull('expiry_date')
+                    ->orWhereDate('expiry_date', '>=', now()->toDateString());
+            })
+            ->orderBy('received_at', 'asc')
+            ->orderBy('id', 'asc');
+    }
+
+    /**
+     * Scope query to expired batches requiring warehouse quarantine or disposal.
+     */
+    public function scopeExpired(Builder $query): Builder
+    {
+        return $query->where('remaining_quantity', '>', 0)
+            ->whereNotNull('expiry_date')
+            ->whereDate('expiry_date', '<', now()->toDateString())
+            ->orderBy('expiry_date', 'asc');
+    }
+
+    /**
+     * Scope query to batches nearing expiration within specified window (default 5 days).
+     */
+    public function scopeNearExpiry(Builder $query, int $days = 5): Builder
+    {
+        return $query->where('is_exhausted', false)
+            ->where('remaining_quantity', '>', 0)
+            ->whereNotNull('expiry_date')
+            ->whereDate('expiry_date', '>=', now()->toDateString())
+            ->whereDate('expiry_date', '<=', now()->addDays($days)->toDateString())
+            ->orderBy('expiry_date', 'asc');
     }
 
     /**

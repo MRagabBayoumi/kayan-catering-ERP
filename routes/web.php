@@ -59,10 +59,12 @@ Route::middleware('auth')->group(function () {
         ];
 
         return view('dashboard', $stats);
-    })->name('dashboard');
+    })->name('dashboard')->middleware('can:access-dashboard');
 
     // AI Copilot Query Endpoint
-    Route::post('/ai/ask', [AiCopilotController::class, 'ask'])->name('ai.ask');
+    Route::post('/ai/ask', [AiCopilotController::class, 'ask'])
+        ->name('ai.ask')
+        ->middleware('can:use-ai-copilot');
 
     // 1. Warehouse & FIFO Department Routes
     Route::prefix('warehouse')->name('warehouse.')->group(function () {
@@ -184,12 +186,18 @@ Route::middleware('auth')->group(function () {
     });
 
     // 6. Settings & Permissions (إعدادات النظام والمستخدمين والصلاحيات)
-    Route::get('/settings', [CompanySettingController::class, 'index'])->name('settings.index');
-    Route::match(['post', 'put'], '/settings', [CompanySettingController::class, 'update'])->name('settings.update');
-    Route::match(['post', 'put'], '/settings/barcode', [CompanySettingController::class, 'updateBarcode'])->name('settings.barcode.update');
-    Route::match(['post', 'put'], '/settings/printers', [CompanySettingController::class, 'updatePrinters'])->name('settings.printers.update');
+    Route::middleware('can:manage-company-settings')->group(function () {
+        Route::get('/settings', [CompanySettingController::class, 'index'])->name('settings.index');
+        Route::match(['post', 'put'], '/settings', [CompanySettingController::class, 'update'])->name('settings.update');
+        Route::match(['post', 'put'], '/settings/barcode', [CompanySettingController::class, 'updateBarcode'])->name('settings.barcode.update');
+        Route::match(['post', 'put'], '/settings/printers', [CompanySettingController::class, 'updatePrinters'])->name('settings.printers.update');
+    });
 
-    Route::resource('users', UserController::class);
+    Route::middleware('can:manage-users')->group(function () {
+        Route::resource('users', UserController::class);
+    });
 
-    Route::get('/roles', [RoleController::class, 'index'])->name('roles.index');
+    Route::middleware('can:manage-roles')->group(function () {
+        Route::get('/roles', [RoleController::class, 'index'])->name('roles.index');
+    });
 });

@@ -17,9 +17,22 @@ class CostingReconciliationController extends Controller
     {
         Gate::authorize('manage-costing');
 
-        $hospitals = Hospital::where('is_active', true)->orderBy('name')->get();
-        $hospitalId = $request->input('hospital_id', $hospitals->first()?->id);
-        $hospital = $hospitals->firstWhere('id', (int) $hospitalId) ?? $hospitals->first();
+        $user = auth()->user();
+        $hospitals = $user->isAdmin()
+            ? Hospital::where('is_active', true)->orderBy('name')->get()
+            : $user->accessibleHospitals();
+
+        $requestedHospitalId = $request->input('hospital_id');
+        $hospital = null;
+
+        if ($requestedHospitalId) {
+            $hospital = $hospitals->firstWhere('id', (int) $requestedHospitalId);
+            if (! $hospital && ! $user->isAdmin()) {
+                abort(403, 'غير مصرح لك باستعراض بيانات هذا المستشفى.');
+            }
+        }
+
+        $hospital = $hospital ?? $hospitals->first();
 
         $date = $request->input('date', Carbon::today()->toDateString());
         $carbonDate = Carbon::parse($date);

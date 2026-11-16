@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Hospital;
 use App\Models\Product;
 use App\Models\SiteKitchenIssue;
 use Carbon\Carbon;
@@ -19,14 +18,19 @@ class SiteKitchenIssueController extends Controller
         Gate::authorize('manage-site-operations');
 
         $user = auth()->user();
-        if ($user->role === 'site_manager' && $user->assignedHospital) {
-            $hospital = $user->assignedHospital;
-            $allHospitals = collect([$hospital]);
-        } else {
-            $allHospitals = Hospital::where('is_active', true)->orderBy('name')->get();
-            $hospitalId = $request->input('hospital_id', $allHospitals->first()?->id);
-            $hospital = $allHospitals->firstWhere('id', (int) $hospitalId) ?? $allHospitals->first();
+        $allHospitals = $user->accessibleHospitals();
+
+        $requestedHospitalId = $request->input('hospital_id');
+        $hospital = null;
+
+        if ($requestedHospitalId) {
+            $hospital = $allHospitals->firstWhere('id', (int) $requestedHospitalId);
+            if (! $hospital && ! $user->isAdmin()) {
+                abort(403, 'غير مصرح لك بالوصول لبيانات هذا المستشفى.');
+            }
         }
+
+        $hospital = $hospital ?? $allHospitals->first();
 
         $date = $request->input('date', Carbon::today()->toDateString());
 
@@ -49,9 +53,13 @@ class SiteKitchenIssueController extends Controller
         Gate::authorize('manage-site-operations');
 
         $user = auth()->user();
-        $hospitalId = ($user->role === 'site_manager' && $user->assigned_hospital_id)
-            ? $user->assigned_hospital_id
-            : $request->input('hospital_id');
+        $targetHospitalId = (int) $request->input('hospital_id');
+
+        if (! $user->hasAccessToHospital($targetHospitalId)) {
+            abort(403, 'غير مصرح لك بصرف مواد مطبخ لهذا المستشفى.');
+        }
+
+        $hospitalId = $targetHospitalId;
 
         $request->merge([
             'items' => array_values(array_filter(

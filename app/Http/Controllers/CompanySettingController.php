@@ -11,6 +11,7 @@ use App\Services\TelegramNotificationService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Illuminate\View\View;
@@ -23,6 +24,8 @@ class CompanySettingController extends Controller
      */
     public function index(): View
     {
+        Gate::authorize('manage-company-settings');
+
         $settings = CompanySetting::getSettings();
         $barcodeSettings = (object) [
             'prefix' => '21',
@@ -72,6 +75,8 @@ class CompanySettingController extends Controller
      */
     public function update(Request $request): RedirectResponse
     {
+        Gate::authorize('manage-company-settings');
+
         $settings = CompanySetting::getSettings();
 
         $validated = $request->validate([
@@ -149,6 +154,8 @@ class CompanySettingController extends Controller
      */
     public function updateBarcode(Request $request): RedirectResponse
     {
+        Gate::authorize('manage-company-settings');
+
         $barcodeSettings = BarcodeSetting::getSettings();
 
         $validated = $request->validate([
@@ -193,6 +200,8 @@ class CompanySettingController extends Controller
      */
     public function updatePrinters(Request $request): RedirectResponse
     {
+        Gate::authorize('manage-company-settings');
+
         $settings = CompanySetting::getSettings();
 
         $validated = $request->validate([
