@@ -6,6 +6,7 @@ use App\Models\DailySiteCensus;
 use App\Models\DailySiteCensusItem;
 use App\Models\DietSchedule;
 use App\Models\Hospital;
+use App\Services\CostCenterService;
 use Carbon\Carbon;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -160,5 +161,29 @@ class SiteDailyCensusController extends Controller
             'date' => $validated['census_date'],
             'hospital_id' => $hospitalId,
         ])->with('success', 'تم تسجيل وتأكيد تشغيل وأعداد الموقع بنجاح طبقاً لاختيار الشيف ومدير الموقع.');
+    }
+
+    /**
+     * Bill Daily Census and recognize hospital revenue in Cost Center.
+     */
+    public function billCensus(Request $request, int $id, CostCenterService $costCenterService): RedirectResponse
+    {
+        Gate::authorize('manage-site-operations');
+
+        $census = DailySiteCensus::with('hospital.activeContract')->findOrFail($id);
+        $totalMeals = max(1, (int) $census->total_patient_count * 3);
+
+        $costCenterService->recognizeHospitalRevenue(
+            hospitalId: $census->hospital_id,
+            date: $census->census_date->toDateString(),
+            mealCount: $totalMeals,
+            overridePricePerMeal: $request->filled('override_price') ? (float) $request->input('override_price') : null,
+            userId: auth()->id() ?? 1,
+            notes: 'إثبات استحقاق إيراد عن تعداد نزلاء يوم '.$census->census_date->format('Y-m-d')
+        );
+
+        $census->update(['status' => 'billed']);
+
+        return back()->with('success', 'تم بنجاح إثبات استحقاق إيراد التغذية التعاقدي بالدفاتر المالية ومركز تكلفة المستشفى.');
     }
 }

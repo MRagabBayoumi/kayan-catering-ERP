@@ -567,5 +567,8 @@ class DatabaseSeeder extends Seeder
 
         // 13. Diet Schedules & Ministerial Matrices
         $this->call(DietScheduleSeeder::class);
+
+        // 14. Chart of Accounts, Cost Centers & Contracts
+        $this->call(ChartOfAccountsAndCostCentersSeeder::class);
     }
 }

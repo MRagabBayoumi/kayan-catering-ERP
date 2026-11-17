@@ -48,6 +48,11 @@ class Warehouse extends Model
         return $this->belongsTo(User::class, 'driver_id');
     }
 
+    public function hospital(): BelongsTo
+    {
+        return $this->belongsTo(Hospital::class);
+    }
+
     public function stockBalances(): HasMany
     {
         return $this->hasMany(StockBalance::class);

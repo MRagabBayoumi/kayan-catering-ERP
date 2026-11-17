@@ -50,6 +50,26 @@ class Hospital extends Model
         ];
     }
 
+    public function contracts(): HasMany
+    {
+        return $this->hasMany(Contract::class);
+    }
+
+    public function siteWarehouse(): HasOne
+    {
+        return $this->hasOne(Warehouse::class)->where('type', Warehouse::TYPE_SITE);
+    }
+
+    public function activeContract(): HasOne
+    {
+        return $this->hasOne(Contract::class)->where('status', Contract::STATUS_ACTIVE)->latestOfMany();
+    }
+
+    public function costCenter(): HasOne
+    {
+        return $this->hasOne(CostCenter::class);
+    }
+
     public function supplyOrders(): HasMany
     {
         return $this->hasMany(SupplyOrder::class);
@@ -83,11 +103,6 @@ class Hospital extends Model
     public function supervisingUsers(): BelongsToMany
     {
         return $this->belongsToMany(User::class, 'hospital_user');
-    }
-
-    public function siteWarehouse(): HasOne
-    {
-        return $this->hasOne(Warehouse::class)->where('type', Warehouse::TYPE_SITE);
     }
 
     public function isContractActive(): bool

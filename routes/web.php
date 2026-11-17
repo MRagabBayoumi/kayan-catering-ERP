@@ -4,18 +4,25 @@ use App\Http\Controllers\AiCopilotController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\BlindAuditController;
 use App\Http\Controllers\CompanySettingController;
+use App\Http\Controllers\ContractController;
+use App\Http\Controllers\CostCenterProfitabilityController;
 use App\Http\Controllers\CostingController;
 use App\Http\Controllers\CostingReconciliationController;
 use App\Http\Controllers\DriverSettlementController;
 use App\Http\Controllers\FinanceController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\HospitalController;
+use App\Http\Controllers\MobileOperationsController;
+use App\Http\Controllers\PrintDocumentsController;
 use App\Http\Controllers\ProcurementController;
 use App\Http\Controllers\ProductPrintController;
+use App\Http\Controllers\RationVersionController;
 use App\Http\Controllers\RoleController;
 use App\Http\Controllers\SiteDailyCensusController;
 use App\Http\Controllers\SiteKitchenIssueController;
+use App\Http\Controllers\SiteWasteController;
 use App\Http\Controllers\TenderController;
+use App\Http\Controllers\TraceabilityController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\VehicleDispatchTripController;
 use App\Http\Controllers\WarehouseController;
@@ -100,12 +107,25 @@ Route::middleware('auth')->group(function () {
     // Product Barcode Label Printing
     Route::get('/products/{product}/print-label', [ProductPrintController::class, 'printProductLabel'])->name('products.print-label');
 
+    // Mobile / Field Operations (بوابة العمليات الميدانية للسائق وأمين الموقع)
+    Route::prefix('mobile')->name('mobile.')->group(function () {
+        Route::get('/', [MobileOperationsController::class, 'index'])->name('index');
+        Route::get('/driver/trips', [MobileOperationsController::class, 'driverTrips'])->name('driver.trips');
+        Route::get('/receiving/{dispatch_id}', [MobileOperationsController::class, 'hospitalReceiving'])->name('receiving.show');
+        Route::post('/receiving/{dispatch_id}', [MobileOperationsController::class, 'submitHospitalReceiving'])->name('receiving.submit');
+        Route::get('/receipts/{id}', [MobileOperationsController::class, 'showReceipt'])->name('receipt.show');
+    });
+
     // 2. Costing Department Routes (المقننات والتكاليف)
     Route::prefix('costing')->name('costing.')->group(function () {
         Route::get('/', fn () => redirect()->route('costing.recipes.index'))->name('index');
         Route::get('/recipes', [CostingController::class, 'indexRecipes'])->name('recipes.index');
         Route::get('/recipes/create', [CostingController::class, 'createRecipe'])->name('recipes.create');
         Route::post('/recipes', [CostingController::class, 'storeRecipe'])->name('recipes.store');
+        Route::get('/recipes/{recipe}/versions', [RationVersionController::class, 'versions'])->name('recipes.versions');
+        Route::post('/recipes/{recipe}/versions', [RationVersionController::class, 'storeVersion'])->name('recipes.versions.store');
+        Route::get('/mrp', [RationVersionController::class, 'mrp'])->name('mrp.index');
+        Route::post('/mrp/create-pr', [RationVersionController::class, 'createPrFromMrp'])->name('mrp.create-pr');
 
         Route::get('/daily-order', [CostingController::class, 'dailyOrder'])->name('daily-order');
 
@@ -119,9 +139,13 @@ Route::middleware('auth')->group(function () {
     Route::prefix('site')->name('site.')->group(function () {
         Route::get('/census', [SiteDailyCensusController::class, 'index'])->name('census.index');
         Route::post('/census', [SiteDailyCensusController::class, 'store'])->name('census.store');
+        Route::post('/census/{id}/bill', [SiteDailyCensusController::class, 'billCensus'])->name('census.bill');
 
         Route::get('/kitchen-issues', [SiteKitchenIssueController::class, 'index'])->name('kitchen-issues.index');
         Route::post('/kitchen-issues', [SiteKitchenIssueController::class, 'store'])->name('kitchen-issues.store');
+
+        Route::get('/waste', [SiteWasteController::class, 'index'])->name('waste.index');
+        Route::post('/waste', [SiteWasteController::class, 'store'])->name('waste.store');
     });
 
     // 3. Sales & Tenders Department Routes (المبيعات والمناقصات)
@@ -130,6 +154,14 @@ Route::middleware('auth')->group(function () {
         Route::get('/hospitals/create', [HospitalController::class, 'create'])->name('hospitals.create');
         Route::post('/hospitals', [HospitalController::class, 'store'])->name('hospitals.store');
         Route::post('/hospitals/{id}/terminate', [HospitalController::class, 'terminate'])->name('hospitals.terminate');
+
+        Route::get('/contracts', [ContractController::class, 'index'])->name('contracts.index');
+        Route::get('/contracts/create', [ContractController::class, 'create'])->name('contracts.create');
+        Route::post('/contracts', [ContractController::class, 'store'])->name('contracts.store');
+
+        Route::get('/feasibility', [ContractController::class, 'feasibility'])->name('feasibility.index');
+        Route::get('/feasibility/create', [ContractController::class, 'createFeasibility'])->name('feasibility.create');
+        Route::post('/feasibility', [ContractController::class, 'storeFeasibility'])->name('feasibility.store');
 
         Route::get('/tenders', [TenderController::class, 'index'])->name('tenders.index');
         Route::get('/tenders/create', [TenderController::class, 'create'])->name('tenders.create');
@@ -141,9 +173,21 @@ Route::middleware('auth')->group(function () {
 
     // 4. Procurement Department Routes (إدارة المشتريات والتوريدات)
     Route::prefix('procurement')->name('procurement.')->group(function () {
+        Route::get('/requests', [ProcurementController::class, 'requests'])->name('requests.index');
+        Route::get('/requests/create', [ProcurementController::class, 'createRequest'])->name('requests.create');
+        Route::post('/requests', [ProcurementController::class, 'storeRequest'])->name('requests.store');
+        Route::get('/requests/{id}', [ProcurementController::class, 'showRequest'])->name('requests.show');
+        Route::post('/requests/{id}/approve', [ProcurementController::class, 'approveRequest'])->name('requests.approve');
+        Route::post('/requests/{id}/reject', [ProcurementController::class, 'rejectRequest'])->name('requests.reject');
+        Route::get('/requests/{id}/compare-quotes', [ProcurementController::class, 'compareQuotes'])->name('requests.compare');
+        Route::post('/requests/{id}/convert-to-po', [ProcurementController::class, 'convertRequestToOrder'])->name('requests.convert');
+
         Route::get('/orders', [ProcurementController::class, 'orders'])->name('orders.index');
         Route::get('/orders/create', [ProcurementController::class, 'createOrder'])->name('orders.create');
         Route::post('/orders', [ProcurementController::class, 'storeOrder'])->name('orders.store');
+
+        Route::get('/receipts', [ProcurementController::class, 'receipts'])->name('receipts.index');
+        Route::post('/receipts', [ProcurementController::class, 'storeReceipt'])->name('receipts.store');
 
         Route::get('/suppliers', [ProcurementController::class, 'suppliers'])->name('suppliers.index');
         Route::post('/suppliers', [ProcurementController::class, 'storeSupplier'])->name('suppliers.store');
@@ -151,6 +195,9 @@ Route::middleware('auth')->group(function () {
 
     // 5. Finance & Accounts Department Routes (إدارة الحسابات والمالية)
     Route::prefix('finance')->name('finance.')->group(function () {
+        // Profitability & Cost Centers (تحليل ربحية المستشفيات)
+        Route::get('/profitability', [CostCenterProfitabilityController::class, 'index'])->name('profitability.index');
+
         // 1. Disbursement Orders (أذونات الصرف اللحظية)
         Route::get('/disbursements', [FinanceController::class, 'disbursements'])->name('disbursements.index');
         Route::post('/disbursements', [FinanceController::class, 'storeDisbursement'])->name('disbursements.store');
@@ -183,6 +230,19 @@ Route::middleware('auth')->group(function () {
         Route::get('/suppliers', [FinanceController::class, 'suppliers'])->name('suppliers.index');
         Route::get('/treasury', [FinanceController::class, 'treasury'])->name('treasury.index');
         Route::post('/treasury/vouchers', [FinanceController::class, 'storeVoucher'])->name('treasury.vouchers.store');
+    });
+
+    // Document Traceability Engine (شجرة تتبع المستندات صعوداً وهبوطاً)
+    Route::get('/traceability/{type}/{id}', [TraceabilityController::class, 'show'])->name('traceability.show');
+
+    // Official Document & Thermal Printing Engine (طباعة المستندات والملصقات الحرارية)
+    Route::prefix('prints')->name('prints.')->group(function () {
+        Route::get('/purchase-order/{id}', [PrintDocumentsController::class, 'purchaseOrder'])->name('purchase-order');
+        Route::get('/goods-receipt/{id}', [PrintDocumentsController::class, 'goodsReceipt'])->name('goods-receipt');
+        Route::get('/dispatch-order/{id}', [PrintDocumentsController::class, 'dispatchOrder'])->name('dispatch-order');
+        Route::get('/delivery-receipt/{id}', [PrintDocumentsController::class, 'deliveryReceipt'])->name('delivery-receipt');
+        Route::get('/driver-settlement/{id}', [PrintDocumentsController::class, 'driverSettlement'])->name('driver-settlement');
+        Route::get('/diet-labels/{id}', [PrintDocumentsController::class, 'dietLabels'])->name('diet-labels');
     });
 
     // 6. Settings & Permissions (إعدادات النظام والمستخدمين والصلاحيات)

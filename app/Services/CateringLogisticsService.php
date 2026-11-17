@@ -195,11 +195,12 @@ class CateringLogisticsService
 
     /**
      * 3. Record Delivery at Hospital (Actual Delivery, Extra Requests & Returns).
+     * Transits inventory from Driver Van Custody to Hospital Site Warehouse.
      */
     public function recordDeliveryReceipt(int $dispatchOrderId, array $receiptData, array $itemResults): DeliveryReceipt
     {
         return DB::transaction(function () use ($dispatchOrderId, $receiptData, $itemResults) {
-            $dispatch = DispatchOrder::findOrFail($dispatchOrderId);
+            $dispatch = DispatchOrder::with('hospital')->findOrFail($dispatchOrderId);
 
             $receiptNumber = 'REC-'.date('Ymd').'-'.str_pad((string) (DeliveryReceipt::count() + 1), 4, '0', STR_PAD_LEFT);
 
@@ -210,27 +211,102 @@ class CateringLogisticsService
                 'driver_id' => $dispatch->driver_id,
                 'receiving_officer_name' => $receiptData['receiving_officer_name'] ?? null,
                 'received_at' => $receiptData['received_at'] ?? Carbon::now(),
-                'status' => DeliveryReceipt::STATUS_PENDING_VERIFICATION,
+                'status' => DeliveryReceipt::STATUS_VERIFIED,
                 'notes' => $receiptData['notes'] ?? null,
             ]);
 
+            // Ensure Hospital Site Warehouse exists
+            $hospital = $dispatch->hospital ?? Hospital::find($dispatch->hospital_id);
+            $siteWarehouse = Warehouse::firstOrCreate(
+                ['hospital_id' => $hospital->id, 'type' => Warehouse::TYPE_SITE],
+                [
+                    'code' => 'SITE-'.($hospital->code ?? 'H'.$hospital->id),
+                    'name' => 'مخزن موقع '.$hospital->name,
+                    'is_active' => true,
+                    'is_default' => false,
+                ]
+            );
+
             foreach ($itemResults as $res) {
+                $actualDelivered = (float) $res['actual_delivered_qty'];
+                $dispatchedQty = (float) $res['dispatched_qty'];
+                $returnedQty = (float) ($res['returned_qty'] ?? 0.0000);
+                $rejectedQty = (float) ($res['rejected_qty'] ?? 0.0000);
+
                 DeliveryReceiptItem::create([
                     'delivery_receipt_id' => $receipt->id,
                     'product_id' => $res['product_id'],
-                    'dispatched_qty' => $res['dispatched_qty'],
-                    'actual_delivered_qty' => $res['actual_delivered_qty'],
+                    'dispatched_qty' => $dispatchedQty,
+                    'actual_delivered_qty' => $actualDelivered,
                     'extra_requested_qty' => $res['extra_requested_qty'] ?? 0.0000,
-                    'returned_qty' => $res['returned_qty'] ?? 0.0000,
-                    'rejected_qty' => $res['rejected_qty'] ?? 0.0000,
+                    'returned_qty' => $returnedQty,
+                    'rejected_qty' => $rejectedQty,
                     'rejection_reason' => $res['rejection_reason'] ?? null,
                 ]);
 
-                // Update supply order delivered quantity
+                // Transfer delivered goods from Van Transit to Hospital Site Warehouse
+                if ($actualDelivered > 0) {
+                    // 1. Deduct from Van Transit Warehouse
+                    $vanBal = StockBalance::where('product_id', $res['product_id'])
+                        ->where('warehouse_id', $dispatch->transit_warehouse_id)
+                        ->first();
+                    if ($vanBal) {
+                        $vanBal->quantity = max(0, $vanBal->quantity - $actualDelivered);
+                        $vanBal->save();
+                    }
+
+                    // 2. Increment Hospital Site Warehouse Balance
+                    $siteBal = StockBalance::firstOrCreate(
+                        ['product_id' => $res['product_id'], 'warehouse_id' => $siteWarehouse->id],
+                        ['quantity' => 0.0000]
+                    );
+                    $siteBal->quantity += $actualDelivered;
+                    $siteBal->save();
+
+                    // 3. Find source batch info from Van
+                    $sourceVanBatch = InventoryBatch::where('product_id', $res['product_id'])
+                        ->where('warehouse_id', $dispatch->transit_warehouse_id)
+                        ->latest()
+                        ->first();
+
+                    $unitCost = $sourceVanBatch ? (float) $sourceVanBatch->cost_price : (float) (Product::find($res['product_id'])?->cost_price ?? 0);
+
+                    // 4. Create batch in Site Warehouse
+                    InventoryBatch::create([
+                        'batch_number' => ($sourceVanBatch?->batch_number ?? 'B-'.$receipt->id).'-SITE',
+                        'product_id' => $res['product_id'],
+                        'warehouse_id' => $siteWarehouse->id,
+                        'initial_quantity' => $actualDelivered,
+                        'remaining_quantity' => $actualDelivered,
+                        'cost_price' => $unitCost,
+                        'production_date' => $sourceVanBatch?->production_date ?? Carbon::today(),
+                        'expiry_date' => $sourceVanBatch?->expiry_date ?? Carbon::today()->addMonths(3),
+                        'received_at' => Carbon::now(),
+                        'is_exhausted' => false,
+                        'notes' => 'وارد للمخزن الفرعي لموقع '.$hospital->name.' عبر إشعار استلام رقم '.$receiptNumber,
+                    ]);
+
+                    // 5. Stock movement: Van -> Hospital Site Warehouse
+                    StockMovement::create([
+                        'movement_number' => 'MOV-SITE-'.date('YmdHis').'-'.rand(100, 999),
+                        'type' => StockMovement::TYPE_TRANSFER,
+                        'product_id' => $res['product_id'],
+                        'from_warehouse_id' => $dispatch->transit_warehouse_id,
+                        'to_warehouse_id' => $siteWarehouse->id,
+                        'quantity' => $actualDelivered,
+                        'unit_cost' => $unitCost,
+                        'reference_type' => 'DeliveryReceipt',
+                        'reference_id' => $receipt->id,
+                        'user_id' => auth()->id() ?? $dispatch->driver_id,
+                        'notes' => "تسليم بضاعة لمخزن موقع مستشفى {$hospital->name} عبر إشعار {$receiptNumber}",
+                    ]);
+                }
+
+                // Update supply order delivered quantity if linked
                 if ($dispatch->supply_order_id) {
                     SupplyOrderItem::where('supply_order_id', $dispatch->supply_order_id)
                         ->where('product_id', $res['product_id'])
-                        ->increment('delivered_quantity', $res['actual_delivered_qty']);
+                        ->increment('delivered_quantity', $actualDelivered);
                 }
             }
 
@@ -320,8 +396,13 @@ class CateringLogisticsService
                 $deliveredQty = (float) $rItem->actual_delivered_qty;
                 $retQty = (float) $rItem->returned_qty;
 
-                // 1. Deduct Delivered Quantity from Driver Van Warehouse (Supplied to Hospital)
-                if ($deliveredQty > 0) {
+                // 1. Deduct Delivered Quantity from Driver Van Warehouse (if not already transferred during delivery receipt)
+                $alreadyTransferred = StockMovement::where('reference_type', 'DeliveryReceipt')
+                    ->where('reference_id', $receipt->id)
+                    ->where('product_id', $prodId)
+                    ->exists();
+
+                if ($deliveredQty > 0 && ! $alreadyTransferred) {
                     $vanBal = StockBalance::where('product_id', $prodId)
                         ->where('warehouse_id', $dispatch->transit_warehouse_id)
                         ->first();

@@ -28,6 +28,8 @@ class JournalEntryLine extends Model
 
     protected $fillable = [
         'journal_entry_id',
+        'chart_of_account_id',
+        'cost_center_id',
         'account_type',
         'account_id',
         'account_name',
@@ -44,5 +46,15 @@ class JournalEntryLine extends Model
     public function journalEntry(): BelongsTo
     {
         return $this->belongsTo(JournalEntry::class);
+    }
+
+    public function chartOfAccount(): BelongsTo
+    {
+        return $this->belongsTo(ChartOfAccount::class);
+    }
+
+    public function costCenter(): BelongsTo
+    {
+        return $this->belongsTo(CostCenter::class);
     }
 }

@@ -176,6 +176,12 @@
                             <span class="erp-nav-label">حساب طلبيات المطبخ (المقنن)</span>
                         </div>
                     </a>
+                    <a href="{{ route('costing.mrp.index') }}" class="erp-nav-item {{ request()->routeIs('costing.mrp*') ? 'active' : '' }}" title="تخطيط الاحتياجات التموينية بعد معامل التشفية">
+                        <div class="erp-nav-content">
+                            <span class="erp-nav-icon"><x-icon name="layers" size="18" /></span>
+                            <span class="erp-nav-label">تخطيط الاحتياجات (MRP)</span>
+                        </div>
+                    </a>
                 </div>
             </div>
 
@@ -259,7 +265,13 @@
                     <a href="{{ route('sales.hospitals.index') }}" class="erp-nav-item {{ request()->routeIs('sales.hospitals*') ? 'active' : '' }}" title="المستشفيات والجهات المتعاقدة">
                         <div class="erp-nav-content">
                             <span class="erp-nav-icon"><x-icon name="building-2" size="18" /></span>
-                            <span class="erp-nav-label">المستشفيات والتعاقدات</span>
+                            <span class="erp-nav-label">دليل المستشفيات</span>
+                        </div>
+                    </a>
+                    <a href="{{ route('sales.contracts.index') }}" class="erp-nav-item {{ request()->routeIs('sales.contracts*') ? 'active' : '' }}" title="العقود ومصفوفة أسعار الوجبات">
+                        <div class="erp-nav-content">
+                            <span class="erp-nav-icon"><x-icon name="file-text" size="18" /></span>
+                            <span class="erp-nav-label">العقود والأسعار التعاقدية</span>
                         </div>
                     </a>
                 </div>
@@ -267,8 +279,14 @@
 
             <!-- القسم الفرعي 2: المناقصات والمنافسين -->
             <div class="erp-nav-section is-open" data-section="sales-tenders">
-                <div class="erp-nav-section-title">المناقصات وتحليل المنافسين</div>
+                <div class="erp-nav-section-title">المناقصات ودراسات الجدوى</div>
                 <div class="erp-nav-section-items">
+                    <a href="{{ route('sales.feasibility.index') }}" class="erp-nav-item {{ request()->routeIs('sales.feasibility*') ? 'active' : '' }}" title="دراسات الجدوى التقديرية وهوامش المساهمة">
+                        <div class="erp-nav-content">
+                            <span class="erp-nav-icon"><x-icon name="trending-up" size="18" /></span>
+                            <span class="erp-nav-label">دراسات الجدوى التقديرية</span>
+                        </div>
+                    </a>
                     <a href="{{ route('sales.tenders.index') }}" class="erp-nav-item {{ request()->routeIs('sales.tenders*') ? 'active' : '' }}" title="سجل المناقصات وكراسات الشروط">
                         <div class="erp-nav-content">
                             <span class="erp-nav-icon"><x-icon name="file-text" size="18" /></span>
@@ -306,10 +324,22 @@
             <div class="erp-nav-section is-open" data-section="procurement-orders">
                 <div class="erp-nav-section-title">أوامر التوريد والشراء</div>
                 <div class="erp-nav-section-items">
-                    <a href="{{ route('procurement.orders.index') }}" class="erp-nav-item {{ request()->routeIs('procurement.orders*') ? 'active' : '' }}" title="طلبات الشراء وعروض الأسعار">
+                    <a href="{{ route('procurement.requests.index') }}" class="erp-nav-item {{ request()->routeIs('procurement.requests*') ? 'active' : '' }}" title="طلبات الشراء والاحتياجات التموينية">
+                        <div class="erp-nav-content">
+                            <span class="erp-nav-icon"><x-icon name="file-text" size="18" /></span>
+                            <span class="erp-nav-label">طلبات الشراء (PR)</span>
+                        </div>
+                    </a>
+                    <a href="{{ route('procurement.orders.index') }}" class="erp-nav-item {{ request()->routeIs('procurement.orders*') ? 'active' : '' }}" title="أوامر الشراء وعروض الأسعار">
                         <div class="erp-nav-content">
                             <span class="erp-nav-icon"><x-icon name="shopping-bag" size="18" /></span>
-                            <span class="erp-nav-label">طلبات الشراء وعروض الأسعار</span>
+                            <span class="erp-nav-label">أوامر الشراء المعمدة (PO)</span>
+                        </div>
+                    </a>
+                    <a href="{{ route('procurement.receipts.index') }}" class="erp-nav-item {{ request()->routeIs('procurement.receipts*') ? 'active' : '' }}" title="فحص واستلام التوريدات وإثبات الباتشات">
+                        <div class="erp-nav-content">
+                            <span class="erp-nav-icon"><x-icon name="clipboard-check" size="18" /></span>
+                            <span class="erp-nav-label">فحص واستلام التوريدات (GRN)</span>
                         </div>
                     </a>
                 </div>
@@ -335,8 +365,14 @@
             @can('manage-finance')
             <!-- نظرة عامة على القسم -->
             <div class="erp-nav-section is-open" data-section="finance-overview">
-                <div class="erp-nav-section-title">نظرة عامة</div>
+                <div class="erp-nav-section-title">الربحية ومراكز التكلفة</div>
                 <div class="erp-nav-section-items">
+                    <a href="{{ route('finance.profitability.index') }}" class="erp-nav-item {{ request()->routeIs('finance.profitability.index') ? 'active' : '' }}" title="تحليل ربحية المستشفيات ومراكز التكلفة">
+                        <div class="erp-nav-content">
+                            <span class="erp-nav-icon"><x-icon name="trending-up" size="18" /></span>
+                            <span class="erp-nav-label">ربحية المستشفيات ومراكز التكلفة</span>
+                        </div>
+                    </a>
                     <a href="{{ route('finance.suppliers.index') }}" class="erp-nav-item {{ request()->routeIs('finance.suppliers.index') ? 'active' : '' }}" title="نظرة عامة على الحسابات والمالية">
                         <div class="erp-nav-content">
                             <span class="erp-nav-icon"><x-icon name="layout-dashboard" size="18" /></span>

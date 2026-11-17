@@ -5,6 +5,14 @@
 
     $financeTabs = [
         [
+            'label' => 'ربحية المستشفيات ومراكز التكلفة',
+            'url' => route('finance.profitability.index'),
+            'icon' => 'trending-up',
+            'active' => request()->routeIs('finance.profitability*'),
+            'badge' => 'جديد',
+            'badge_class' => 'erp-badge-primary',
+        ],
+        [
             'label' => 'أذونات الصرف اللحظية',
             'url' => route('finance.disbursements.index'),
             'icon' => 'truck',
