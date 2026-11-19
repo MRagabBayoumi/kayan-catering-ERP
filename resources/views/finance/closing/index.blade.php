@@ -112,11 +112,20 @@
             @if($closing)
                 <span class="text-[11px] font-bold mt-1 block {{ $closing->hasDeficit() ? 'text-rose-600' : ($closing->hasSurplus() ? 'text-emerald-600' : 'text-slate-500') }}">
                     @if($closing->hasDeficit())
-                        ⚠️ عجز مالي: {{ number_format(abs($closing->difference), 2) }} ج.م
+                        <span class="inline-flex items-center gap-1">
+                            <x-icon name="alert-triangle" size="14" class="text-rose-600 inline" />
+                            <span>عجز مالي: {{ number_format(abs($closing->difference), 2) }} ج.م</span>
+                        </span>
                     @elseif($closing->hasSurplus())
-                        ✅ فائض مالي: {{ number_format($closing->difference, 2) }} ج.م
+                        <span class="inline-flex items-center gap-1">
+                            <x-icon name="check-circle" size="14" class="text-emerald-600 inline" />
+                            <span>فائض مالي: {{ number_format($closing->difference, 2) }} ج.م</span>
+                        </span>
                     @else
-                        ✅ مطابقة تامة (0.00 ج.م)
+                        <span class="inline-flex items-center gap-1">
+                            <x-icon name="check-circle" size="14" class="text-emerald-600 inline" />
+                            <span>مطابقة تامة (0.00 ج.م)</span>
+                        </span>
                     @endif
                 </span>
             @else
@@ -186,13 +195,25 @@
             </h3>
             <p class="text-xs text-slate-500 mt-1">
                 @if($closing && $closing->isApproved())
-                    ✅ تم اعتماد التقفيل ومطابقة الأرصدة رسمياً بواسطة المدير: <strong>{{ $closing->approvedByUser->name ?? 'مدير النظام' }}</strong> في {{ $closing->approved_at?->format('Y-m-d H:i') }}
+                    <span class="inline-flex items-center gap-1.5 text-emerald-600 dark:text-emerald-400 font-semibold">
+                        <x-icon name="check-circle" size="16" />
+                        <span>تم اعتماد التقفيل ومطابقة الأرصدة رسمياً بواسطة المدير: <strong>{{ $closing->approvedByUser->name ?? 'مدير النظام' }}</strong> في {{ $closing->approved_at?->format('Y-m-d H:i') }}</span>
+                    </span>
                 @elseif($closing && $closing->isPending())
-                    ⏳ تم تقديم المحضر بواسطة: <strong>{{ $closing->closedByUser->name ?? 'أمين الخزنة' }}</strong> وبانتظار اعتماد المدير العام.
+                    <span class="inline-flex items-center gap-1.5 text-amber-600 dark:text-amber-400 font-semibold">
+                        <x-icon name="clock" size="16" />
+                        <span>تم تقديم المحضر بواسطة: <strong>{{ $closing->closedByUser->name ?? 'أمين الخزنة' }}</strong> وبانتظار اعتماد المدير العام.</span>
+                    </span>
                 @elseif($closing && $closing->isRejected())
-                    ❌ تم رفض الإقفال بواسطة المدير. السبب: <span class="font-bold text-rose-600">{{ $closing->rejection_reason }}</span>
+                    <span class="inline-flex items-center gap-1.5 text-rose-600 dark:text-rose-400 font-semibold">
+                        <x-icon name="x-circle" size="16" />
+                        <span>تم رفض الإقفال بواسطة المدير. السبب: <span class="font-bold underline">{{ $closing->rejection_reason }}</span></span>
+                    </span>
                 @else
-                    ⚠️ اليومية مفتوحة ولم يتم إجراء الجرد الفعلي وتقديم التقفيل بعد.
+                    <span class="inline-flex items-center gap-1.5 text-amber-600 dark:text-amber-400 font-semibold">
+                        <x-icon name="alert-triangle" size="16" />
+                        <span>اليومية مفتوحة ولم يتم إجراء الجرد الفعلي وتقديم التقفيل بعد.</span>
+                    </span>
                 @endif
             </p>
         </div>

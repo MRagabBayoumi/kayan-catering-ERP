@@ -669,6 +669,31 @@
             <circle cx="17.5" cy="17.5" r="2.5"/>
             @break
 
+        @case('snowflake')
+        @case('freeze')
+        @case('cooling')
+            <path d="m10 20-1.25-2.5L6 18"/>
+            <path d="M10 4 8.75 6.5 6 6"/>
+            <path d="m14 20 1.25-2.5L18 18"/>
+            <path d="m14 4 1.25 2.5L18 6"/>
+            <path d="m17 21-3-6h-4"/>
+            <path d="m17 3-3 6h-4"/>
+            <path d="m2 12 20 0"/>
+            <path d="m20 10-2.5 1.25L18 14"/>
+            <path d="m4 10 2.5 1.25L6 14"/>
+            <path d="m12 2 0 20"/>
+            @break
+
+        @case('plane')
+        @case('telegram')
+            <path d="m22 2-7 20-4-9-9-4Z"/>
+            <path d="M22 2 11 13"/>
+            @break
+
+        @case('star')
+            <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
+            @break
+
         @default
             <circle cx="12" cy="12" r="10"/>
             <line x1="12" y1="8" x2="12" y2="12"/>

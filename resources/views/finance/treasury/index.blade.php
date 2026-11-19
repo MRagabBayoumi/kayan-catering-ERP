@@ -41,13 +41,16 @@
             <div class="erp-card p-4">
                 <div class="flex justify-between items-start">
                     <div>
-                        <span class="text-xs font-semibold text-slate-500">
+                        <span class="text-xs font-semibold text-slate-500 inline-flex items-center gap-1.5">
                             @if($t->type === 'cashbox')
-                                🏢 خزينة نقدية
+                                <x-icon name="building" size="14" class="text-slate-500" />
+                                <span>خزينة نقدية</span>
                             @elseif($t->type === 'bank')
-                                🏦 حساب بنكي
+                                <x-icon name="landmark" size="14" class="text-slate-500" />
+                                <span>حساب بنكي</span>
                             @else
-                                🏥 عهدة موقع المستشفى
+                                <x-icon name="hospital" size="14" class="text-slate-500" />
+                                <span>عهدة موقع المستشفى</span>
                             @endif
                         </span>
                         <h4 class="font-bold text-slate-800 dark:text-slate-100 mt-1">{{ $t->name }}</h4>

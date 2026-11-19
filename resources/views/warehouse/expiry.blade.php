@@ -254,13 +254,16 @@
                                 </td>
                                 <td>
                                     <div class="font-medium text-xs">{{ $batch->warehouse->name ?? '-' }}</div>
-                                    <span class="text-[10px] text-[var(--text-muted)]">
+                                    <span class="text-[10px] text-[var(--text-muted)] inline-flex items-center gap-1">
                                         @if($batch->product?->storage_type === 'chilled')
-                                            ❄️ تبريد (+4°C)
+                                            <x-icon name="snowflake" size="12" class="text-sky-500" />
+                                            <span>تبريد (+4°C)</span>
                                         @elseif($batch->product?->storage_type === 'frozen')
-                                            🧊 تجميد (-18°C)
+                                            <x-icon name="freeze" size="12" class="text-indigo-500" />
+                                            <span>تجميد (-18°C)</span>
                                         @else
-                                            📦 جاف ومعتدل
+                                            <x-icon name="package" size="12" class="text-amber-500" />
+                                            <span>جاف ومعتدل</span>
                                         @endif
                                     </span>
                                 </td>

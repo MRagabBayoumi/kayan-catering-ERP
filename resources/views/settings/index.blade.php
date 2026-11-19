@@ -737,7 +737,7 @@
                     <input type="hidden" name="telegram_settings_submitted" value="1">
                     <div class="erp-card-header">
                         <div class="erp-card-title">
-                            <span class="text-sky-500 font-black text-lg">✈</span>
+                            <x-icon name="send" size="18" class="text-sky-500" />
                             <span>إشعارات تليجرام الفورية للإدارة (Telegram Bot Alerts)</span>
                         </div>
                         <span class="badge bg-emerald-50 text-emerald-700 text-xs font-bold border border-emerald-200 px-2 py-0.5 rounded">مجاني وبدون اشتراكات</span>
@@ -792,7 +792,10 @@
                                     placeholder="مثال: 797900749 أو -1001234567890 للجروب"
                                 >
                                 <span class="erp-form-hint">معرف حسابك الشخصي أو معرف جروب المديرين في تليجرام.</span>
-                                <span class="block text-[11px] text-amber-700 font-medium mt-1">⚠️ خطوة لازمة: افتح محادثة البوت على هاتفك أولاً واضغط <strong>ابدأ (Start)</strong> لكي يقبل تليجرام استلام الرسائل.</span>
+                                <span class="block text-[11px] text-amber-700 font-medium mt-1 flex items-center gap-1">
+                                    <x-icon name="alert-triangle" size="13" class="text-amber-600 shrink-0" />
+                                    <span>خطوة لازمة: افتح محادثة البوت على هاتفك أولاً واضغط <strong>ابدأ (Start)</strong> لكي يقبل تليجرام استلام الرسائل.</span>
+                                </span>
                             </div>
                         </div>
 
@@ -820,7 +823,7 @@
                         <!-- Test Button -->
                         <div class="mt-4 pt-3 border-t border-slate-100 flex items-center justify-between">
                             <button type="button" id="btnTestTelegram" class="erp-btn erp-btn-secondary text-xs">
-                                <span class="text-sky-500">✈</span>
+                                <x-icon name="send" size="14" class="text-sky-500" />
                                 <span>تجربة إرسال رسالة اختبار للبوت</span>
                             </button>
                             <span id="telegramTestResult" class="text-xs font-bold"></span>

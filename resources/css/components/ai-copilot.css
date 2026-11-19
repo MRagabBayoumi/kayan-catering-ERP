@@ -158,6 +158,9 @@
 }
 
 .ai-pill-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
     white-space: nowrap;
     background: var(--bg-surface);
     border: 1px solid var(--border-color);

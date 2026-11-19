@@ -25,11 +25,26 @@
         <div class="ai-quick-prompts">
             <div class="ai-quick-title">أسئلة سريعة ومقترحة:</div>
             <div class="ai-pills-row">
-                <button type="button" class="ai-pill-btn" data-query="عندي قد ايه لحمه">🥩 رصيد اللحوم بالمخزن</button>
-                <button type="button" class="ai-pill-btn" data-query="المناقصه مثلا بتاع الجيزه وجبة الغداء كانت بكام السنه الي فاتت">🎯 مناقصة الجيزة وجبة الغداء بكام؟</button>
-                <button type="button" class="ai-pill-btn" data-query="تكلفة مستشفي امبابه كام و معجزه ولا مهدره في البضاعه و صافي ربحها بعد نسبة المطبخ و ضرائب و دمعات و تامينات و عمولة شريك">🏥 تكلفة وأرباح مستشفى إمبابة</button>
-                <button type="button" class="ai-pill-btn" data-query="انا اكلت كام وجبه النهارده">🍽️ عدد الوجبات المنفذة اليوم</button>
-                <button type="button" class="ai-pill-btn" data-query="حساب مورد فلان كام اخر مره واخد دفعه امتي">🤝 كشوفات الموردين والدفعات</button>
+                <button type="button" class="ai-pill-btn" data-query="عندي قد ايه لحمه">
+                    <x-icon name="package" size="14" class="text-primary-600" />
+                    <span>رصيد اللحوم بالمخزن</span>
+                </button>
+                <button type="button" class="ai-pill-btn" data-query="المناقصه مثلا بتاع الجيزه وجبة الغداء كانت بكام السنه الي فاتت">
+                    <x-icon name="file-text" size="14" class="text-amber-600" />
+                    <span>مناقصة الجيزة وجبة الغداء بكام؟</span>
+                </button>
+                <button type="button" class="ai-pill-btn" data-query="تكلفة مستشفي امبابه كام و معجزه ولا مهدره في البضاعه و صافي ربحها بعد نسبة المطبخ و ضرائب و دمعات و تامينات و عمولة شريك">
+                    <x-icon name="hospital" size="14" class="text-rose-600" />
+                    <span>تكلفة وأرباح مستشفى إمبابة</span>
+                </button>
+                <button type="button" class="ai-pill-btn" data-query="انا اكلت كام وجبه النهارده">
+                    <x-icon name="utensils" size="14" class="text-emerald-600" />
+                    <span>عدد الوجبات المنفذة اليوم</span>
+                </button>
+                <button type="button" class="ai-pill-btn" data-query="حساب مورد فلان كام اخر مره واخد دفعه امتي">
+                    <x-icon name="users" size="14" class="text-cyan-600" />
+                    <span>كشوفات الموردين والدفعات</span>
+                </button>
             </div>
         </div>
 
@@ -39,7 +54,9 @@
             <div class="ai-msg ai-msg-bot">
                 <div class="ai-bubble">
                     <div class="ai-welcome-header">
-                        <span class="ai-welcome-icon">🌸</span>
+                        <span class="ai-welcome-icon flex items-center justify-center text-primary-600">
+                            <x-icon name="sparkles" size="16" />
+                        </span>
                         <span class="ai-welcome-title">أهلاً بك يا فندم!</span>
                     </div>
                     <p class="ai-welcome-body">

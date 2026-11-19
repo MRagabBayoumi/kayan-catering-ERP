@@ -93,11 +93,11 @@
                     @foreach($treasuries as $t)
                         <option value="{{ $t->id }}" {{ old('treasury_id') == $t->id ? 'selected' : '' }}>
                             @if($t->type === 'bank')
-                                🏦 بنك:
+                                [حساب بنكي]
                             @elseif($t->type === 'cashbox')
-                                🏢 خزينة نقدية:
+                                [خزينة نقدية]
                             @else
-                                🏥 عهدة موقع:
+                                [عهدة موقع]
                             @endif
                             {{ $t->name }} (الرصيد المتاح حالياً: {{ number_format($t->balance, 2) }} ج.م)
                         </option>
